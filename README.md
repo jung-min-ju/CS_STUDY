@@ -1,4 +1,5 @@
 # CS STUDY 운영 규칙
+본 스터디의 발표 자료, 질문 및 답변, 주간 학습 기록은 **GitHub Wiki**를 활용해 관리한다.
 
 ## 0. 스터디원
 - 정민주 : https://github.com/jung-min-ju
