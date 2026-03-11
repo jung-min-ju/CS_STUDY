@@ -1,5 +1,11 @@
 # CS STUDY 운영 규칙
 
+## 0. 스터디원
+- 정민주 : https://github.com/jung-min-ju
+- 조해민 : https://github.com/chohaeminn
+- 서재완 : https://github.com/SeoJaeWan
+- 정태형 : https://github.com/gamewithfriend
+
 ## 1. 스터디 개요
 
 - 시간: 매주 일요일 13:00
