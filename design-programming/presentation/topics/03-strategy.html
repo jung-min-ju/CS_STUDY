@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Strategy Pattern</title>
+  <link rel="stylesheet" href="../topic-frame.css">
+</head>
+<body>
+<h2 class="sr-only">Strategy pattern interactive explainer with simulation, pros, cons, and use cases tabs in Korean.</h2>
+<style>
+*{box-sizing:border-box}
+.tabs{display:flex;gap:0;border-bottom:0.5px solid var(--color-border-tertiary);margin-bottom:1.25rem;overflow-x:auto}
+.tab{padding:8px 14px;font-size:13px;font-weight:500;color:var(--color-text-secondary);cursor:pointer;border-bottom:2px solid transparent;transition:all 0.3s;background:none;border-top:none;border-left:none;border-right:none;white-space:nowrap}
+.tab:hover{color:var(--color-text-primary)}
+.tab.active{color:#3C3489;border-bottom-color:#534AB7}
+.pnl{display:none}.pnl.active{display:block}
+.sec{margin-bottom:1.25rem}
+.sec-title{font-size:14px;font-weight:500;color:var(--color-text-primary);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.sec-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.cw{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:14px 16px;font-family:var(--font-mono);font-size:12px;line-height:2.2;color:var(--color-text-secondary);overflow-x:auto;margin-bottom:10px}
+.cl{display:flex;align-items:baseline;min-height:24px;transition:background 0.5s;border-radius:3px;padding:0 4px;margin:0 -4px}
+.cl.hl{background:#EEEDFE}.cl.hlg{background:#E1F5EE}.cl.hlr{background:#FCEBEB}
+.ct{white-space:pre;flex-shrink:0}
+.ca{margin-left:12px;font-family:var(--font-sans);font-size:11px;opacity:0;transition:opacity 1s;white-space:nowrap;flex-shrink:0}
+.ca.show{opacity:1}
+.cap{color:#534AB7}.cag{color:#085041}.car{color:#791F1F}
+.kw{color:#534AB7}.vl{color:#0F6E56}.nl{color:#A32D2D}.cm{color:var(--color-text-tertiary)}.sv{color:#BA7517}
+
+.viz-area{position:relative;height:320px;margin:12px 0}
+.ctx-box{position:absolute;left:50%;top:8px;transform:translateX(-50%);width:200px;text-align:center;z-index:2}
+.ctx-rect{background:var(--color-background-primary);border:2px solid #534AB7;border-radius:var(--border-radius-lg);padding:12px;transition:all 0.6s}
+.ctx-rect.active{box-shadow:0 0 0 4px #EEEDFE}
+.ctx-lbl{font-size:14px;font-weight:500;color:#3C3489}
+.ctx-strat{font-family:var(--font-mono);font-size:11px;color:#534AB7;margin-top:4px;min-height:14px}
+.ctx-result{font-family:var(--font-mono);font-size:11px;color:var(--color-text-tertiary);margin-top:2px;min-height:14px}
+
+.strat-node{position:absolute;bottom:8px;width:120px;text-align:center;transition:all 0.5s}
+.strat-box{height:60px;border-radius:var(--border-radius-lg);display:flex;align-items:center;justify-content:center;margin:0 auto 4px;font-size:13px;font-weight:500;transition:all 0.5s;border:0.5px solid;padding:0 10px}
+.strat-box.selected{border-width:2px;transform:scale(1.05)}
+.strat-name{font-size:11px;color:var(--color-text-secondary)}
+.strat-desc{font-family:var(--font-mono);font-size:10px;color:var(--color-text-tertiary);margin-top:1px}
+
+svg.conn{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1}
+svg.conn line{stroke-width:1.5;opacity:0;transition:all 0.8s}
+svg.conn line.active-line{opacity:0.7;stroke-dasharray:none}
+svg.conn line.inactive-line{opacity:0.2;stroke-dasharray:6 4}
+
+.pills{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.pill{font-size:12px;padding:4px 12px;border-radius:var(--border-radius-md);background:var(--color-background-secondary);color:var(--color-text-secondary);transition:all 0.5s}
+.pill.active{background:#EEEDFE;color:#3C3489}.pill.done{background:#E1F5EE;color:#085041}
+.sts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:12px 0}
+.stc{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 12px;text-align:center}
+.stn{font-size:20px;font-weight:500;color:var(--color-text-primary)}
+.stl{font-size:11px;color:var(--color-text-tertiary);margin-top:2px}
+.lga{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 14px;min-height:60px;max-height:200px;overflow-y:auto;font-family:var(--font-mono);font-size:11px;line-height:2;color:var(--color-text-secondary)}
+.ll{display:flex;gap:6px;align-items:baseline}
+.tg{display:inline-block;font-size:10px;padding:1px 7px;border-radius:var(--border-radius-md);font-weight:500}
+.tgn{background:#E1F5EE;color:#085041}.tgc{background:#EEEDFE;color:#3C3489}.tgk{background:#FAEEDA;color:#633806}.tgr{background:#FCEBEB;color:#791F1F}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+.btns button:disabled{opacity:0.4;cursor:not-allowed}
+.dnav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.dbtn{padding:6px 14px;font-size:12px;border-radius:var(--border-radius-md);background:var(--color-background-secondary);color:var(--color-text-secondary);border:0.5px solid var(--color-border-tertiary);cursor:pointer;transition:all 0.3s}
+.dbtn:hover{border-color:var(--color-border-secondary)}
+.dbtn.ag{background:#E1F5EE;color:#085041;border-color:#0F6E56}
+.dbtn.ar{background:#FCEBEB;color:#791F1F;border-color:#A32D2D}
+.dsc{font-size:13px;color:var(--color-text-secondary);line-height:1.7;padding:10px 14px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);min-height:40px;opacity:0;transition:opacity 0.8s}
+.dsc.show{opacity:1}
+
+.intro-block{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:14px 16px;margin-bottom:1.25rem;display:flex;flex-direction:column;gap:10px}
+.intro-item{display:flex;gap:10px;align-items:baseline}
+.intro-label{font-size:12px;font-weight:600;color:var(--color-text-primary);white-space:nowrap;min-width:100px;flex-shrink:0}
+.intro-text{font-size:13px;color:var(--color-text-secondary);line-height:1.6}
+
+.sim-row{display:flex;gap:1.25rem;align-items:flex-start}
+.sim-row>.sec{flex:1;min-width:0;margin-bottom:0}
+.sim-row>.sec:first-child{flex:0 0 38%;max-width:38%}
+.sim-row>.sec:last-child{flex:1}
+@media(max-width:860px){.sim-row{flex-direction:column}.sim-row>.sec:first-child{flex:1;max-width:100%}}
+
+
+
+</style>
+
+<div style="padding:0.5rem 0">
+<div class="intro-block">
+  <div class="intro-item"><span class="intro-label">무슨 패턴인가</span><span class="intro-text">알고리즘(전략)을 각각 별도 클래스로 분리하고, 실행 시점에 원하는 전략으로 교체할 수 있게 합니다. if/else 분기 대신 객체를 바꿔 끼우는 방식이에요.</span></div>
+  <div class="intro-item"><span class="intro-label">이 화면에서는</span><span class="intro-text">Sorter(Context) 박스 아래에 BubbleSort·QuickSort·MergeSort 세 노드가 연결선으로 이어져 있습니다. "Bubble 설정" 등의 버튼으로 전략을 고른 뒤 "execute() 실행"을 누르면 선택된 전략이 정렬을 수행합니다.</span></div>
+  <div class="intro-item"><span class="intro-label">언제 떠올리나</span><span class="intro-text">같은 작업을 여러 방식으로 처리해야 하고, 런타임에 방식을 바꿔야 할 때. 결제 수단 선택, 파일 압축 알고리즘 교체 등이 대표적입니다.</span></div>
+</div>
+<div class="tabs">
+  <button class="tab active" onclick="sw('sim')">Simulation</button>
+  <button class="tab" onclick="sw('pro')">장점 (Pros)</button>
+  <button class="tab" onclick="sw('con')">단점 (Cons)</button>
+  <button class="tab" onclick="sw('use')">사용 예시</button>
+</div>
+
+<div class="pnl active" id="p-sim">
+<div class="sim-row">
+<div class="sec">
+  <div class="sec-title"><span class="sec-dot" style="background:#534AB7"></span>Strategy pattern</div>
+  <div class="cw">
+    <div class="cl" id="cl-0"><span class="ct"><span class="kw">interface</span> SortStrategy {</span></div>
+    <div class="cl" id="cl-1"><span class="ct">  sort(data): number[]</span><span class="ca cap" id="an-1"></span></div>
+    <div class="cl" id="cl-2"><span class="ct">}</span></div>
+    <div class="cl" id="cl-3"><span class="ct"></span></div>
+    <div class="cl" id="cl-4"><span class="ct"><span class="kw">class</span> Sorter {</span></div>
+    <div class="cl" id="cl-5"><span class="ct">  <span class="kw">private</span> strategy: SortStrategy</span><span class="ca cap" id="an-5"></span></div>
+    <div class="cl" id="cl-6"><span class="ct"></span></div>
+    <div class="cl" id="cl-7"><span class="ct">  setStrategy(s: SortStrategy) {</span><span class="ca cap" id="an-7"></span></div>
+    <div class="cl" id="cl-8"><span class="ct">    this.strategy = s</span><span class="ca cap" id="an-8"></span></div>
+    <div class="cl" id="cl-9"><span class="ct">  }</span></div>
+    <div class="cl" id="cl-10"><span class="ct"></span></div>
+    <div class="cl" id="cl-11"><span class="ct">  execute(data) {</span><span class="ca cap" id="an-11"></span></div>
+    <div class="cl" id="cl-12"><span class="ct">    <span class="kw">return</span> this.strategy.sort(data)</span><span class="ca cap" id="an-12"></span></div>
+    <div class="cl" id="cl-13"><span class="ct">  }</span></div>
+    <div class="cl" id="cl-14"><span class="ct">}</span></div>
+  </div>
+</div>
+<div class="sec">
+  <div class="sec-title"><span class="sec-dot" style="background:#0F6E56"></span>Strategy diagram</div>
+  <div class="pills" id="steps"><div class="pill active" data-s="0">Ready</div><div class="pill" data-s="1">1. setStrategy</div><div class="pill" data-s="2">2. execute</div><div class="pill" data-s="3">3. strategy.sort</div><div class="pill" data-s="4">4. result</div></div>
+  <div style="position:relative">
+    <div class="viz-area" id="viz">
+      <div class="ctx-box"><div class="ctx-rect" id="ctx-rect"><div class="ctx-lbl">Sorter (Context)</div><div class="ctx-strat" id="ctx-strat">strategy: ?</div><div class="ctx-result" id="ctx-result"></div></div></div>
+      <div class="strat-node" style="left:calc(15% - 60px)" id="sn-0">
+        <div class="strat-box" id="sb-0" style="background:#E6F1FB;color:#0C447C;border-color:#85B7EB">Bubble</div>
+        <div class="strat-name">BubbleSort</div>
+        <div class="strat-desc">O(n²) 느리지만 단순</div>
+      </div>
+      <div class="strat-node" style="left:calc(50% - 60px)" id="sn-1">
+        <div class="strat-box" id="sb-1" style="background:#FAEEDA;color:#633806;border-color:#FAC775">Quick</div>
+        <div class="strat-name">QuickSort</div>
+        <div class="strat-desc">O(n log n) 빠름</div>
+      </div>
+      <div class="strat-node" style="left:calc(85% - 60px)" id="sn-2">
+        <div class="strat-box" id="sb-2" style="background:#E1F5EE;color:#085041;border-color:#5DCAA5">Merge</div>
+        <div class="strat-name">MergeSort</div>
+        <div class="strat-desc">O(n log n) 안정적</div>
+      </div>
+      <svg class="conn" id="svg-conn"><line id="ln-0" stroke="#378ADD"/><line id="ln-1" stroke="#BA7517"/><line id="ln-2" stroke="#1D9E75"/></svg>
+    </div>
+  </div>
+<div class="sts">
+  <div class="stc"><div class="stn" id="s-switches">0</div><div class="stl">Strategy switches</div></div>
+  <div class="stc"><div class="stn" id="s-executes">0</div><div class="stl">Executions</div></div>
+  <div class="stc"><div class="stn" id="s-current">-</div><div class="stl">Current strategy</div></div>
+</div>
+<div class="sec"><div class="sec-title"><span class="sec-dot" style="background:#888780"></span>Log</div><div class="lga" id="logbox"></div></div>
+<div class="btns">
+  <button id="btn-0" onclick="req(0)" style="background:#E6F1FB;color:#0C447C;border-color:#85B7EB">Bubble 설정</button>
+  <button id="btn-1" onclick="req(1)" style="background:#FAEEDA;color:#633806;border-color:#FAC775">Quick 설정</button>
+  <button id="btn-2" onclick="req(2)" style="background:#E1F5EE;color:#085041;border-color:#5DCAA5">Merge 설정</button>
+  <button id="btn-exec" onclick="execSort()">execute() 실행</button>
+  <button id="btn-reset" onclick="doReset()">Reset</button>
+</div>
+</div>
+</div>
+</div>
+
+<div class="pnl" id="p-pro">
+<div class="sec"><div class="sec-title"><span class="sec-dot" style="background:#1D9E75"></span>장점 코드 데모</div>
+<div class="dnav" id="pro-nav">
+  <button class="dbtn ag" onclick="proDem(0,this)">런타임 교체</button>
+  <button class="dbtn" onclick="proDem(1,this)">if/else 제거</button>
+  <button class="dbtn" onclick="proDem(2,this)">독립적 테스트</button>
+  <button class="dbtn" onclick="proDem(3,this)">전략 추가 쉬움</button>
+</div>
+<div class="cw" id="pro-code"></div>
+<div class="dsc" id="pro-desc"></div>
+</div>
+<div style="margin-top:8px"><button onclick="runPro()">실행해보기</button></div>
+</div>
+
+<div class="pnl" id="p-con">
+<div class="sec"><div class="sec-title"><span class="sec-dot" style="background:#A32D2D"></span>단점 코드 데모</div>
+<div class="dnav" id="con-nav">
+  <button class="dbtn ar" onclick="conDem(0,this)">클래스 수 증가</button>
+  <button class="dbtn" onclick="conDem(1,this)">클라이언트가 알아야 함</button>
+  <button class="dbtn" onclick="conDem(2,this)">통신 오버헤드</button>
+  <button class="dbtn" onclick="conDem(3,this)">간단한 경우 과잉</button>
+</div>
+<div class="cw" id="con-code"></div>
+<div class="dsc" id="con-desc"></div>
+</div>
+<div style="margin-top:8px"><button onclick="runCon()">실행해보기</button></div>
+</div>
+
+<div class="pnl" id="p-use">
+<div class="sec"><div class="sec-title"><span class="sec-dot" style="background:#534AB7"></span>실제 사용 예시</div>
+<div class="dnav" id="use-nav">
+  <button class="dbtn ag" onclick="useDem(0,this)">결제 수단</button>
+  <button class="dbtn" onclick="useDem(1,this)">압축 알고리즘</button>
+  <button class="dbtn" onclick="useDem(2,this)">할인 정책</button>
+  <button class="dbtn" onclick="useDem(3,this)">내비 경로</button>
+</div>
+<div class="cw" id="use-code"></div>
+<div class="dsc" id="use-desc"></div>
+</div>
+<div style="margin-top:8px"><button onclick="runUse()">실행해보기</button></div>
+</div>
+</div>
+
+<script>
+var D=2400;
+var names=['BubbleSort','QuickSort','MergeSort'];
+var colors=['#378ADD','#BA7517','#1D9E75'];
+
+var proData=[
+{lines:['const sorter = new Sorter()','','// 상황에 따라 전략을 갈아끼움!','sorter.setStrategy(new BubbleSort())','sorter.execute(data)  // 버블정렬 실행','','// 데이터가 많아졌네? 전략 교체!','sorter.setStrategy(new QuickSort())','sorter.execute(data)  // 퀵정렬 실행','','// 같은 sorter인데 행동이 완전히 달라짐!'],
+annos:['정렬기 하나 만들고','','','느린 버블 전략을 꽂음','버블 방식으로 정렬!','','코드 수정 없이 전략만 바꿈!','빠른 퀵 전략으로 교체','이번엔 퀵 방식으로 정렬!','','같은 객체, 다른 행동! 이게 전략 패턴!'],
+desc:'TV 리모컨처럼 채널만 바꾸면 다른 방송이 나오듯, 전략만 바꾸면 같은 객체가 완전히 다르게 동작해요. 코드를 고칠 필요 없이 실행 중에 바꿀 수 있어요.',hl:'hlg'},
+{lines:['// 전략 패턴 없이 — if/else 지옥','function sort(data, type) {','  if (type === "bubble") {','    // 버블정렬 코드 50줄...','  } else if (type === "quick") {','    // 퀵정렬 코드 80줄...','  } else if (type === "merge") {','    // 머지정렬 코드 60줄...','  }','  // 새 알고리즘 추가? else if 또 추가!','}','','// 전략 패턴이면 — 깔끔!','sorter.setStrategy(new QuickSort())'],
+annos:['','하나의 함수에 전부 때려넣음','','50줄짜리 코드 덩어리...','','80줄짜리 또...','','60줄짜리 또또...','','끝이 없는 if/else 지옥!','','','전략별로 클래스를 나눠서 깔끔!','갈아끼우기만 하면 됨!'],
+desc:'if/else가 계속 늘어나면 함수가 200줄, 300줄... 끝없이 커져요. 전략 패턴은 각 알고리즘을 별도 클래스로 분리해서, 함수 하나가 뚱뚱해지는 걸 막아줘요.',hl:'hlg'},
+{lines:['// 각 전략을 독립적으로 테스트 가능!','','// BubbleSort만 따로 테스트','const bubble = new BubbleSort()','expect(bubble.sort([3,1,2])).toEqual([1,2,3])','','// QuickSort만 따로 테스트','const quick = new QuickSort()','expect(quick.sort([3,1,2])).toEqual([1,2,3])','','// Context(Sorter)와 분리되어 있어서','// 전략 하나가 고장나도 어딘지 바로 알 수 있음!'],
+annos:['','','BubbleSort 클래스만 꺼내서 테스트','','통과!','','QuickSort 클래스만 꺼내서 테스트','','통과!','','전략이 분리되어 있으니까','버그가 어디 있는지 바로 찾을 수 있어요'],
+desc:'레고 블록처럼 전략이 각각 독립적이라서, 하나씩 따로 테스트할 수 있어요. 어떤 전략이 고장났는지 바로 찾을 수 있습니다.',hl:'hlg'},
+{lines:['// 새 정렬 알고리즘 추가? 클래스 하나만!','','class RadixSort implements SortStrategy {','  sort(data) {','    // 기수정렬 구현','    return sorted','  }','}','','// 기존 코드는 단 한 줄도 안 고침!','sorter.setStrategy(new RadixSort())','sorter.execute(data)  // 기수정렬 실행!'],
+annos:['','','새 클래스를 만들기만 하면 됨!','인터페이스만 맞추면 OK','','','','','','Sorter 코드 수정 제로!','그냥 새 전략을 꽂으면 끝','바로 동작!'],
+desc:'새 알고리즘을 추가할 때 기존 코드를 건드리지 않아요. 새 클래스 하나 만들고 꽂기만 하면 끝! 개방-폐쇄 원칙(OCP)을 자연스럽게 지킵니다.',hl:'hlg'}
+];
+
+var conData=[
+{lines:['// 전략이 많아지면 클래스도 많아짐','// SortStrategy (인터페이스)','// ├── BubbleSort','// ├── QuickSort','// ├── MergeSort','// ├── RadixSort','// ├── HeapSort','// ├── InsertionSort','// + Sorter (Context)','// = 총 8개 클래스!'],
+annos:['','부모 1개','자식 1','자식 2','자식 3','자식 4','자식 5','자식 6','컨텍스트까지 1개 더','전략마다 클래스가 하나씩...'],
+desc:'전략의 종류가 많아지면 클래스 수도 같이 늘어나요. 마치 공구함에 드라이버가 20개 있으면 어떤 걸 써야 할지 헷갈리는 것과 같아요.',hl:'hlr'},
+{lines:['// 호출하는 쪽이 전략을 직접 골라야 함!','','// 클라이언트가 각 전략의 차이를 알아야 함','if (data.length < 100)','  sorter.setStrategy(new BubbleSort())','else if (data.length < 10000)','  sorter.setStrategy(new QuickSort())','else','  sorter.setStrategy(new MergeSort())','','// 결국 밖에서 if/else가 생기는 것 아닌가?'],
+annos:['','','어떤 전략이 좋은지 판단 필요','데이터 작으면 버블?','','중간이면 퀵?','','','크면 머지?','','전략 선택 로직이 밖으로 새어나옴!'],
+desc:'전략을 "누가 고르느냐"가 문제예요. 호출하는 쪽이 각 전략의 특징을 알아야 고를 수 있어요. 식당에서 주방 도구를 손님이 직접 골라야 하는 격이에요.',hl:'hlr'},
+{lines:['interface SortStrategy {','  sort(data, comparator, locale,','       direction, nullHandling): number[]','}','','// BubbleSort는 locale이 필요 없는데','// 인터페이스에 있으니 받기는 해야 함...','class BubbleSort implements SortStrategy {','  sort(data, comparator, locale,','       direction, nullHandling) {','    // locale? 나는 안 쓰는데...','  }','}'],
+annos:['','파라미터가 점점 늘어남','','','','','쓰지도 않는 파라미터를 받아야 해요','','','','필요 없는 정보까지 전달받는 중...','낭비!',''],
+desc:'모든 전략이 같은 인터페이스를 써야 해서, 어떤 전략에는 필요 없는 파라미터도 받아야 해요. 마치 모든 직원에게 같은 양식의 보고서를 쓰라고 하는 것 — 영업팀에겐 "코드 리뷰" 칸이 의미 없죠.',hl:'hlr'},
+{lines:['// 전략이 2개뿐인데 패턴을 쓰면...','','interface Strategy { execute(): void }','class StrategyA implements Strategy { ... }','class StrategyB implements Strategy { ... }','class Context { ... }','','// 총 4개 클래스... 이걸 위해?','// 그냥 if/else 한 줄이면 될 일!','','if (condition) doA()','else doB()'],
+annos:['','','인터페이스 1개','구현 1개','구현 1개','컨텍스트 1개','','4개나 만들었는데...','','','이게 훨씬 간단하잖아!','2개뿐이면 패턴이 오히려 짐!'],
+desc:'전략이 2개뿐이면 if/else 한 줄이 더 나아요. 지름길이 있는데 고속도로를 빙 돌아가는 격이에요. 전략이 3개 이상이고 앞으로 늘어날 가능성이 있을 때 쓰세요.',hl:'hlr'}
+];
+
+var useData=[
+{lines:['interface PaymentStrategy {','  pay(amount): Receipt','}','class CardPayment implements PaymentStrategy {','  pay(amount) { /* 카드 결제 */ }','}','class KakaoPay implements PaymentStrategy {','  pay(amount) { /* 카카오페이 */ }','}','','// 사용자가 고른 결제 수단으로 교체!','checkout.setPayment(new KakaoPay())','checkout.pay(50000)  // 카카오페이로 결제!'],
+annos:['결제라는 공통 규칙','','','카드 결제 전략','','','카카오페이 전략','','','','사용자 선택에 따라 교체!','카카오페이를 꽂고','5만원 결제!'],
+desc:'결제 수단을 사용자가 실시간으로 고르잖아요? 전략 패턴이면 선택한 결제 수단을 setPayment()로 교체하기만 하면 돼요. 새 결제 수단도 클래스 하나 추가로 끝!',hl:'hlg'},
+{lines:['interface CompressionStrategy {','  compress(file): CompressedFile','}','class ZipCompression { ... }','class GzipCompression { ... }','class Lz4Compression { ... }','','const archiver = new Archiver()','','// 텍스트 → ZIP이 효율적','archiver.setStrategy(new ZipCompression())','// 로그 → GZIP이 효율적','archiver.setStrategy(new GzipCompression())'],
+annos:['압축이라는 공통 규칙','','','ZIP 전략','GZIP 전략','LZ4 전략','','압축기 하나 만들고','','상황에 맞는 알고리즘을 선택!','ZIP으로 압축','상황이 바뀌면 전략만 교체!','GZIP으로 압축'],
+desc:'파일 종류에 따라 최적의 압축 방식이 달라요. 텍스트는 ZIP, 로그는 GZIP, 실시간은 LZ4 — 전략만 갈아끼우면 같은 압축기가 상황에 맞게 동작합니다.',hl:'hlg'},
+{lines:['interface DiscountStrategy {','  calculate(price): number','}','class NoDiscount {','  calculate(price) { return price }','}','class PercentOff {','  calculate(price) { return price * 0.9 }','}','class VIPDiscount {','  calculate(price) { return price * 0.7 }','}','// 회원 등급에 따라 전략 교체!','cart.setDiscount(new VIPDiscount())','cart.checkout()  // 30% 할인 적용!'],
+annos:['할인이라는 공통 규칙','','','할인 없음','원가 그대로','','비율 할인','10% 할인','','VIP 할인','30% 할인!','','등급 바뀌면 전략만 교체','VIP 전략 꽂기!','자동으로 30% 할인 적용!'],
+desc:'쇼핑몰에서 일반/실버/VIP 등급마다 할인이 다르죠? 전략 패턴으로 등급별 할인 클래스를 만들면, 회원 등급에 따라 전략만 교체하면 끝이에요.',hl:'hlg'},
+{lines:['interface RouteStrategy {','  findRoute(from, to): Path','}','class FastestRoute { ... }','class ShortestRoute { ... }','class ScenicRoute { ... }','','const navi = new Navigator()','','// 출근길 → 최단 시간','navi.setStrategy(new FastestRoute())','// 드라이브 → 경치 좋은 길','navi.setStrategy(new ScenicRoute())','navi.navigate("서울", "부산")'],
+annos:['경로 탐색이라는 공통 규칙','','','최단 시간 전략','최단 거리 전략','경치 좋은 길 전략','','내비게이션 하나 만들고','','목적에 따라 전략 교체!','빠른 길로!','','경치 좋은 길로!','같은 내비, 다른 경로!'],
+desc:'내비앱에서 "최단 시간 / 최단 거리 / 추천 경로" 버튼 누르면 같은 내비인데 다른 길을 안내하죠? 이게 바로 전략 패턴이에요!',hl:'hlg'}
+];
+
+var curPro=0,curCon=0,curUse=0,demoR=false;
+
+function buildHTML(data,idx,prefix,colorCls){var d=data[idx];var html='';for(var i=0;i<d.lines.length;i++){html+='<div class="cl" id="'+prefix+'-'+i+'"><span class="ct">'+d.lines[i]+'</span><span class="ca '+colorCls+'" id="'+prefix+'-a-'+i+'"></span></div>'}return html}
+function renderCode(target,data,idx,colorCls){document.getElementById(target).innerHTML=buildHTML(data,idx,target,colorCls)}
+function renderDesc(target,data,idx){var el=document.getElementById(target);el.textContent=data[idx].desc;el.classList.remove('show');requestAnimationFrame(function(){requestAnimationFrame(function(){el.classList.add('show')})})}
+function proDem(i,btn){curPro=i;document.querySelectorAll('#pro-nav .dbtn').forEach(function(b){b.className='dbtn'});btn.className='dbtn ag';renderCode('pro-code',proData,i,'cag');renderDesc('pro-desc',proData,i)}
+function conDem(i,btn){curCon=i;document.querySelectorAll('#con-nav .dbtn').forEach(function(b){b.className='dbtn'});btn.className='dbtn ar';renderCode('con-code',conData,i,'car');renderDesc('con-desc',conData,i)}
+function useDem(i,btn){curUse=i;document.querySelectorAll('#use-nav .dbtn').forEach(function(b){b.className='dbtn'});btn.className='dbtn ag';renderCode('use-code',useData,i,'cag');renderDesc('use-desc',useData,i)}
+function sl(ms){return new Promise(function(r){setTimeout(r,ms)})}
+async function animCode(prefix,data,idx){if(demoR)return;demoR=true;var d=data[idx];for(var i=0;i<d.lines.length;i++){var line=document.getElementById(prefix+'-'+i);var anno=document.getElementById(prefix+'-a-'+i);if(!d.annos[i]||d.annos[i]===''){await sl(200);continue}line.classList.add(d.hl);anno.textContent='\u2190 '+d.annos[i];(function(a){requestAnimationFrame(function(){requestAnimationFrame(function(){a.classList.add('show')})})})(anno);await sl(1800)}demoR=false}
+function runPro(){animCode('pro-code',proData,curPro)}
+function runCon(){animCode('con-code',conData,curCon)}
+function runUse(){animCode('use-code',useData,curUse)}
+renderCode('pro-code',proData,0,'cag');renderDesc('pro-desc',proData,0);
+renderCode('con-code',conData,0,'car');renderDesc('con-desc',conData,0);
+renderCode('use-code',useData,0,'cag');renderDesc('use-desc',useData,0);
+
+function sw(id){document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active')});document.querySelectorAll('.pnl').forEach(function(p){p.classList.remove('active')});document.querySelector('[onclick="sw(\''+id+'\')"]').classList.add('active');document.getElementById('p-'+id).classList.add('active');if(id==='sim')setTimeout(drawLines,50)}
+
+var currentStrat=-1,switches=0,executes=0,running=false;
+var logbox=document.getElementById('logbox');
+
+function setStep(n){document.querySelectorAll('.pill').forEach(function(p){var s=parseInt(p.dataset.s);if(!isNaN(s))p.className='pill'+(s===n?' active':(s<n?' done':''))})}
+function clearHL(){for(var i=0;i<=14;i++){var e=document.getElementById('cl-'+i);if(e)e.classList.remove('hl')}[1,5,7,8,11,12].forEach(function(j){var a=document.getElementById('an-'+j);if(a){a.classList.remove('show');a.textContent=''}})}
+function hlLine(n,txt){clearHL();var e=document.getElementById('cl-'+n);if(e)e.classList.add('hl');var a=document.getElementById('an-'+n);if(a&&txt){a.textContent='\u2190 '+txt;requestAnimationFrame(function(){requestAnimationFrame(function(){a.classList.add('show')})})}}
+function addLog(msg,type){var d=document.createElement('div');d.className='ll';var tg=document.createElement('span');tg.className='tg '+(type==='new'?'tgn':type==='cached'?'tgc':type==='exec'?'tgk':'tgr');tg.textContent=type==='new'?'SET':type==='cached'?'SWAP':type==='exec'?'EXEC':'RUN';var tx=document.createElement('span');tx.textContent=msg;d.appendChild(tg);d.appendChild(tx);logbox.appendChild(d);logbox.scrollTop=logbox.scrollHeight}
+function updateStats(){document.getElementById('s-switches').textContent=switches;document.getElementById('s-executes').textContent=executes;document.getElementById('s-current').textContent=currentStrat>=0?names[currentStrat]:'-'}
+function drawLines(){var viz=document.getElementById('viz');if(!viz)return;var vr=viz.getBoundingClientRect();var cr=document.getElementById('ctx-rect');if(!cr)return;var crr=cr.getBoundingClientRect();var cx=crr.left+crr.width/2-vr.left,cy=crr.top+crr.height-vr.top;[0,1,2].forEach(function(i){var sn=document.getElementById('sn-'+i);if(!sn)return;var sb=sn.querySelector('.strat-box').getBoundingClientRect();var sx=sb.left+sb.width/2-vr.left,sy=sb.top-vr.top;var ln=document.getElementById('ln-'+i);ln.setAttribute('x1',cx);ln.setAttribute('y1',cy);ln.setAttribute('x2',sx);ln.setAttribute('y2',sy);if(currentStrat===i){ln.className.baseVal='active-line'}else if(currentStrat>=0){ln.className.baseVal='inactive-line'}else{ln.className.baseVal=''}})}
+function updateBoxes(){[0,1,2].forEach(function(i){var sb=document.getElementById('sb-'+i);if(currentStrat===i)sb.classList.add('selected');else sb.classList.remove('selected')})}
+function setBtns(d){['btn-0','btn-1','btn-2','btn-exec','btn-reset'].forEach(function(id){var e=document.getElementById(id);if(e)e.disabled=d})}
+
+async function req(idx){
+if(running)return;running=true;setBtns(true);
+var isFirst=currentStrat<0;
+var wasOther=currentStrat>=0&&currentStrat!==idx;
+switches++;currentStrat=idx;
+
+setStep(1);
+hlLine(7,'setStrategy(new '+names[idx]+'()) 호출!');
+if(isFirst)addLog('전략 설정: '+names[idx],'new');
+else if(wasOther)addLog('전략 교체! → '+names[idx],'cached');
+else addLog('같은 전략 재설정: '+names[idx],'new');
+
+document.getElementById('ctx-strat').textContent='strategy: '+names[idx];
+updateBoxes();drawLines();
+await sl(D);
+
+setStep(2);
+hlLine(8,'this.strategy = '+names[idx]);
+addLog('strategy 필드에 '+names[idx]+' 저장','new');
+document.getElementById('ctx-rect').classList.add('active');
+updateStats();
+await sl(D/2);
+document.getElementById('ctx-rect').classList.remove('active');
+running=false;setBtns(false)}
+
+async function execSort(){
+if(running)return;
+if(currentStrat<0){addLog('전략을 먼저 설정하세요!','exec');return}
+running=true;setBtns(true);executes++;
+
+setStep(3);
+hlLine(11,'execute([5,3,8,1]) 호출!');
+addLog('execute() 실행 → strategy.sort() 위임','exec');
+await sl(D);
+
+setStep(4);
+hlLine(12,names[currentStrat]+'.sort() 실행 중!');
+addLog(names[currentStrat]+'.sort([5,3,8,1]) → [1,3,5,8]','exec');
+document.getElementById('ctx-result').textContent='result: [1,3,5,8]';
+document.getElementById('ctx-rect').classList.add('active');
+updateStats();
+await sl(D);
+document.getElementById('ctx-rect').classList.remove('active');
+running=false;setBtns(false)}
+
+function doReset(){currentStrat=-1;switches=0;executes=0;running=false;logbox.innerHTML='';setStep(0);clearHL();
+document.getElementById('ctx-strat').textContent='strategy: ?';
+document.getElementById('ctx-result').textContent='';
+document.getElementById('ctx-rect').classList.remove('active');
+updateStats();updateBoxes();
+[0,1,2].forEach(function(i){document.getElementById('ln-'+i).className.baseVal=''});
+setBtns(false);drawLines()}
+
+window.addEventListener('resize',drawLines);
+setTimeout(drawLines,100);
+</script>
+</body>
+</html>

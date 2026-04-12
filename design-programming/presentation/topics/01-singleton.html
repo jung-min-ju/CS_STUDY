@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Singleton Pattern</title>
+  <link rel="stylesheet" href="../topic-frame.css">
+</head>
+<body>
+<h2 class="sr-only">Singleton pattern interactive explainer with easy Korean descriptions across four tabs.</h2>
+<style>
+*{box-sizing:border-box}
+.tabs{display:flex;gap:0;border-bottom:0.5px solid var(--color-border-tertiary);margin-bottom:1.25rem;overflow-x:auto}
+.tab{padding:8px 14px;font-size:13px;font-weight:500;color:var(--color-text-secondary);cursor:pointer;border-bottom:2px solid transparent;transition:all 0.3s;background:none;border-top:none;border-left:none;border-right:none;white-space:nowrap}
+.tab:hover{color:var(--color-text-primary)}
+.tab.active{color:#3C3489;border-bottom-color:#534AB7}
+.pnl{display:none}.pnl.active{display:block}
+.sec{margin-bottom:1.25rem}
+.sec-title{font-size:14px;font-weight:500;color:var(--color-text-primary);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.sec-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.cw{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:14px 16px;font-family:var(--font-mono);font-size:12px;line-height:2.2;color:var(--color-text-secondary);overflow-x:auto;margin-bottom:10px}
+.cl{display:flex;align-items:baseline;min-height:24px;transition:background 0.5s;border-radius:3px;padding:0 4px;margin:0 -4px}
+.cl.hl{background:#EEEDFE}.cl.hlg{background:#E1F5EE}.cl.hlr{background:#FCEBEB}
+.ct{white-space:pre;flex-shrink:0}
+.ca{margin-left:12px;font-family:var(--font-sans);font-size:11px;opacity:0;transition:opacity 1s;white-space:nowrap;flex-shrink:0}
+.ca.show{opacity:1}
+.cap{color:#534AB7}.cag{color:#085041}.car{color:#791F1F}
+.kw{color:#534AB7}.vl{color:#0F6E56}.nl{color:#A32D2D}.cm{color:var(--color-text-tertiary)}.sv{color:#BA7517}
+.viz-area{position:relative;height:260px;margin:12px 0}
+.sbox{position:absolute;left:50%;top:8px;transform:translateX(-50%);width:160px;text-align:center;z-index:2}
+.srect{background:var(--color-background-primary);border:2px solid #534AB7;border-radius:var(--border-radius-lg);padding:10px 12px;transition:all 0.6s}
+.srect.active{box-shadow:0 0 0 4px #EEEDFE}
+.slbl{font-size:14px;font-weight:500;color:#3C3489}
+.sid{font-family:var(--font-mono);font-size:11px;color:#534AB7;margin-top:2px}
+.idot{width:10px;height:10px;border-radius:50%;background:#D3D1C7;display:inline-block;vertical-align:middle;margin-right:4px;transition:background 0.8s}
+.idot.on{background:#1D9E75}
+.cn{position:absolute;bottom:8px;width:100px;text-align:center}
+.cc{width:48px;height:48px;border-radius:50%;background:var(--color-background-secondary);border:0.5px solid var(--color-border-secondary);display:flex;align-items:center;justify-content:center;margin:0 auto 4px;font-size:14px;font-weight:500;color:var(--color-text-secondary);cursor:pointer;transition:all 0.5s}
+.cc:hover{border-color:#0F6E56;color:#085041;background:#E1F5EE}
+.cc.linked{border-color:#0F6E56;background:#E1F5EE;color:#085041}
+.cc.calling{border-color:#534AB7;background:#EEEDFE;color:#3C3489}
+.cnn{font-size:12px;color:var(--color-text-secondary)}
+.cnr{font-family:var(--font-mono);font-size:10px;color:var(--color-text-tertiary);margin-top:1px}
+svg.conn{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1}
+svg.conn line{stroke:#1D9E75;stroke-width:1.5;stroke-dasharray:6 4;opacity:0;transition:opacity 1s}
+svg.conn line.show{opacity:0.6}
+.pills{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.pill{font-size:12px;padding:4px 12px;border-radius:var(--border-radius-md);background:var(--color-background-secondary);color:var(--color-text-secondary);transition:all 0.5s}
+.pill.active{background:#EEEDFE;color:#3C3489}.pill.done{background:#E1F5EE;color:#085041}
+.sts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:12px 0}
+.stc{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 12px;text-align:center}
+.stn{font-size:20px;font-weight:500;color:var(--color-text-primary)}
+.stl{font-size:11px;color:var(--color-text-tertiary);margin-top:2px}
+.lga{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 14px;min-height:60px;max-height:200px;overflow-y:auto;font-family:var(--font-mono);font-size:11px;line-height:2;color:var(--color-text-secondary)}
+.ll{display:flex;gap:6px;align-items:baseline}
+.tg{display:inline-block;font-size:10px;padding:1px 7px;border-radius:var(--border-radius-md);font-weight:500}
+.tgn{background:#E1F5EE;color:#085041}.tgc{background:#EEEDFE;color:#3C3489}.tgk{background:#FAEEDA;color:#633806}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+.btns button:disabled{opacity:0.4;cursor:not-allowed}
+.dnav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.dbtn{padding:6px 14px;font-size:12px;border-radius:var(--border-radius-md);background:var(--color-background-secondary);color:var(--color-text-secondary);border:0.5px solid var(--color-border-tertiary);cursor:pointer;transition:all 0.3s}
+.dbtn:hover{border-color:var(--color-border-secondary)}
+.dbtn.ag{background:#E1F5EE;color:#085041;border-color:#0F6E56}
+.dbtn.ar{background:#FCEBEB;color:#791F1F;border-color:#A32D2D}
+.dsc{font-size:13px;color:var(--color-text-secondary);line-height:1.7;padding:10px 14px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);min-height:40px;opacity:0;transition:opacity 0.8s}
+.dsc.show{opacity:1}
+
+.intro-block{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:14px 16px;margin-bottom:1.25rem;display:flex;flex-direction:column;gap:10px}
+.intro-item{display:flex;gap:10px;align-items:baseline}
+.intro-label{font-size:12px;font-weight:600;color:var(--color-text-primary);white-space:nowrap;min-width:100px;flex-shrink:0}
+.intro-text{font-size:13px;color:var(--color-text-secondary);line-height:1.6}
+
+.sim-row{display:flex;gap:1.25rem;align-items:flex-start}
+.sim-row>.sec{flex:1;min-width:0;margin-bottom:0}
+.sim-row>.sec:first-child{flex:0 0 38%;max-width:38%}
+.sim-row>.sec:last-child{flex:1}
+@media(max-width:860px){.sim-row{flex-direction:column}.sim-row>.sec:first-child{flex:1;max-width:100%}}
+
+
+
+</style>
+
+<div style="padding:0.5rem 0">
+<div class="intro-block">
+  <div class="intro-item"><span class="intro-label">무슨 패턴인가</span><span class="intro-text">getInstance()를 아무리 많이 호출해도 객체는 딱 하나만 만들어집니다. 여러 곳에서 같은 인스턴스를 공유해야 할 때 중복 생성을 막아 줘요.</span></div>
+  <div class="intro-item"><span class="intro-label">이 화면에서는</span><span class="intro-text">위쪽 Singleton 박스 하나와 아래 Client A·B·C·D 노드가 SVG 선으로 연결됩니다. 각 Client의 getInstance() 버튼을 눌러 보면 모두 같은 인스턴스를 가리키고, Same? 카운터가 이를 확인해 줍니다.</span></div>
+  <div class="intro-item"><span class="intro-label">언제 떠올리나</span><span class="intro-text">DB 커넥션 풀, 로거, 앱 설정처럼 앱 전체에서 딱 하나만 있어야 하는 자원을 관리할 때.</span></div>
+</div>
+<div class="tabs">
+  <button class="tab active" onclick="sw('sim')">Simulation</button>
+  <button class="tab" onclick="sw('pro')">장점 (Pros)</button>
+  <button class="tab" onclick="sw('con')">단점 (Cons)</button>
+  <button class="tab" onclick="sw('use')">사용 예시</button>
+</div>
+
+<div class="pnl active" id="p-sim">
+<div class="sim-row">
+<div class="sec">
+  <div class="sec-title"><span class="sec-dot" style="background:#534AB7"></span>Singleton class</div>
+  <div class="cw">
+    <div class="cl" id="cl-0"><span class="ct"><span class="kw">class</span> Singleton {</span></div>
+    <div class="cl" id="cl-1"><span class="ct">  <span class="kw">private static</span> instance = <span id="c-val" class="nl">null</span></span><span class="ca cap" id="an-1"></span></div>
+    <div class="cl" id="cl-2"><span class="ct">  <span class="kw">private</span> <span class="cm">constructor</span>() { }</span><span class="ca cap" id="an-2"></span></div>
+    <div class="cl" id="cl-3"><span class="ct"></span></div>
+    <div class="cl" id="cl-4"><span class="ct">  <span class="kw">static</span> getInstance() {</span><span class="ca cap" id="an-4"></span></div>
+    <div class="cl" id="cl-5"><span class="ct">    <span class="kw">if</span> (!this.instance)</span><span class="ca cap" id="an-5"></span></div>
+    <div class="cl" id="cl-6"><span class="ct">      this.instance = <span class="kw">new</span> Singleton()</span><span class="ca cap" id="an-6"></span></div>
+    <div class="cl" id="cl-7"><span class="ct">    <span class="kw">return</span> this.instance</span><span class="ca cap" id="an-7"></span></div>
+    <div class="cl" id="cl-8"><span class="ct">  }</span></div>
+    <div class="cl" id="cl-9"><span class="ct">}</span></div>
+  </div>
+</div>
+<div class="sec">
+  <div class="sec-title"><span class="sec-dot" style="background:#0F6E56"></span>Instance diagram</div>
+  <div class="pills" id="steps"><div class="pill active" data-s="0">Ready</div><div class="pill" data-s="1">1. Call</div><div class="pill" data-s="2">2. Check</div><div class="pill" data-s="3">3. Create</div><div class="pill" data-s="4">4. Return</div></div>
+  <div style="position:relative">
+    <div class="viz-area" id="viz">
+      <div class="sbox"><div class="srect" id="sg-rect"><div class="slbl"><span class="idot" id="sg-ind"></span>Singleton</div><div class="sid" id="sg-id">instance: null</div></div></div>
+      <div class="cn" style="left:calc(10% - 50px)" id="cn-A"><div class="cc" onclick="req('A')">A</div><div class="cnn">Client A</div><div class="cnr" id="ref-A">-</div></div>
+      <div class="cn" style="left:calc(35% - 50px)" id="cn-B"><div class="cc" onclick="req('B')">B</div><div class="cnn">Client B</div><div class="cnr" id="ref-B">-</div></div>
+      <div class="cn" style="left:calc(60% - 50px)" id="cn-C"><div class="cc" onclick="req('C')">C</div><div class="cnn">Client C</div><div class="cnr" id="ref-C">-</div></div>
+      <div class="cn" style="left:calc(85% - 50px)" id="cn-D"><div class="cc" onclick="req('D')">D</div><div class="cnn">Client D</div><div class="cnr" id="ref-D">-</div></div>
+      <svg class="conn" id="svg-conn"><line id="ln-A"/><line id="ln-B"/><line id="ln-C"/><line id="ln-D"/></svg>
+    </div>
+  </div>
+<div class="sts"><div class="stc"><div class="stn" id="s-calls">0</div><div class="stl">Calls</div></div><div class="stc"><div class="stn" id="s-created">0</div><div class="stl">Created</div></div><div class="stc"><div class="stn" id="s-same">-</div><div class="stl">Same?</div></div></div>
+<div class="sec"><div class="sec-title"><span class="sec-dot" style="background:#888780"></span>Log</div><div class="lga" id="logbox"></div></div>
+<div class="btns"><button id="btn-A" onclick="req('A')">A.getInstance()</button><button id="btn-B" onclick="req('B')">B.getInstance()</button><button id="btn-C" onclick="req('C')">C.getInstance()</button><button id="btn-D" onclick="req('D')">D.getInstance()</button><button id="btn-reset" onclick="doReset()">Reset</button></div>
+</div>
+</div>
+</div>
+
+<div class="pnl" id="p-pro">
+<div class="sec"><div class="sec-title"><span class="sec-dot" style="background:#1D9E75"></span>장점 코드 데모</div>
+<div class="dnav" id="pro-nav">
+  <button class="dbtn ag" onclick="proDem(0,this)">인스턴스 보장</button>
+  <button class="dbtn" onclick="proDem(1,this)">전역 접근점</button>
+  <button class="dbtn" onclick="proDem(2,this)">리소스 절약</button>
+  <button class="dbtn" onclick="proDem(3,this)">지연 초기화</button>
+</div>
+<div class="cw" id="pro-code"></div>
+<div class="dsc" id="pro-desc"></div>
+</div>
+<div style="margin-top:8px"><button onclick="runPro()">실행해보기</button></div>
+</div>
+
+<div class="pnl" id="p-con">
+<div class="sec"><div class="sec-title"><span class="sec-dot" style="background:#A32D2D"></span>단점 코드 데모</div>
+<div class="dnav" id="con-nav">
+  <button class="dbtn ar" onclick="conDem(0,this)">테스트 어려움</button>
+  <button class="dbtn" onclick="conDem(1,this)">숨겨진 의존성</button>
+  <button class="dbtn" onclick="conDem(2,this)">쓰레드 안전</button>
+  <button class="dbtn" onclick="conDem(3,this)">SRP 위반</button>
+</div>
+<div class="cw" id="con-code"></div>
+<div class="dsc" id="con-desc"></div>
+</div>
+<div style="margin-top:8px"><button onclick="runCon()">실행해보기</button></div>
+</div>
+
+<div class="pnl" id="p-use">
+<div class="sec"><div class="sec-title"><span class="sec-dot" style="background:#534AB7"></span>실제 사용 예시</div>
+<div class="dnav" id="use-nav">
+  <button class="dbtn ag" onclick="useDem(0,this)">DB 커넥션 풀</button>
+  <button class="dbtn" onclick="useDem(1,this)">로거</button>
+  <button class="dbtn" onclick="useDem(2,this)">설정 관리자</button>
+  <button class="dbtn" onclick="useDem(3,this)">DI 대안</button>
+</div>
+<div class="cw" id="use-code"></div>
+<div class="dsc" id="use-desc"></div>
+</div>
+<div style="margin-top:8px"><button onclick="runUse()">실행해보기</button></div>
+</div>
+</div>
+
+<script>
+var D=2400;
+var proData=[
+{lines:['const a = Singleton.getInstance()','const b = Singleton.getInstance()','const c = Singleton.getInstance()','','console.log(a === b)  // true','console.log(b === c)  // true','console.log(a === c)  // true'],
+annos:['첫 호출 — 여기서 딱 1개 만들어짐','두 번째 — 아까 그 1개를 다시 줌','세 번째 — 또 그 1개를 줌','','같은 거 맞아? → 맞음!','이것도? → 맞음!','전부 같은 1개! 절대 2개 안 생김'],
+desc:'아무리 많이 불러도 객체는 딱 1개만 존재해요. 마치 회사에 프린터가 1대뿐인 것과 같아요 — 누가 쓰든 같은 프린터를 씁니다.',hl:'hlg'},
+{lines:['// 어떤 파일에서든 바로 접근 가능','// ── userService.ts','const cfg = Config.getInstance()','cfg.get("dbHost")','','// ── orderService.ts','const cfg = Config.getInstance()','cfg.get("dbHost")  // 같은 값'],
+annos:['','파일 A에서 사용','이 한 줄이면 끝! 전달 필요 없음','설정값 바로 읽기','','완전 다른 파일 B에서도','똑같이 한 줄로 접근!','같은 설정을 보고 있어요'],
+desc:'어디서든 getInstance() 한 줄이면 바로 쓸 수 있어요. 다른 파일에 일일이 넘겨줄 필요가 없어서 코드가 깔끔해집니다.',hl:'hlg'},
+{lines:['// DB 커넥션 풀 — 만드는 데 시간이 오래 걸림','class DBPool {','  private connections = []','  constructor() {','    // 10개 커넥션 준비 (~500ms 소요)','  }','}','','// 싱글톤이면 이 무거운 작업을 딱 1번만!','DBPool.getInstance() // 500ms (첫 번째)','DBPool.getInstance() // 0ms  (두 번째부터)'],
+annos:['','','커넥션 10개짜리 큰 객체','','만들 때마다 0.5초씩 걸림','','','','','처음만 0.5초 기다리면 됨','그 다음부터는 공짜!'],
+desc:'만드는 데 오래 걸리는 객체를 매번 새로 만들면 낭비예요. 싱글톤은 처음 1번만 만들고, 그 다음부터는 만들어둔 걸 바로 꺼내 씁니다. 시간도 메모리도 아낄 수 있어요.',hl:'hlg'},
+{lines:['// 앱이 켜질 때 → 아직 아무것도 안 만듦','class HeavyService {','  static instance = null','  static getInstance() {','    if (!this.instance)','      this.instance = new HeavyService()','    return this.instance','  }','}','','// 한참 뒤, 진짜 필요할 때 비로소 만듦','HeavyService.getInstance()'],
+annos:['앱 시작할 때 부담 제로!','','처음엔 비어있는 상태','','','필요한 바로 그 순간에만!','','','','','안 쓸 수도 있는 걸 미리 안 만들어요','이때 처음 생성! 효율적!'],
+desc:'앱이 켜질 때 무거운 객체를 미리 다 만들면 시작이 느려져요. 싱글톤은 "진짜 쓸 때" 만들어서 앱 시작 속도를 빠르게 유지합니다.',hl:'hlg'}
+];
+
+var conData=[
+{lines:['// 테스트 A에서 값을 바꿈','const s = Singleton.getInstance()','s.value = "test-A"','','// 테스트 B — 깨끗한 상태여야 하는데...','const s = Singleton.getInstance()','console.log(s.value)','// 원하는 결과: undefined (깨끗)','// 실제 결과: "test-A" (오염됨!)'],
+annos:['','','테스트 A가 값을 바꿔버림','','','같은 객체가 돌아옴!','"test-A"가 그대로 남아있음!','깨끗해야 하는데...','다른 테스트의 찌꺼기가 남아요'],
+desc:'싱글톤은 앱 전체에서 1개라서, 테스트 A가 바꾼 값이 테스트 B에도 남아있어요. 마치 시험지를 지우개로 안 지우고 다음 사람에게 넘기는 것과 같아요.',hl:'hlr'},
+{lines:['class OrderService {','  processOrder() {','    // 겉에서 보면 DB 쓰는지 전혀 모름!','    const db = DB.getInstance()','    db.save(order)','  }','}','','// 밖에서 이 클래스를 볼 때...','new OrderService()  // DB가 필요한지 안 보임!'],
+annos:['','','밖에서는 안 보이는 의존성!','코드 안쪽에 숨어있음','몰래 DB를 쓰고 있어요','','','','','이 클래스가 뭘 필요로 하는지 감춰짐'],
+desc:'싱글톤을 쓰면 "이 클래스가 뭘 필요로 하는지" 겉에서 안 보여요. 설명서 없는 기계 같아서, 코드를 열어봐야만 어떤 부품이 필요한지 알 수 있어요.',hl:'hlr'},
+{lines:['// 쓰레드 1          쓰레드 2','if(!instance)','  // 아직 안 만들었네...','                    if(!instance)','                      // 나도 null이네!','  instance = new S()  // 1번 생성','                    instance = new S() // 2번 생성!','','// 결과: 1개여야 할 객체가 2개 생겨버림!'],
+annos:['동시에 두 명이 들어옴','1번: 아직 없네? 만들자','','2번: 나도 확인해보니 없네?','','1번이 하나 만듦','2번도 하나 만듦! 큰일!','','싱글톤이 깨져버렸어요!'],
+desc:'두 쓰레드가 "동시에" 들어오면 둘 다 "아직 없네?"라고 판단해서 각각 만들어버려요. 화장실 문에 잠금장치가 없으면 두 명이 동시에 들어가는 것과 같아요. 잠금장치(synchronized)가 필요합니다.',hl:'hlr'},
+{lines:['class Logger {','  // 원래 할 일: 로그 기록하기','  log(msg) { /* ... */ }','  error(msg) { /* ... */ }','','  // 원래 할 일이 아닌 것: 자기 자신 관리','  private static instance = null','  static getInstance() { /* ... */ }','}','','// 한 클래스가 두 가지 역할을 동시에!'],
+annos:['','본업: 로그 기록','','','','부업: 내가 1개인지 스스로 감시?','이건 내 일이 아닌데...','두 가지 일을 한꺼번에','','','역할이 너무 많아요!'],
+desc:'싱글톤 클래스는 "본래 할 일"과 "자기가 1개인지 관리하는 일" 두 가지를 동시에 해요. 마치 요리사가 요리도 하면서 식당 관리까지 하는 것과 같아요. 역할을 나누는 게 더 좋습니다.',hl:'hlr'}
+];
+
+var useData=[
+{lines:['class DBPool {','  private pool: Connection[] = []','  private constructor() {','    for(let i=0; i<10; i++)','      this.pool.push(new Connection())','  }','  getConn() { return this.pool.pop() }','  release(c) { this.pool.push(c) }','}','','// 앱 전체가 이 하나의 풀을 같이 씀','DBPool.getInstance().getConn()'],
+annos:['','커넥션 10개짜리 풀','','커넥션을 하나씩 준비','','','필요하면 하나 빌려감','다 쓰면 돌려놓음','','','풀이 2개면 커넥션 20개 → 낭비!','1개만 만들어서 함께 공유!'],
+desc:'DB 연결은 개수 제한이 있어요. 풀을 여러 개 만들면 제한을 금방 초과해요. 싱글톤으로 딱 1개의 풀만 만들고, 모두가 같이 쓰면 안전합니다.',hl:'hlg'},
+{lines:['class Logger {','  private logFile: FileHandle','  log(level, msg) {','    this.logFile.write(','      `[${level}] ${timestamp()} ${msg}`','    )','  }','}','','// 어떤 모듈이든 같은 로거에 기록','Logger.getInstance().log("INFO", "started")'],
+annos:['','로그 파일 하나를 관리','','','깔끔한 포맷으로 기록','','','','','로거가 여러 개면 로그가 뒤죽박죽','하나로 통일하면 깔끔!'],
+desc:'일기장이 여러 권이면 나중에 찾기 힘들죠? 로거도 마찬가지예요. 하나의 로거가 모든 기록을 담당하면 로그가 깔끔하게 정리됩니다.',hl:'hlg'},
+{lines:['class Config {','  private data: Map','  private constructor() {','    this.data = loadFromEnv()','  }','  get(key) { return this.data.get(key) }','}','','// 모든 모듈이 같은 설정을 바라봄','Config.getInstance().get("apiKey")'],
+annos:['','설정값 저장소','','환경변수에서 한 번만 읽어옴','','키로 설정값 꺼내기','','','따로 읽으면 서로 다른 값이 될 수도!','전부 같은 설정을 보니까 안심!'],
+desc:'설정 파일을 각 모듈이 따로 읽으면 "나는 A 버전, 너는 B 버전" 같은 엇갈림이 생길 수 있어요. 싱글톤으로 한 번만 읽고 전체가 공유하면 항상 같은 설정을 씁니다.',hl:'hlg'},
+{lines:['// Spring이나 NestJS 같은 프레임워크 방식','// 싱글톤을 직접 만들지 않아도 됨!','','@Injectable({ scope: Scope.DEFAULT })','class UserService {','  constructor(','    private db: DBService  // 여기에 적으면 끝!','  ) {}','}','','// 프레임워크가 알아서 1개만 만들어줌','// getInstance() 같은 코드가 필요 없음!'],
+annos:['','프레임워크한테 맡기자!','','이 한 줄이 "1개만 만들어줘"란 뜻','그냥 평범한 클래스','','필요한 것을 여기에 명시!','','','','내가 안 해도 프레임워크가 해줌','코드가 훨씬 깔끔해져요'],
+desc:'Spring이나 NestJS 같은 프레임워크를 쓰면, 싱글톤을 직접 만들 필요가 없어요. "이거 1개만 만들어줘"라고 프레임워크에 말하면 끝! 코드도 깔끔하고 테스트도 쉬워집니다.',hl:'hlg'}
+];
+
+var curPro=0,curCon=0,curUse=0,demoR=false;
+
+function buildHTML(data,idx,prefix,colorCls){
+var d=data[idx];var html='';
+for(var i=0;i<d.lines.length;i++){
+html+='<div class="cl" id="'+prefix+'-'+i+'"><span class="ct">'+d.lines[i]+'</span><span class="ca '+colorCls+'" id="'+prefix+'-a-'+i+'"></span></div>';
+}return html;
+}
+function renderCode(target,data,idx,colorCls){document.getElementById(target).innerHTML=buildHTML(data,idx,target,colorCls)}
+function renderDesc(target,data,idx){var el=document.getElementById(target);el.textContent=data[idx].desc;el.classList.remove('show');requestAnimationFrame(function(){requestAnimationFrame(function(){el.classList.add('show')})})}
+
+function proDem(i,btn){curPro=i;document.querySelectorAll('#pro-nav .dbtn').forEach(function(b){b.className='dbtn'});btn.className='dbtn ag';renderCode('pro-code',proData,i,'cag');renderDesc('pro-desc',proData,i)}
+function conDem(i,btn){curCon=i;document.querySelectorAll('#con-nav .dbtn').forEach(function(b){b.className='dbtn'});btn.className='dbtn ar';renderCode('con-code',conData,i,'car');renderDesc('con-desc',conData,i)}
+function useDem(i,btn){curUse=i;document.querySelectorAll('#use-nav .dbtn').forEach(function(b){b.className='dbtn'});btn.className='dbtn ag';renderCode('use-code',useData,i,'cag');renderDesc('use-desc',useData,i)}
+
+function sl(ms){return new Promise(function(r){setTimeout(r,ms)})}
+
+async function animCode(prefix,data,idx){
+if(demoR)return;demoR=true;
+var d=data[idx];
+for(var i=0;i<d.lines.length;i++){
+var line=document.getElementById(prefix+'-'+i);
+var anno=document.getElementById(prefix+'-a-'+i);
+if(!d.annos[i]||d.annos[i]===''){await sl(200);continue}
+line.classList.add(d.hl);
+anno.textContent='\u2190 '+d.annos[i];
+(function(a){requestAnimationFrame(function(){requestAnimationFrame(function(){a.classList.add('show')})})})(anno);
+await sl(1800);
+}demoR=false;
+}
+function runPro(){animCode('pro-code',proData,curPro)}
+function runCon(){animCode('con-code',conData,curCon)}
+function runUse(){animCode('use-code',useData,curUse)}
+
+renderCode('pro-code',proData,0,'cag');renderDesc('pro-desc',proData,0);
+renderCode('con-code',conData,0,'car');renderDesc('con-desc',conData,0);
+renderCode('use-code',useData,0,'cag');renderDesc('use-desc',useData,0);
+
+function sw(id){document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active')});document.querySelectorAll('.pnl').forEach(function(p){p.classList.remove('active')});document.querySelector('[onclick="sw(\''+id+'\')"]').classList.add('active');document.getElementById('p-'+id).classList.add('active');if(id==='sim')setTimeout(drawLines,50)}
+
+var inst=null,calls=0,created=0,linked=new Set(),running=false;
+var logbox=document.getElementById('logbox');
+function setStep(n){document.querySelectorAll('.pill').forEach(function(p){var s=parseInt(p.dataset.s);if(!isNaN(s))p.className='pill'+(s===n?' active':(s<n?' done':''))})}
+function clearHL(){for(var i=0;i<=9;i++){var e=document.getElementById('cl-'+i);if(e)e.classList.remove('hl')}['an-1','an-2','an-4','an-5','an-6','an-7'].forEach(function(id){var el=document.getElementById(id);if(el){el.classList.remove('show');el.textContent=''}})}
+function hlLine(n,txt){clearHL();var e=document.getElementById('cl-'+n);if(e)e.classList.add('hl');var a=document.getElementById('an-'+n);if(a&&txt){a.textContent='\u2190 '+txt;requestAnimationFrame(function(){requestAnimationFrame(function(){a.classList.add('show')})})}}
+function addLog(msg,type){var d=document.createElement('div');d.className='ll';var tg=document.createElement('span');tg.className='tg '+(type==='new'?'tgn':type==='cached'?'tgc':'tgk');tg.textContent=type==='new'?'NEW':type==='cached'?'CACHED':'CHECK';var tx=document.createElement('span');tx.textContent=msg;d.appendChild(tg);d.appendChild(tx);logbox.appendChild(d);logbox.scrollTop=logbox.scrollHeight}
+function updateStats(){document.getElementById('s-calls').textContent=calls;document.getElementById('s-created').textContent=created;document.getElementById('s-same').textContent=calls>1?(created===1?'Yes':'No'):'-'}
+function updateSG(){var ind=document.getElementById('sg-ind');var sid=document.getElementById('sg-id');var cv=document.getElementById('c-val');var rect=document.getElementById('sg-rect');if(inst){ind.classList.add('on');sid.textContent='Singleton@1';cv.textContent='Singleton@1';cv.className='vl';rect.classList.add('active')}else{ind.classList.remove('on');sid.textContent='instance: null';cv.textContent='null';cv.className='nl';rect.classList.remove('active')}}
+function drawLines(){var viz=document.getElementById('viz');if(!viz)return;var vr=viz.getBoundingClientRect();var sr=document.getElementById('sg-rect');if(!sr)return;var srr=sr.getBoundingClientRect();var sx=srr.left+srr.width/2-vr.left,sy=srr.top+srr.height-vr.top;['A','B','C','D'].forEach(function(n){var cn=document.getElementById('cn-'+n);if(!cn)return;var cr=cn.querySelector('.cc').getBoundingClientRect();var cx=cr.left+cr.width/2-vr.left,cy=cr.top-vr.top;var ln=document.getElementById('ln-'+n);ln.setAttribute('x1',sx);ln.setAttribute('y1',sy);ln.setAttribute('x2',cx);ln.setAttribute('y2',cy);if(linked.has(n)){ln.classList.add('show');cn.querySelector('.cc').classList.add('linked')}else{ln.classList.remove('show');cn.querySelector('.cc').classList.remove('linked')}})}
+function setBtns(d){['btn-A','btn-B','btn-C','btn-D','btn-reset'].forEach(function(id){var e=document.getElementById(id);if(e)e.disabled=d});document.querySelectorAll('#p-sim .cc').forEach(function(c){c.style.pointerEvents=d?'none':'auto'})}
+
+async function req(name){
+if(running)return;running=true;setBtns(true);calls++;
+var circle=document.getElementById('cn-'+name).querySelector('.cc');
+circle.classList.add('calling');var isNew=!inst;
+setStep(1);hlLine(4,'Client '+name+' 호출 — private라서 new는 못 씀!');addLog('Client '+name+' \u2192 getInstance()','check');await sl(D);
+setStep(2);
+if(isNew){hlLine(5,'아직 만든 적 없음! null 상태');addLog('instance === null \u2192 true','check')}
+else{hlLine(5,'이미 있네! 새로 만들 필요 없음');addLog('instance === null \u2192 false','cached')}
+await sl(D);
+setStep(3);
+if(isNew){inst={id:1};created++;hlLine(6,'지금 딱 1개 만듦! 이후로는 절대 안 만듦');addLog('new Singleton() \u2192 Singleton@1','new');updateSG()}
+else{hlLine(6,'이 줄은 건너뜀! 이미 있으니까');addLog('Skip \u2192 reuse Singleton@1','cached')}
+await sl(D);
+setStep(4);
+if(isNew)hlLine(7,'만든 걸 Client '+name+'에게 전달!');
+else hlLine(7,'아까 그거 Client '+name+'에게도 전달!');
+addLog('return Singleton@1 \u2192 Client '+name,'cached');
+circle.classList.remove('calling');linked.add(name);
+['A','B','C','D'].forEach(function(n){document.getElementById('ref-'+n).textContent=linked.has(n)?'@1':'-'});
+updateStats();drawLines();await sl(D/2);running=false;setBtns(false)}
+
+function doReset(){inst=null;calls=0;created=0;linked.clear();running=false;logbox.innerHTML='';setStep(0);clearHL();updateSG();updateStats();['A','B','C','D'].forEach(function(n){document.getElementById('ref-'+n).textContent='-';document.getElementById('ln-'+n).classList.remove('show');var c=document.getElementById('cn-'+n).querySelector('.cc');c.classList.remove('linked','calling')});setBtns(false);drawLines()}
+
+window.addEventListener('resize',drawLines);
+setTimeout(drawLines,100);
+</script>
+</body>
+</html>

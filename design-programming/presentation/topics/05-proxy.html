@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Proxy Pattern</title>
+  <link rel="stylesheet" href="../topic-frame.css">
+</head>
+<body>
+<h2 class="sr-only">Proxy pattern interactive explainer with simulation, pros, cons, and use cases in Korean.</h2>
+<style>
+*{box-sizing:border-box}
+.tabs{display:flex;gap:0;border-bottom:0.5px solid var(--color-border-tertiary);margin-bottom:1.25rem;overflow-x:auto}
+.tab{padding:8px 14px;font-size:13px;font-weight:500;color:var(--color-text-secondary);cursor:pointer;border-bottom:2px solid transparent;transition:all 0.3s;background:none;border-top:none;border-left:none;border-right:none;white-space:nowrap}
+.tab:hover{color:var(--color-text-primary)}.tab.active{color:#3C3489;border-bottom-color:#534AB7}
+.pnl{display:none}.pnl.active{display:block}
+.sec{margin-bottom:1.25rem}
+.sec-title{font-size:14px;font-weight:500;color:var(--color-text-primary);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.sec-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.cw{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:14px 16px;font-family:var(--font-mono);font-size:12px;line-height:2.2;color:var(--color-text-secondary);overflow-x:auto;margin-bottom:10px}
+.cl{display:flex;align-items:baseline;min-height:24px;transition:background 0.5s;border-radius:3px;padding:0 4px;margin:0 -4px}
+.cl.hl{background:#EEEDFE}.cl.hlg{background:#E1F5EE}.cl.hlr{background:#FCEBEB}.cl.hlb{background:#E6F1FB}.cl.hla{background:#FAEEDA}
+.ct{white-space:pre;flex-shrink:0}
+.ca{margin-left:12px;font-family:var(--font-sans);font-size:11px;opacity:0;transition:opacity 1s;white-space:nowrap;flex-shrink:0}
+.ca.show{opacity:1}
+.cap{color:#534AB7}.cag{color:#085041}.car{color:#791F1F}.cab{color:#0C447C}.caa{color:#633806}
+.kw{color:#534AB7}.vl{color:#0F6E56}.nl{color:#A32D2D}.cm{color:var(--color-text-tertiary)}.sv{color:#BA7517}
+
+.viz-area{position:relative;min-height:200px;margin:12px 0;padding:8px 0}
+.proxy-row{display:flex;justify-content:center;align-items:center;gap:16px;flex-wrap:wrap}
+.proxy-box{width:140px;border-radius:var(--border-radius-lg);padding:12px;text-align:center;border:2px solid;transition:all 0.6s}
+.proxy-box.pulse{transform:scale(1.06)}
+.proxy-label{font-size:14px;font-weight:500;margin-bottom:4px}
+.proxy-desc{font-size:10px;margin-bottom:6px}
+.proxy-state{font-family:var(--font-mono);font-size:11px;min-height:16px}
+.box-client{background:#FAEEDA;border-color:#FAC775;color:#633806}.box-client .proxy-desc{color:#BA7517}
+.box-proxy{background:#E1F5EE;border-color:#5DCAA5;color:#085041}.box-proxy .proxy-desc{color:#1D9E75}
+.box-real{background:#EEEDFE;border-color:#AFA9EC;color:#3C3489}.box-real .proxy-desc{color:#534AB7}
+.arrow-sep{font-size:20px;color:var(--color-border-secondary);transition:color 0.5s}
+.arrow-sep.ac{color:#BA7517}.arrow-sep.ag{color:#1D9E75}.arrow-sep.am{color:#534AB7}.arrow-sep.ar{color:#A32D2D}
+.flow-row{display:flex;justify-content:center;align-items:center;gap:8px;margin:12px 0;font-size:11px;color:var(--color-text-tertiary);flex-wrap:wrap}
+.flow-step{padding:3px 10px;border-radius:var(--border-radius-md);background:var(--color-background-secondary);transition:all 0.5s;font-family:var(--font-mono)}
+.flow-step.ac{background:#FAEEDA;color:#633806}.flow-step.ag{background:#E1F5EE;color:#085041}.flow-step.am{background:#EEEDFE;color:#3C3489}.flow-step.ar{background:#FCEBEB;color:#791F1F}
+.flow-arrow{font-size:16px;color:var(--color-border-secondary);transition:color 0.5s}
+.flow-arrow.ac{color:#BA7517}.flow-arrow.ag{color:#1D9E75}.flow-arrow.am{color:#534AB7}
+.cache-zone{margin-top:12px;padding:10px 12px;background:var(--color-background-secondary);border-radius:var(--border-radius-md)}
+.cache-label{font-size:10px;font-weight:500;color:var(--color-text-tertiary);margin-bottom:6px}
+.cache-entries{display:flex;flex-wrap:wrap;gap:6px;min-height:24px}
+.cache-entry{padding:3px 10px;border-radius:var(--border-radius-md);font-family:var(--font-mono);font-size:11px;background:#E1F5EE;color:#085041;border:0.5px solid #5DCAA5;opacity:0;transform:scale(0.9);transition:all 0.5s}
+.cache-entry.show{opacity:1;transform:scale(1)}
+.result-zone{margin-top:8px;padding:10px 12px;background:var(--color-background-secondary);border-radius:var(--border-radius-md)}
+.result-label{font-size:10px;font-weight:500;color:var(--color-text-tertiary);margin-bottom:4px}
+.result-msg{font-family:var(--font-mono);font-size:12px;color:var(--color-text-primary);min-height:18px}
+
+.pills{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.pill{font-size:12px;padding:4px 12px;border-radius:var(--border-radius-md);background:var(--color-background-secondary);color:var(--color-text-secondary);transition:all 0.5s}
+.pill.active{background:#EEEDFE;color:#3C3489}.pill.done{background:#E1F5EE;color:#085041}
+.sts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:12px 0}
+.stc{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 8px;text-align:center}
+.stn{font-size:20px;font-weight:500;color:var(--color-text-primary)}
+.stl{font-size:10px;color:var(--color-text-tertiary);margin-top:2px}
+.lga{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 14px;min-height:60px;max-height:200px;overflow-y:auto;font-family:var(--font-mono);font-size:11px;line-height:2;color:var(--color-text-secondary)}
+.ll{display:flex;gap:6px;align-items:baseline}
+.tg{display:inline-block;font-size:10px;padding:1px 7px;border-radius:var(--border-radius-md);font-weight:500}
+.tgn{background:#E1F5EE;color:#085041}.tgc{background:#EEEDFE;color:#3C3489}.tgk{background:#FAEEDA;color:#633806}.tgr{background:#FCEBEB;color:#791F1F}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+.btns button:disabled{opacity:0.4;cursor:not-allowed}
+.dnav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.dbtn{padding:6px 14px;font-size:12px;border-radius:var(--border-radius-md);background:var(--color-background-secondary);color:var(--color-text-secondary);border:0.5px solid var(--color-border-tertiary);cursor:pointer;transition:all 0.3s}
+.dbtn:hover{border-color:var(--color-border-secondary)}
+.dbtn.ag{background:#E1F5EE;color:#085041;border-color:#0F6E56}
+.dbtn.ar{background:#FCEBEB;color:#791F1F;border-color:#A32D2D}
+.dsc{font-size:13px;color:var(--color-text-secondary);line-height:1.7;padding:10px 14px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);min-height:40px;opacity:0;transition:opacity 0.8s}
+.dsc.show{opacity:1}
+
+.intro-block{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:14px 16px;margin-bottom:1.25rem;display:flex;flex-direction:column;gap:10px}
+.intro-item{display:flex;gap:10px;align-items:baseline}
+.intro-label{font-size:12px;font-weight:600;color:var(--color-text-primary);white-space:nowrap;min-width:100px;flex-shrink:0}
+.intro-text{font-size:13px;color:var(--color-text-secondary);line-height:1.6}
+
+.sim-row{display:flex;gap:1.25rem;align-items:flex-start}
+.sim-row>.sec{flex:1;min-width:0;margin-bottom:0}
+.sim-row>.sec:first-child{flex:0 0 38%;max-width:38%}
+.sim-row>.sec:last-child{flex:1}
+@media(max-width:860px){.sim-row{flex-direction:column}.sim-row>.sec:first-child{flex:1;max-width:100%}}
+
+
+
+</style>
+
+<div style="padding:0.5rem 0">
+<div class="intro-block">
+  <div class="intro-item"><span class="intro-label">무슨 패턴인가</span><span class="intro-text">실제 객체 대신 대리인(Proxy)을 두어, 접근 제어·캐싱·로깅 같은 부가 기능을 원본 코드 수정 없이 끼워 넣을 수 있습니다.</span></div>
+  <div class="intro-item"><span class="intro-label">이 화면에서는</span><span class="intro-text">Client → Proxy → Real Service 세 박스가 화살표로 연결되어 있고, fetch 버튼을 누르면 Proxy cache 영역에 캐시 여부가 표시됩니다. 같은 ID를 다시 요청하면 Cache hit 카운터가 올라가고 Real Service 호출이 생략되는 것을 확인하세요.</span></div>
+  <div class="intro-item"><span class="intro-label">언제 떠올리나</span><span class="intro-text">비용이 큰 API 호출을 캐싱하거나, 권한 검사를 원본 서비스 변경 없이 추가하고 싶을 때. 이미지 Lazy Loading도 대표적인 프록시 활용입니다.</span></div>
+</div>
+<div class="tabs">
+  <button class="tab active" onclick="sw('sim')">Simulation</button>
+  <button class="tab" onclick="sw('pro')">장점 (Pros)</button>
+  <button class="tab" onclick="sw('con')">단점 (Cons)</button>
+  <button class="tab" onclick="sw('use')">사용 예시</button>
+</div>
+
+<div class="pnl active" id="p-sim">
+<div class="sim-row">
+<div class="sec">
+  <div class="sec-title"><span class="sec-dot" style="background:#534AB7"></span>Proxy pattern (caching proxy)</div>
+  <div class="cw">
+    <div class="cl" id="cl-0"><span class="ct"><span class="kw">interface</span> DataService {</span></div>
+    <div class="cl" id="cl-1"><span class="ct">  fetch(id): Data</span><span class="ca cap" id="an-1"></span></div>
+    <div class="cl" id="cl-2"><span class="ct">}</span></div>
+    <div class="cl" id="cl-3"><span class="ct"></span></div>
+    <div class="cl" id="cl-4"><span class="ct"><span class="kw">class</span> RealService <span class="kw">implements</span> DataService {</span></div>
+    <div class="cl" id="cl-5"><span class="ct">  fetch(id) {</span><span class="ca cap" id="an-5"></span></div>
+    <div class="cl" id="cl-6"><span class="ct">    <span class="kw">return</span> db.query(id)  <span class="cm">// 느린 DB 호출!</span></span><span class="ca cap" id="an-6"></span></div>
+    <div class="cl" id="cl-7"><span class="ct">  }</span></div>
+    <div class="cl" id="cl-8"><span class="ct">}</span></div>
+    <div class="cl" id="cl-9"><span class="ct"></span></div>
+    <div class="cl" id="cl-10"><span class="ct"><span class="kw">class</span> CachingProxy <span class="kw">implements</span> DataService {</span></div>
+    <div class="cl" id="cl-11"><span class="ct">  <span class="kw">private</span> cache = <span class="kw">new</span> Map()</span><span class="ca cag" id="an-11"></span></div>
+    <div class="cl" id="cl-12"><span class="ct">  <span class="kw">constructor</span>(<span class="kw">private</span> real: RealService) {}</span><span class="ca cag" id="an-12"></span></div>
+    <div class="cl" id="cl-13"><span class="ct"></span></div>
+    <div class="cl" id="cl-14"><span class="ct">  fetch(id) {</span><span class="ca cag" id="an-14"></span></div>
+    <div class="cl" id="cl-15"><span class="ct">    <span class="kw">if</span> (this.cache.has(id))</span><span class="ca cag" id="an-15"></span></div>
+    <div class="cl" id="cl-16"><span class="ct">      <span class="kw">return</span> this.cache.get(id)</span><span class="ca cag" id="an-16"></span></div>
+    <div class="cl" id="cl-17"><span class="ct">    <span class="kw">const</span> data = this.real.fetch(id)</span><span class="ca cag" id="an-17"></span></div>
+    <div class="cl" id="cl-18"><span class="ct">    this.cache.set(id, data)</span><span class="ca cag" id="an-18"></span></div>
+    <div class="cl" id="cl-19"><span class="ct">    <span class="kw">return</span> data</span><span class="ca cag" id="an-19"></span></div>
+    <div class="cl" id="cl-20"><span class="ct">  }</span></div>
+    <div class="cl" id="cl-21"><span class="ct">}</span></div>
+  </div>
+</div>
+<div class="sec">
+  <div class="sec-title"><span class="sec-dot" style="background:#0F6E56"></span>Proxy diagram</div>
+  <div class="pills" id="steps"><div class="pill active" data-s="0">Ready</div><div class="pill" data-s="1">1. request</div><div class="pill" data-s="2">2. cache check</div><div class="pill" data-s="3">3. forward/return</div></div>
+  <div class="viz-area">
+    <div class="proxy-row">
+      <div class="proxy-box box-client" id="box-c"><div class="proxy-label">Client</div><div class="proxy-desc">요청하는 쪽</div><div class="proxy-state" id="c-state">fetch(?)</div></div>
+      <span class="arrow-sep" id="arr-1">→</span>
+      <div class="proxy-box box-proxy" id="box-p"><div class="proxy-label">Proxy</div><div class="proxy-desc">대리인 (캐시)</div><div class="proxy-state" id="p-state">대기</div></div>
+      <span class="arrow-sep" id="arr-2">→</span>
+      <div class="proxy-box box-real" id="box-r"><div class="proxy-label">Real Service</div><div class="proxy-desc">실제 DB 호출</div><div class="proxy-state" id="r-state">대기</div></div>
+    </div>
+    <div class="flow-row">
+      <span class="flow-step" id="fs-1">Client</span>
+      <span class="flow-arrow" id="fa-1">→</span>
+      <span class="flow-step" id="fs-2">Proxy</span>
+      <span class="flow-arrow" id="fa-2">→</span>
+      <span class="flow-step" id="fs-3">cache?</span>
+      <span class="flow-arrow" id="fa-3">→</span>
+      <span class="flow-step" id="fs-4">Real / Cache</span>
+    </div>
+    <div class="cache-zone">
+      <div class="cache-label">Proxy cache</div>
+      <div class="cache-entries" id="cache-entries"></div>
+    </div>
+    <div class="result-zone">
+      <div class="result-label">Result</div>
+      <div class="result-msg" id="result-msg">버튼을 눌러 데이터를 요청해보세요!</div>
+    </div>
+  </div>
+<div class="sts">
+  <div class="stc"><div class="stn" id="s-req">0</div><div class="stl">Requests</div></div>
+  <div class="stc"><div class="stn" id="s-hit">0</div><div class="stl">Cache hit</div></div>
+  <div class="stc"><div class="stn" id="s-miss">0</div><div class="stl">Cache miss</div></div>
+  <div class="stc"><div class="stn" id="s-db">0</div><div class="stl">DB calls</div></div>
+</div>
+<div class="sec"><div class="sec-title"><span class="sec-dot" style="background:#888780"></span>Log</div><div class="lga" id="logbox"></div></div>
+<div class="btns">
+  <button id="btn-a" onclick="doFetch('A')">fetch("user-A")</button>
+  <button id="btn-b" onclick="doFetch('B')">fetch("user-B")</button>
+  <button id="btn-c" onclick="doFetch('C')">fetch("user-C")</button>
+  <button id="btn-reset" onclick="doReset()">Reset</button>
+</div>
+</div>
+</div>
+</div>
+
+<div class="pnl" id="p-pro">
+<div class="sec"><div class="sec-title"><span class="sec-dot" style="background:#1D9E75"></span>장점 코드 데모</div>
+<div class="dnav" id="pro-nav">
+  <button class="dbtn ag" onclick="proDem(0,this)">캐싱 프록시</button>
+  <button class="dbtn" onclick="proDem(1,this)">접근 제어</button>
+  <button class="dbtn" onclick="proDem(2,this)">로깅 프록시</button>
+  <button class="dbtn" onclick="proDem(3,this)">지연 로딩</button>
+</div>
+<div class="cw" id="pro-code"></div>
+<div class="dsc" id="pro-desc"></div>
+</div>
+<div style="margin-top:8px"><button onclick="runPro()">실행해보기</button></div>
+</div>
+
+<div class="pnl" id="p-con">
+<div class="sec"><div class="sec-title"><span class="sec-dot" style="background:#A32D2D"></span>단점 코드 데모</div>
+<div class="dnav" id="con-nav">
+  <button class="dbtn ar" onclick="conDem(0,this)">응답 지연</button>
+  <button class="dbtn" onclick="conDem(1,this)">복잡도 증가</button>
+  <button class="dbtn" onclick="conDem(2,this)">캐시 일관성</button>
+  <button class="dbtn" onclick="conDem(3,this)">과도한 프록시</button>
+</div>
+<div class="cw" id="con-code"></div>
+<div class="dsc" id="con-desc"></div>
+</div>
+<div style="margin-top:8px"><button onclick="runCon()">실행해보기</button></div>
+</div>
+
+<div class="pnl" id="p-use">
+<div class="sec"><div class="sec-title"><span class="sec-dot" style="background:#534AB7"></span>실제 사용 예시</div>
+<div class="dnav" id="use-nav">
+  <button class="dbtn ag" onclick="useDem(0,this)">JS Proxy 객체</button>
+  <button class="dbtn" onclick="useDem(1,this)">API 미들웨어</button>
+  <button class="dbtn" onclick="useDem(2,this)">이미지 레이지 로드</button>
+  <button class="dbtn" onclick="useDem(3,this)">Vue reactivity</button>
+</div>
+<div class="cw" id="use-code"></div>
+<div class="dsc" id="use-desc"></div>
+</div>
+<div style="margin-top:8px"><button onclick="runUse()">실행해보기</button></div>
+</div>
+</div>
+
+<script>
+var D=2400;var cache={};var reqs=0,hits=0,misses=0,dbCalls=0,running=false;
+var fakeData={A:'{name:"Alice",age:28}',B:'{name:"Bob",age:35}',C:'{name:"Carol",age:42}'};
+
+var proData=[
+{lines:['// 같은 요청이 또 오면 캐시에서 바로 반환!','const proxy = new CachingProxy(realService)','','proxy.fetch("user-1")  // DB 호출 (느림)','proxy.fetch("user-1")  // 캐시 반환! (빠름!)','proxy.fetch("user-1")  // 캐시 반환! (빠름!)','','// DB 호출은 딱 1번만!','// 나머지는 전부 캐시에서 가져옴','// Client는 차이를 전혀 모름!'],
+annos:['','프록시 생성','','첫 요청: DB까지 갔다 옴 (200ms)','두 번째: 캐시! (0ms!)','세 번째: 또 캐시! (0ms!)','','DB 부하를 확 줄여줌!','','인터페이스가 같아서 투명함!'],
+desc:'카페에서 같은 음료를 주문하면 이미 만들어둔 걸 바로 주는 것처럼, 캐싱 프록시는 같은 요청에 대해 저장해둔 결과를 바로 돌려줘요. DB 호출을 확 줄여줍니다.',hl:'hlg'},
+{lines:['// 권한 없는 사용자를 차단!','class AuthProxy implements DataService {','  constructor(private real, private user) {}','','  fetch(id) {','    if (!this.user.isAdmin) {','      throw new Error("권한 없음!")','    }','    return this.real.fetch(id)','  }','}','','// admin → 통과! 일반 사용자 → 차단!','const proxy = new AuthProxy(realService, currentUser)','proxy.fetch("secret-data")  // 관리자만 OK!'],
+annos:['','','실제 서비스 + 사용자 정보','','','관리자인지 확인!','아니면 차단!','','맞으면 진짜 서비스로 전달','','','','','프록시가 문지기 역할!','권한 체크 후 통과/차단!'],
+desc:'클럽 앞 보안요원처럼, 접근 제어 프록시는 "자격이 있는 사람만" 실제 서비스에 접근하게 해요. 실제 서비스 코드는 수정 없이 프록시만 앞에 세우면 됩니다.',hl:'hlg'},
+{lines:['// 모든 호출을 자동으로 기록!','class LoggingProxy implements DataService {','  constructor(private real) {}','','  fetch(id) {','    console.log(`[${new Date()}] fetch(${id})`)','    const start = Date.now()','    const result = this.real.fetch(id)','    const ms = Date.now() - start','    console.log(`[완료] ${ms}ms 소요`)','    return result','  }','}','','// 실제 서비스 코드는 한 줄도 안 고침!','// 프록시만 감싸면 자동 로깅!'],
+annos:['','','','','','호출 시각 + 파라미터 기록!','시작 시간 기록','실제 서비스 호출','소요 시간 계산','완료 로그!','결과 그대로 반환','','','','원본 수정 제로!','감싸기만 하면 로깅 완성!'],
+desc:'CCTV처럼 프록시가 모든 호출을 자동으로 기록해요. 실제 서비스 코드를 전혀 안 고치고, 프록시로 감싸기만 하면 호출 시각, 파라미터, 소요 시간이 전부 남아요.',hl:'hlg'},
+{lines:['// 무거운 객체를 필요할 때만 생성!','class LazyProxy implements ImageService {','  private realImage = null','','  display() {','    if (!this.realImage) {','      // 지금에서야 진짜 이미지 로드!','      this.realImage = new HeavyImage(this.url)','    }','    return this.realImage.display()','  }','}','','// 100개 이미지가 있어도','// 실제로 보이는 것만 로드!','// 초기 로딩 시간 대폭 절약!'],
+annos:['','','처음엔 null!','','','아직 안 만들었으면','','이때 비로소 생성! (Lazy!)','','만들어둔 거 사용','','','','','스크롤해서 보일 때만 로드!','메모리 + 시간 절약!'],
+desc:'냉장고에서 먹을 것만 꺼내는 것처럼, 지연 로딩 프록시는 실제로 필요한 시점에만 무거운 객체를 만들어요. 100개 이미지 중 화면에 보이는 5개만 로드하면 되니까 초기 속도가 빨라져요.',hl:'hlg'}
+];
+
+var conData=[
+{lines:['// 프록시를 거치면 한 단계 더 추가됨','','// 프록시 없이: Client → RealService','// 응답 시간: 100ms','','// 프록시 있으면: Client → Proxy → RealService','// 응답 시간: 100ms + 프록시 처리 시간','','// 캐시 미스일 때는','// 캐시 확인 시간 + DB 호출 시간 = 더 느림!','','// 캐시 히트가 많아야 이득!','// 히트율이 낮으면 오히려 손해!'],
+annos:['','','직접 호출','빠름!','','한 단계 추가됨','약간 더 느림','','','캐시 미스 = 원래보다 느림!','','히트율이 핵심!','히트율 낮으면 프록시가 짐!'],
+desc:'편의점 택배를 받을 때, 직접 받으면 빠르지만 경비실을 거치면 한 단계 더 걸리잖아요. 프록시도 마찬가지로 추가 경유지예요. 캐시 히트가 많아야 그 비용을 상쇄합니다.',hl:'hlr'},
+{lines:['// 프록시가 여러 개 겹치면 복잡해짐','','const service = new RealService()','','// 로깅 프록시로 감싸고','const logged = new LoggingProxy(service)','// 캐싱 프록시로 또 감싸고','const cached = new CachingProxy(logged)','// 인증 프록시로 또 감싸고','const authed = new AuthProxy(cached, user)','','// 러시안 인형처럼 겹겹이!','// 어디서 문제가 생겼는지 찾기 어려움!'],
+annos:['','','진짜 서비스','','감싸기 1','','감싸기 2','','감싸기 3','','','3중 래핑!','디버깅이 복잡해져요!'],
+desc:'러시안 인형(마트료시카)처럼 프록시를 겹겹이 쌓으면, 어디서 뭘 하는지 추적하기 어려워져요. 프록시는 2~3개까지가 적당하고, 그 이상이면 미들웨어 체인으로 바꾸는 게 나아요.',hl:'hlr'},
+{lines:['// 캐시된 데이터가 옛날 건이면?','','proxy.fetch("user-1")  // DB에서 가져와서 캐시','','// 이 사이에 DB에서 user-1 정보가 바뀜!','// DB: { name: "Alice", age: 29 }  ← 업데이트됨','','proxy.fetch("user-1")  // 캐시에서 가져옴','// 결과: { name: "Alice", age: 28 } ← 옛날 데이터!','','// 캐시가 DB와 안 맞음!','// TTL(유효기간)이나 캐시 무효화가 필수!'],
+annos:['','','캐시에 저장됨 (age: 28)','','','DB에선 29로 바뀜!','','캐시에서 반환','28이 나옴! 옛날 데이터!','','캐시 ≠ DB!','유효기간 설정이 필수!'],
+desc:'어제 날씨 예보를 오늘도 보는 격이에요. 캐시된 데이터가 원본과 달라지는 "캐시 일관성" 문제가 생겨요. TTL(유효기간)을 설정하거나, 원본이 바뀔 때 캐시를 지우는 전략이 필요해요.',hl:'hlr'},
+{lines:['// 단순한 서비스에 프록시를 씌우면','','class SimpleService {','  greet() { return "Hello!" }','}','','// 이걸 위해 프록시를 만들면...','class GreetProxy {','  constructor(private real) {}','  greet() {','    return this.real.greet() // 그냥 전달만?','  }','}','','// 아무것도 안 하는 프록시!','// 오히려 코드만 늘어남!'],
+annos:['','','','간단한 함수','','','','','','','그냥 패스스루!','','','','존재 이유가 없는 프록시!','단순한 건 그냥 직접 호출하세요!'],
+desc:'간단한 편지를 전하는데 대리인을 세우면 오히려 느려지는 것처럼, 캐싱/인증/로깅 같은 부가 기능이 없으면 프록시가 의미 없어요. 프록시는 "할 일이 있을 때만" 쓰세요.',hl:'hlr'}
+];
+
+var useData=[
+{lines:['// JavaScript Proxy 객체 — 언어 내장 기능!','','const user = { name: "Alice", age: 28 }','','const proxy = new Proxy(user, {','  get(target, prop) {','    console.log(`[읽기] ${prop}`)','    return target[prop]','  },','  set(target, prop, value) {','    console.log(`[쓰기] ${prop} = ${value}`)','    target[prop] = value','    return true','  }','})','','proxy.name     // [읽기] name → "Alice"','proxy.age = 29 // [쓰기] age = 29'],
+annos:['우리가 쓸 수 있는 진짜 Proxy!','','평범한 객체','','Proxy로 감싸기!','읽기를 가로채기!','자동 로깅!','원래 값 반환','','쓰기도 가로채기!','자동 로깅!','값 저장','','','','','읽기 → 로그 자동!','쓰기 → 로그 자동!'],
+desc:'JavaScript에 Proxy가 내장되어 있어요! 객체를 감싸면 읽기/쓰기를 가로채서 로깅, 유효성 검사, 반응형 시스템 등을 만들 수 있어요. Vue 3의 reactivity도 이걸로 만들어졌어요.',hl:'hlg'},
+{lines:['// API 미들웨어 = 프록시와 비슷한 래핑 체인','','// Express.js 미들웨어','app.use(cors())           // CORS 처리','app.use(rateLimit())      // 속도 제한','app.use(authenticate())   // 인증 검사','app.use(cache())          // 캐시 확인','app.use(logger())         // 요청 로깅','','// 프록시처럼 보조 기능을 끼워 넣지만','// 보통은 미들웨어/파이프라인으로 더 많이 설명함','app.get("/api/users", getUsers)'],
+annos:['','','','CORS 체크','요청 속도 제한','인증 확인','캐시 확인','요청 로깅','','프록시와 닮은 점은 있음','','보통은 미들웨어 체인으로 분류'],
+desc:'Express 미들웨어는 프록시처럼 보조 기능을 중간에 끼워 넣는다는 점에서 비슷하게 볼 수 있어요. 다만 보통은 프록시 패턴 그 자체보다는 미들웨어 체인이나 파이프라인으로 설명하는 편이 더 자연스럽습니다.',hl:'hlg'},
+{lines:['// 이미지 레이지 로딩 = 지연 프록시로 비유 가능한 예시','','// HTML에는 가벼운 플레이스홀더만','<img data-src="heavy-photo.jpg"','     src="placeholder.svg"','     class="lazy" />','','// IntersectionObserver가 로드 시점을 제어','const observer = new IntersectionObserver((entries) => {','  entries.forEach(entry => {','    if (entry.isIntersecting) {','      entry.target.src = entry.target.dataset.src','      observer.unobserve(entry.target)','    }','  })','})'],
+annos:['','','','진짜 이미지 URL은 숨겨놓고','가벼운 이미지만 보여줌','','','','보이는지 감시!','','화면에 나타났을 때!','그때서야 진짜 이미지 로드!','감시 해제','','',''],
+desc:'웹의 이미지 레이지 로딩은 "필요할 때 실제 객체를 불러온다"는 점에서 지연 프록시에 비유할 수 있는 예시예요. 다만 엄밀하게는 로딩 전략이나 지연 초기화 기법으로 설명하는 경우도 많습니다.',hl:'hlg'},
+{lines:['// Vue 3의 반응형 시스템 = JS Proxy!','','const state = reactive({ count: 0 })','// 내부적으로 이렇게 동작:','// new Proxy(state, {','//   get(target, key) {','//     track(target, key)  // 의존성 추적!','//     return target[key]','//   },','//   set(target, key, value) {','//     target[key] = value','//     trigger(target, key) // 화면 갱신!','//   }','// })','','state.count++  // set 가로채기 → 자동 리렌더!'],
+annos:['','','reactive() = Proxy 래핑!','','','','읽을 때 의존성 추적!','','','','값 저장하고','변경 감지 → View 갱신!','','','','Proxy 덕분에 자동 반응형!'],
+desc:'Vue 3의 reactive()는 JS Proxy를 활용한 대표 사례예요. 값을 읽을 때 의존성을 추적하고, 값을 바꿀 때 변경을 감지해서 반응형 시스템을 구성합니다.',hl:'hlg'}
+];
+
+var curPro=0,curCon=0,curUse=0,demoR=false;
+function buildHTML(data,idx,prefix,colorCls){var d=data[idx];var html='';for(var i=0;i<d.lines.length;i++){html+='<div class="cl" id="'+prefix+'-'+i+'"><span class="ct">'+d.lines[i]+'</span><span class="ca '+colorCls+'" id="'+prefix+'-a-'+i+'"></span></div>'}return html}
+function renderCode(t,data,idx,c){document.getElementById(t).innerHTML=buildHTML(data,idx,t,c)}
+function renderDesc(t,data,idx){var el=document.getElementById(t);el.textContent=data[idx].desc;el.classList.remove('show');requestAnimationFrame(function(){requestAnimationFrame(function(){el.classList.add('show')})})}
+function proDem(i,b){curPro=i;document.querySelectorAll('#pro-nav .dbtn').forEach(function(x){x.className='dbtn'});b.className='dbtn ag';renderCode('pro-code',proData,i,'cag');renderDesc('pro-desc',proData,i)}
+function conDem(i,b){curCon=i;document.querySelectorAll('#con-nav .dbtn').forEach(function(x){x.className='dbtn'});b.className='dbtn ar';renderCode('con-code',conData,i,'car');renderDesc('con-desc',conData,i)}
+function useDem(i,b){curUse=i;document.querySelectorAll('#use-nav .dbtn').forEach(function(x){x.className='dbtn'});b.className='dbtn ag';renderCode('use-code',useData,i,'cag');renderDesc('use-desc',useData,i)}
+function sl(ms){return new Promise(function(r){setTimeout(r,ms)})}
+async function animCode(p,data,idx){if(demoR)return;demoR=true;var d=data[idx];for(var i=0;i<d.lines.length;i++){var line=document.getElementById(p+'-'+i);var anno=document.getElementById(p+'-a-'+i);if(!d.annos[i]||d.annos[i]===''){await sl(200);continue}line.classList.add(d.hl);anno.textContent='\u2190 '+d.annos[i];(function(a){requestAnimationFrame(function(){requestAnimationFrame(function(){a.classList.add('show')})})})(anno);await sl(1800)}demoR=false}
+function runPro(){animCode('pro-code',proData,curPro)}
+function runCon(){animCode('con-code',conData,curCon)}
+function runUse(){animCode('use-code',useData,curUse)}
+renderCode('pro-code',proData,0,'cag');renderDesc('pro-desc',proData,0);
+renderCode('con-code',conData,0,'car');renderDesc('con-desc',conData,0);
+renderCode('use-code',useData,0,'cag');renderDesc('use-desc',useData,0);
+
+function sw(id){document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active')});document.querySelectorAll('.pnl').forEach(function(p){p.classList.remove('active')});document.querySelector('[onclick="sw(\''+id+'\')"]').classList.add('active');document.getElementById('p-'+id).classList.add('active')}
+
+var logbox=document.getElementById('logbox');
+var anIds=[1,5,6,11,12,14,15,16,17,18,19];
+function setStep(n){document.querySelectorAll('.pill').forEach(function(p){var s=parseInt(p.dataset.s);if(!isNaN(s))p.className='pill'+(s===n?' active':(s<n?' done':''))})}
+function clearHL(){for(var i=0;i<=21;i++){var e=document.getElementById('cl-'+i);if(e)e.classList.remove('hl','hlg','hlr','hlb','hla')}anIds.forEach(function(j){var a=document.getElementById('an-'+j);if(a){a.classList.remove('show');a.textContent=''}})}
+function hlLine(n,txt,cls){clearHL();var c=cls||'hl';var e=document.getElementById('cl-'+n);if(e)e.classList.add(c);var a=document.getElementById('an-'+n);if(a&&txt){var acls=c==='hlg'?'cag':c==='hlr'?'car':c==='hlb'?'cab':c==='hla'?'caa':'cap';a.className='ca '+acls;a.textContent='\u2190 '+txt;requestAnimationFrame(function(){requestAnimationFrame(function(){a.classList.add('show')})})}}
+function addLog(msg,type){var d=document.createElement('div');d.className='ll';var tg=document.createElement('span');tg.className='tg '+(type==='hit'?'tgn':type==='miss'?'tgk':type==='db'?'tgc':'tgr');tg.textContent=type==='hit'?'HIT':type==='miss'?'MISS':type==='db'?'DB':'REQ';var tx=document.createElement('span');tx.textContent=msg;d.appendChild(tg);d.appendChild(tx);logbox.appendChild(d);logbox.scrollTop=logbox.scrollHeight}
+function updateStats(){document.getElementById('s-req').textContent=reqs;document.getElementById('s-hit').textContent=hits;document.getElementById('s-miss').textContent=misses;document.getElementById('s-db').textContent=dbCalls}
+function pulseBox(id){var el=document.getElementById(id);el.classList.add('pulse');setTimeout(function(){el.classList.remove('pulse')},600)}
+function activateFlow(n,cls){for(var i=1;i<=4;i++){document.getElementById('fs-'+i).className='flow-step';if(i<=3)document.getElementById('fa-'+i).className='flow-arrow'}if(n>=1){document.getElementById('fs-'+n).className='flow-step '+cls;if(n>1)document.getElementById('fa-'+(n-1)).className='flow-arrow '+cls}}
+function setArrow(id,cls){document.getElementById(id).className='arrow-sep'+(cls?' '+cls:'')}
+function addCacheEntry(id){var ce=document.getElementById('ce-'+id);if(!ce){ce=document.createElement('div');ce.className='cache-entry';ce.id='ce-'+id;ce.textContent='user-'+id+': '+fakeData[id];document.getElementById('cache-entries').appendChild(ce)}requestAnimationFrame(function(){requestAnimationFrame(function(){ce.classList.add('show')})})}
+function setBtns(d){['btn-a','btn-b','btn-c','btn-reset'].forEach(function(id){var e=document.getElementById(id);if(e)e.disabled=d})}
+
+async function doFetch(id){
+if(running)return;running=true;setBtns(true);reqs++;
+var isHit=!!cache[id];
+
+setStep(1);activateFlow(1,'ac');setArrow('arr-1','ac');
+hlLine(14,'Client → Proxy: fetch("user-'+id+'")','hlg');
+pulseBox('box-c');
+document.getElementById('c-state').textContent='fetch("user-'+id+'")';
+addLog('Client → Proxy: fetch("user-'+id+'")','miss');
+await sl(D);
+
+setStep(2);activateFlow(2,'ag');
+hlLine(15,'캐시에 user-'+id+'가 있는지 확인...','hlg');
+pulseBox('box-p');
+if(isHit){
+document.getElementById('p-state').textContent='캐시 HIT!';
+addLog('캐시 확인 → HIT! user-'+id+' 발견!','hit');
+hits++;
+await sl(D);
+
+setStep(3);activateFlow(3,'ag');
+hlLine(16,'캐시에서 바로 반환! DB 안 감!','hlg');
+document.getElementById('result-msg').textContent='user-'+id+' → '+fakeData[id]+' (캐시!)';
+setArrow('arr-2','');
+addLog('캐시에서 즉시 반환! DB 호출 없음!','hit');
+}else{
+document.getElementById('p-state').textContent='캐시 MISS!';
+addLog('캐시 확인 → MISS! user-'+id+' 없음','miss');
+misses++;
+await sl(D);
+
+setArrow('arr-2','am');activateFlow(4,'am');
+hlLine(17,'캐시 미스! → RealService: db.query("user-'+id+'")','hl');
+pulseBox('box-r');
+document.getElementById('r-state').textContent='DB 쿼리 중...';
+dbCalls++;
+addLog('Proxy → RealService: db.query("user-'+id+'")','db');
+await sl(D);
+
+hlLine(18,'결과를 캐시에 저장!','hlg');
+cache[id]=true;
+addCacheEntry(id);
+document.getElementById('p-state').textContent='캐시 저장!';
+addLog('결과 캐시에 저장: user-'+id,'hit');
+await sl(D);
+
+setStep(3);
+hlLine(19,'결과를 Client에게 반환!','hlg');
+document.getElementById('r-state').textContent='대기';
+document.getElementById('result-msg').textContent='user-'+id+' → '+fakeData[id]+' (DB → 캐시됨)';
+}
+updateStats();pulseBox('box-c');
+await sl(D/2);
+setArrow('arr-1','');setArrow('arr-2','');activateFlow(0,'');
+document.getElementById('p-state').textContent='대기';document.getElementById('c-state').textContent='fetch(?)';
+running=false;setBtns(false)}
+
+function doReset(){cache={};reqs=0;hits=0;misses=0;dbCalls=0;running=false;logbox.innerHTML='';setStep(0);clearHL();updateStats();
+document.getElementById('c-state').textContent='fetch(?)';
+document.getElementById('p-state').textContent='대기';
+document.getElementById('r-state').textContent='대기';
+document.getElementById('result-msg').textContent='버튼을 눌러 데이터를 요청해보세요!';
+document.getElementById('cache-entries').innerHTML='';
+setArrow('arr-1','');setArrow('arr-2','');activateFlow(0,'');
+['box-c','box-p','box-r'].forEach(function(id){document.getElementById(id).classList.remove('pulse')});
+setBtns(false)}
+</script>
+</body>
+</html>

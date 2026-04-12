@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Functional Programming</title>
+  <link rel="stylesheet" href="../topic-frame.css">
+</head>
+<body>
+<h2 class="sr-only">Functional programming core concepts: 8 essential keywords with code demos in Korean.</h2>
+<style>
+*{box-sizing:border-box}
+.tabs{display:flex;gap:0;border-bottom:0.5px solid var(--color-border-tertiary);margin-bottom:1.25rem;overflow-x:auto}
+.tab{padding:8px 14px;font-size:13px;font-weight:500;color:var(--color-text-secondary);cursor:pointer;border-bottom:2px solid transparent;transition:all 0.3s;background:none;border-top:none;border-left:none;border-right:none;white-space:nowrap}
+.tab:hover{color:var(--color-text-primary)}.tab.active{color:#3C3489;border-bottom-color:#534AB7}
+.pnl{display:none}.pnl.active{display:block}
+.sec{margin-bottom:1.25rem}
+.sec-title{font-size:14px;font-weight:500;color:var(--color-text-primary);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.sec-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.cw{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:14px 16px;font-family:var(--font-mono);font-size:12px;line-height:2.2;color:var(--color-text-secondary);overflow-x:auto;margin-bottom:10px}
+.cl{display:flex;align-items:baseline;min-height:24px;transition:background 0.5s;border-radius:3px;padding:0 4px;margin:0 -4px}
+.cl.hl{background:#EEEDFE}.cl.hlg{background:#E1F5EE}.cl.hlr{background:#FCEBEB}
+.ct{white-space:pre;flex-shrink:0}
+.ca{margin-left:12px;font-family:var(--font-sans);font-size:11px;opacity:0;transition:opacity 1s;white-space:nowrap;flex-shrink:0}
+.ca.show{opacity:1}
+.cag{color:#085041}.car{color:#791F1F}.cap{color:#534AB7}
+.kw{color:#534AB7}.vl{color:#0F6E56}.nl{color:#A32D2D}.cm{color:var(--color-text-tertiary)}.sv{color:#BA7517}
+.dnav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.dbtn{padding:6px 14px;font-size:12px;border-radius:var(--border-radius-md);background:var(--color-background-secondary);color:var(--color-text-secondary);border:0.5px solid var(--color-border-tertiary);cursor:pointer;transition:all 0.3s}
+.dbtn:hover{border-color:var(--color-border-secondary)}
+.dbtn.ag{background:#E1F5EE;color:#085041;border-color:#0F6E56}
+.dsc{font-size:13px;color:var(--color-text-secondary);line-height:1.7;padding:10px 14px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);min-height:40px;opacity:0;transition:opacity 0.8s}
+.dsc.show{opacity:1}
+.cc{padding:12px 14px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);border-left:3px solid;margin-bottom:8px;cursor:pointer;transition:all 0.3s;border-radius:0}
+.cc:hover{background:var(--color-background-primary)}
+.cc.active{background:var(--color-background-primary);border-left-width:4px}
+.cc-t{font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:2px}
+.cc-s{font-size:12px;color:var(--color-text-secondary)}
+.cc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;margin-bottom:14px}
+.b1{border-color:#1D9E75}.b2{border-color:#D85A30}.b3{border-color:#378ADD}.b4{border-color:#534AB7}.b5{border-color:#BA7517}.b6{border-color:#D4537E}.b7{border-color:#639922}.b8{border-color:#A32D2D}
+</style>
+
+<div style="padding:0.5rem 0">
+<div class="tabs">
+  <button class="tab active" onclick="sw('what')">함수형이란?</button>
+  <button class="tab" onclick="sw('key')">핵심 키워드 (8개)</button>
+</div>
+
+<div class="pnl active" id="p-what">
+<div class="sec">
+  <div class="sec-title"><span class="sec-dot" style="background:#534AB7"></span>함수형 프로그래밍이란?</div>
+  <div class="dnav" id="w-nav">
+    <button class="dbtn ag" onclick="wDem(0,this)">한 줄 요약</button>
+    <button class="dbtn" onclick="wDem(1,this)">명령형과 비교</button>
+    <button class="dbtn" onclick="wDem(2,this)">3가지 원칙</button>
+    <button class="dbtn" onclick="wDem(3,this)">왜 써야 할까?</button>
+    <button class="dbtn" onclick="wDem(4,this)">어디에 쓰이나?</button>
+  </div>
+  <div class="cw" id="w-code"></div>
+  <div class="dsc" id="w-desc"></div>
+</div>
+<div style="margin-top:8px"><button onclick="runW()">실행해보기</button></div>
+</div>
+
+<div class="pnl" id="p-key">
+<div class="sec">
+  <div class="sec-title"><span class="sec-dot" style="background:#0F6E56"></span>핵심 키워드 8개 — 클릭하면 코드 데모가 나타납니다</div>
+  <div class="cc-grid">
+    <div class="cc b1" onclick="kDem(0,this)"><div class="cc-t">1. 순수 함수</div><div class="cc-s">같은 입력 → 항상 같은 출력, 부작용 없음</div></div>
+    <div class="cc b2" onclick="kDem(1,this)"><div class="cc-t">2. 불변성</div><div class="cc-s">원본 데이터를 절대 변경하지 않음</div></div>
+    <div class="cc b3" onclick="kDem(2,this)"><div class="cc-t">3. 일급 함수</div><div class="cc-s">함수를 값(숫자, 문자열)처럼 다룸</div></div>
+    <div class="cc b4" onclick="kDem(3,this)"><div class="cc-t">4. 고차 함수</div><div class="cc-s">함수를 인자로 받거나 반환하는 함수</div></div>
+    <div class="cc b5" onclick="kDem(4,this)"><div class="cc-t">5. 커링</div><div class="cc-s">인자를 하나씩 받아서 특화된 함수 생성</div></div>
+    <div class="cc b6" onclick="kDem(5,this)"><div class="cc-t">6. 함수 합성</div><div class="cc-s">작은 함수를 레고처럼 조립해서 큰 함수</div></div>
+    <div class="cc b7" onclick="kDem(6,this)"><div class="cc-t">7. 선언형 프로그래밍</div><div class="cc-s">HOW가 아닌 WHAT만 적음</div></div>
+    <div class="cc b8" onclick="kDem(7,this)"><div class="cc-t">8. 참조 투명성</div><div class="cc-s">함수 호출을 결과값으로 바꿔도 동일</div></div>
+  </div>
+  <div class="cw" id="k-code"></div>
+  <div class="dsc" id="k-desc"></div>
+</div>
+<div style="margin-top:8px"><button onclick="runK()">실행해보기</button></div>
+</div>
+</div>
+
+<script>
+var D=2400;
+
+var wData=[
+{lines:['// 함수형 프로그래밍 = 수학의 함수처럼 코딩!','//','// 수학: f(x) = x + 1','//       f(2) = 3  ← 영원히 3!','//','// 코드도 이렇게 하자!','const add1 = (x) => x + 1','','add1(2)  // 3','add1(2)  // 3 ← 100번 불러도 3!','add1(2)  // 3 ← 어제도 3, 오늘도 3!','','// "같은 입력이면 항상 같은 출력"','// + "외부 상태를 바꾸지 않음"','// = 이게 함수형의 전부!'],
+annos:['','','수학 함수!','절대 안 변하는 결과','','','코드로 옮기면!','','항상 3!','100번 불러도 3!','시간이 지나도 3!','','핵심 약속 1!','핵심 약속 2!','이것만 지키면 함수형!'],
+desc:'함수형 프로그래밍은 수학의 f(x)를 코드에 옮긴 거예요. 핵심은 딱 두 가지: "같은 입력 = 같은 출력"과 "외부를 건드리지 마". 이 단순한 약속만 지키면 버그가 확 줄어요.',hl:'hlg'},
+{lines:['// 명령형: 과정을 하나씩 지시 (HOW)','const nums = [1, 2, 3, 4, 5]','const result = []','for (let i = 0; i < nums.length; i++) {','  if (nums[i] % 2 === 0) {','    result.push(nums[i] * 2)','  }','}','// result: [4, 8]','','// 함수형: 원하는 것만 선언 (WHAT)','const result = nums','  .filter(n => n % 2 === 0)','  .map(n => n * 2)','// result: [4, 8]','','// 같은 결과! 하지만 사고방식이 완전히 다름'],
+annos:['한 줄씩 지시해야 함','','빈 배열 직접 만들고','인덱스로 반복하고','조건 직접 확인하고','직접 넣고...','','','','','의도만 적으면 끝!','','짝수만!','2배!','','','내비에 목적지만 찍기 vs 길을 일일이 알려주기'],
+desc:'명령형은 "빈 배열 만들고, for문 돌리고, 조건 확인하고..." 과정을 적어요. 함수형은 "짝수 골라서 2배" 한 마디예요. 내비에 목적지만 찍으면 되는 것(함수형) vs 교차로마다 "좌회전!" 외치는 것(명령형)의 차이예요.',hl:'hlg'},
+{lines:['// 함수형의 3가지 핵심 원칙!','','// 원칙 1: 순수 함수 — 외부에 영향 없음','const add = (a, b) => a + b','// 언제 어디서 불러도 같은 결과! 예측 가능!','','// 원칙 2: 불변성 — 원본을 절대 안 바꿈','const nums = [1, 2, 3]','const added = [...nums, 4]','// nums는 여전히 [1, 2, 3] 그대로!','','// 원칙 3: 일급 함수 — 함수를 값처럼 다룸','const double = (n) => n * 2','const result = [1, 2, 3].map(double)','// 함수를 인자로 넘길 수 있어야 함!','','// 이 3가지가 나머지 키워드의 토대!'],
+annos:['','','원칙 1!','같은 입력 = 같은 출력','','','원칙 2!','원본 배열','새 배열! 원본 안 건드림','','','원칙 3!','함수를 변수에 담고','인자로 전달!','','','고차 함수, 커링, 합성 전부 여기서 시작!'],
+desc:'순수 함수(예측 가능), 불변성(안전), 일급 함수(유연) — 이 3가지가 함수형의 기둥이에요. 나머지 키워드(고차 함수, 커링, 합성, 참조 투명성, 선언형)는 전부 이 3가지 위에 세워져요.',hl:'hlg'},
+{lines:['// 왜 함수형을 써야 할까? 5가지 이유!','','// 1. 버그 감소 — 상태를 안 바꾸니까','//    "누가 이 값 바꿨지?" 문제 자체가 없음','','// 2. 테스트 쉬움 — 입력/출력만 확인하면 끝','//    add(2, 3) === 5? 통과! 모킹 필요 없음!','','// 3. 병렬 처리 — 공유 상태가 없으니','//    여러 쓰레드가 동시에 써도 충돌 없음','','// 4. 코드가 읽기 쉬움 — 의도가 바로 보임','//    filter → map → reduce 체이닝','','// 5. 합성이 쉬움 — 작은 함수를 조립','const process = pipe(validate, format, save)'],
+annos:['','','상태 변경 없음 = 버그 감소!','','','입력 → 출력만 테스트!','','','공유 상태 없음 = 안전!','','','선언적 코드 = 읽기 쉬움!','','','레고 블록처럼 조립!',''],
+desc:'상태를 안 바꾸니까 버그가 줄고, 입력/출력만 확인하면 되니까 테스트가 쉽고, 공유 상태가 없으니까 병렬 처리에 강해요. 특히 React, 데이터 파이프라인, 백엔드에서 큰 장점을 발휘해요.',hl:'hlg'},
+{lines:['// 어디에서 함수형을 쓰고 있을까?','','// React — 불변 상태 + 순수 컴포넌트','const [items, setItems] = useState([])','setItems(prev => [...prev, newItem])','','// Array 메서드 — filter, map, reduce','users.filter(u => u.active).map(u => u.name)','','// Redux — 순수 리듀서','const reducer = (state, action) => ({ ...state, ...change })','','// RxJS — 스트림을 함수로 변환','stream.pipe(filter(...), map(...), debounce(...))','','// 이미 매일 쓰고 있었어요!','// "의식적으로" 쓰면 코드 품질이 올라갑니다!'],
+annos:['','','불변성 + 순수 함수!','','새 배열 생성!','','고차 함수!','','','순수 함수!','불변 상태 반환!','','함수 합성!','','','이미 함수형을 쓰고 있었어요!',''],
+desc:'React의 setState, Array의 filter/map, Redux의 리듀서, RxJS의 pipe — 이미 매일 쓰고 있었어요! "이게 함수형이었어?"라고 놀라는 분이 많아요. 의식적으로 원칙을 지키면 코드 품질이 확 올라갑니다.',hl:'hlg'}
+];
+
+var kData=[
+{lines:['// 1. 순수 함수 (Pure Function)','// 같은 입력 → 항상 같은 출력, 부작용 없음!','','// 순수 O','const add = (a, b) => a + b','add(2, 3)  // 항상 5! 언제 불러도 5!','','// 순수 X — 외부 상태에 의존','let tax = 0.1','const price = (p) => p * (1 + tax)','// tax가 바뀌면? 결과도 달라짐! 예측 불가!','','// 순수 X — 외부를 변경 (부작용!)','let total = 0','const addToTotal = (n) => { total += n }','// 함수 밖의 total을 바꿈 = 부작용!','','// 순수 함수 판별법: "밖에서 뭔가 읽나? 바꾸나?"','// 둘 다 아니면 순수!'],
+annos:['','','','','인자만으로 결과 결정!','항상 예측 가능!','','','외부 변수!','tax에 의존... 불순!','','','','외부 상태!','total을 바꿈 = 부작용!','','','이 질문 하나로 판별 가능!',''],
+desc:'자판기처럼 같은 버튼에 항상 같은 음료가 나오면 순수 함수예요. "밖에서 뭔가 읽는가? 밖을 바꾸는가?" 둘 다 아니면 순수! 순수 함수는 테스트도 쉽고, 결과를 항상 예측할 수 있어요.',hl:'hlg'},
+{lines:['// 2. 불변성 (Immutability)','// 원본 데이터를 절대 변경하지 않는다!','','// 나쁜 예: 원본을 직접 바꿈 (mutable)','const user = { name: "철수", age: 25 }','user.age = 26  // 원본이 바뀜! 위험!','','// 좋은 예: 새 객체를 만듦 (immutable)','const updated = { ...user, age: 26 }','// user:    { name: "철수", age: 25 } ← 그대로!','// updated: { name: "철수", age: 26 } ← 새 객체!','','// 배열도!','const nums = [1, 2, 3]','// nums.push(4)         ← 원본 변경! 금지!','const added = [...nums, 4]  // ← 새 배열! 안전!','','// 왜? "누가 언제 바꿨지?"를 추적하려면','// 원본이 안 바뀌어야 비교할 수 있으니까!'],
+annos:['','','','','','원본 직접 변경 = 위험!','','','스프레드로 복사+수정!','원본 안전!','새 객체!','','','','push = 원본 변경! 금지!','스프레드 = 새 배열!','','불변성이 있어야 변경 추적 가능!','React가 새 객체를 요구하는 이유!'],
+desc:'원본을 바꾸면 "이걸 누가 언제 바꿨지?" 추적이 불가능해요. 불변성을 지키면 이전 값과 새 값을 비교할 수 있어서 변경 감지가 쉬워요. React의 setState가 꼭 새 객체를 요구하는 이유가 바로 불변성이에요.',hl:'hlg'},
+{lines:['// 3. 일급 함수 (First-class Function)','// 함수를 숫자, 문자열처럼 "값"으로 다룸!','','// 변수에 담기','const greet = (name) => `안녕 ${name}!`','','// 배열에 넣기','const operations = [add, subtract, multiply]','','// 다른 함수의 인자로 전달','[1, 2, 3].map(double)','','// 함수의 반환값으로 사용','function createMultiplier(factor) {','  return (num) => num * factor','}','const triple = createMultiplier(3)','triple(5)  // 15','','// 일급 함수가 가능해야 고차 함수, 커링, 합성이 됨!'],
+annos:['','','','숫자처럼 변수에!','','','배열에도 넣을 수 있음!','','','인자로 전달!','','','함수를 만들어서 반환!','','','','3배 함수 생성!','','','일급 함수 = 다른 기법의 전제 조건!'],
+desc:'"일급 함수"란 함수를 숫자 42나 문자열 "hello"처럼 자유롭게 다룰 수 있다는 뜻이에요. 이게 가능해야 고차 함수(인자로 받기), 커링(함수 반환), 합성(함수 조립) 등 함수형의 모든 기법이 동작해요.',hl:'hlg'},
+{lines:['// 4. 고차 함수 (Higher-order Function)','// 함수를 인자로 받거나 함수를 반환하는 함수!','','// 인자로 받기 — filter, map, reduce','const nums = [1, 2, 3, 4, 5]','nums.filter(n => n > 3)      // [4, 5]','nums.map(n => n * 2)         // [2, 4, 6, 8, 10]','nums.reduce((s, n) => s + n, 0)  // 15','','// 함수를 반환하기 — 함수 공장!','function withLog(fn) {','  return (...args) => {','    console.log("호출:", args)','    return fn(...args)','  }','}','const loggedAdd = withLog(add)','loggedAdd(2, 3)  // "호출: [2,3]" → 5'],
+annos:['','','','대표적인 고차 함수 3총사!','','함수를 인자로!','함수를 인자로!','함수를 인자로!','','','원래 함수를 감싸서','새로운 기능을 추가한','함수를 반환!','','','','로깅 기능이 추가된 add!','원래 기능 + 로깅!'],
+desc:'고차 함수는 "함수를 재료처럼 다루는 함수"예요. filter/map/reduce가 대표적으로 "어떤 동작을 할지"를 함수로 받아요. 함수를 반환하면 원래 함수에 기능을 추가하는 "래퍼"를 만들 수 있어요.',hl:'hlg'},
+{lines:['// 5. 커링 (Currying)','// 인자를 하나씩 받아서 특화된 함수를 만듦!','','// 일반 함수: 인자 한꺼번에','const add = (a, b) => a + b','add(2, 3)  // 5','','// 커링: 인자를 하나씩','const curriedAdd = (a) => (b) => a + b','const add2 = curriedAdd(2)  // a=2 고정!','add2(3)   // 5','add2(10)  // 12  ← 재사용!','','// 실전: 설정을 미리 고정!','const api = (base) => (path) => fetch(base + path)','const github = api("https://api.github.com")','github("/users")   // github API 호출!','github("/repos")   // base URL 재입력 불필요!'],
+annos:['','','','','인자 2개를 한 번에','','','인자를 하나씩!','a 먼저 → b 나중에','a=2가 기억된 함수!','3만 넣으면 됨!','재사용 가능!','','','base URL을 먼저 고정!','github 전용 API 함수!','path만 넘기면 끝!','설정 재입력 불필요!'],
+desc:'커링은 "미리 세팅해두는 것"이에요. 카페에서 "아이스 아메리카노"를 주문하면 얼음+원두+물이 정해져있고 사이즈만 고르면 되듯이, 인자를 미리 넣어두면 나머지만 넣으면 되는 특화 함수가 만들어져요.',hl:'hlg'},
+{lines:['// 6. 함수 합성 (Function Composition)','// 작은 순수 함수를 레고처럼 조립!','','// 작은 블록들','const trim = (s) => s.trim()','const lower = (s) => s.toLowerCase()','const dash = (s) => s.replace(/\\s+/g, "-")','','// 직접 합성: 안쪽부터 실행','const slugify = (s) => dash(lower(trim(s)))','slugify("  Hello World  ")  // "hello-world"','','// pipe로 합성: 왼쪽→오른쪽 읽기 순서!','const pipe = (...fns) => (x) => fns.reduce((v, f) => f(v), x)','const slugify = pipe(trim, lower, dash)','','slugify("  Hello World  ")  // "hello-world"','// 블록 추가/제거/순서 변경이 자유로움!'],
+annos:['','','','','공백 제거','소문자','스페이스→하이픈','','','trim→lower→dash 순서!','','','pipe로 가독성 향상!','왼→오 순서로 실행!','','','레고처럼 조립!','블록 교체가 자유로움!'],
+desc:'순수 함수(trim, lower, dash)를 레고 블록처럼 조립해서 큰 함수(slugify)를 만들어요. 각 블록은 따로 테스트 가능하고, 순서를 바꾸거나 블록을 추가/제거하기도 쉬워요. pipe를 쓰면 왼→오 읽기 순서로 합성할 수 있어요.',hl:'hlg'},
+{lines:['// 7. 선언형 프로그래밍 (Declarative)','// "어떻게(HOW)" 대신 "무엇을(WHAT)"만 적음!','','// 명령형: 과정을 일일이 적어야 함','const evens = []','for (let i = 0; i < nums.length; i++) {','  if (nums[i] % 2 === 0) evens.push(nums[i])','}','','// 선언형: 결과만 선언!','const evens = nums.filter(n => n % 2 === 0)','','// 더 많은 예시','// SQL: SELECT * FROM users WHERE age > 20','// HTML: <h1>제목</h1>','// React: <TodoList items={todos} />','','// "무엇을 원하는지"만 적고, 나머지는 맡기기!'],
+annos:['','','','과정을 지시!','빈 배열 만들고','반복하고','조건 확인하고 넣고...','','','결과만 선언!','이 한 줄이면 끝!','','','WHAT만!','WHAT만!','WHAT만!','','HOW는 엔진/프레임워크에게!'],
+desc:'식당에서 "파스타 주세요"라고만 하면 끝이죠? "물 끓이고, 면 넣고, 소스 만들고..." 과정을 설명할 필요 없어요. 함수형에서 filter/map/reduce를 쓰면 자연스럽게 선언형이 되어서 코드가 의도를 바로 드러내요.',hl:'hlg'},
+{lines:['// 8. 참조 투명성 (Referential Transparency)','// 함수 호출을 그 결과값으로 바꿔도 동작이 같음!','','// 순수 함수 → 참조 투명!','const add = (a, b) => a + b','','// 이 코드와','const x = add(2, 3) + add(2, 3)','// 이 코드가 완전히 같음!','const x = 5 + 5','// add(2, 3)을 5로 바꿔도 동일한 결과!','','// 비순수 함수 → 참조 투명하지 않음!','let count = 0','const next = () => ++count','// next()를 1로 바꾸면? 결과가 달라짐!','// next() + next() = 1 + 2 = 3','// 1 + 1 = 2  ← 다른 결과! 투명하지 않음!'],
+annos:['','','','','','','','add(2,3)을','','5로 바꿔도','결과가 같음! = 참조 투명!','','','','','next()를 결과값으로 바꾸면?','호출할 때마다 값이 달라짐!','바꾸면 결과가 달라짐 = 투명하지 않음!'],
+desc:'참조 투명성이란 "함수 호출을 그 결과값으로 치환해도 프로그램이 똑같이 동작하는 것"이에요. 순수 함수는 항상 참조 투명해요. 이게 보장되면 컴파일러가 최적화(메모이제이션)도 할 수 있고, 개발자가 코드를 머릿속에서 "치환"하며 추론할 수 있어요.',hl:'hlg'}
+];
+
+var curW=0,curK=0,demoR=false;
+function buildHTML(data,idx,prefix,colorCls){var d=data[idx];var html='';for(var i=0;i<d.lines.length;i++){html+='<div class="cl" id="'+prefix+'-'+i+'"><span class="ct">'+d.lines[i]+'</span><span class="ca '+colorCls+'" id="'+prefix+'-a-'+i+'"></span></div>'}return html}
+function renderCode(t,data,idx,c){document.getElementById(t).innerHTML=buildHTML(data,idx,t,c)}
+function renderDesc(t,data,idx){var el=document.getElementById(t);el.textContent=data[idx].desc;el.classList.remove('show');requestAnimationFrame(function(){requestAnimationFrame(function(){el.classList.add('show')})})}
+function wDem(i,b){curW=i;document.querySelectorAll('#w-nav .dbtn').forEach(function(x){x.className='dbtn'});b.className='dbtn ag';renderCode('w-code',wData,i,'cag');renderDesc('w-desc',wData,i)}
+function kDem(i,el){curK=i;document.querySelectorAll('.cc').forEach(function(x){x.classList.remove('active')});el.classList.add('active');renderCode('k-code',kData,i,'cag');renderDesc('k-desc',kData,i)}
+function sl(ms){return new Promise(function(r){setTimeout(r,ms)})}
+async function animCode(p,data,idx){if(demoR)return;demoR=true;var d=data[idx];for(var i=0;i<d.lines.length;i++){var line=document.getElementById(p+'-'+i);var anno=document.getElementById(p+'-a-'+i);if(!d.annos[i]||d.annos[i]===''){await sl(200);continue}line.classList.add(d.hl);anno.textContent='\u2190 '+d.annos[i];(function(a){requestAnimationFrame(function(){requestAnimationFrame(function(){a.classList.add('show')})})})(anno);await sl(1800)}demoR=false}
+function runW(){animCode('w-code',wData,curW)}
+function runK(){animCode('k-code',kData,curK)}
+renderCode('w-code',wData,0,'cag');renderDesc('w-desc',wData,0);
+renderCode('k-code',kData,0,'cag');renderDesc('k-desc',kData,0);
+function sw(id){document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active')});document.querySelectorAll('.pnl').forEach(function(p){p.classList.remove('active')});document.querySelector('[onclick="sw(\''+id+'\')"]').classList.add('active');document.getElementById('p-'+id).classList.add('active')}
+</script>
+</body>
+</html>

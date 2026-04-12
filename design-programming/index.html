@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Design Patterns &amp; Programming Paradigms</title>
+  <link rel="stylesheet" href="presentation/presentation.css">
+</head>
+<body>
+  <div class="shell">
+    <!-- ── Sidebar: Agenda ── -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-title">Agenda</div>
+      </div>
+      <nav class="sidebar-list" aria-label="Topic agenda">
+        <!-- JS가 manifest 기반으로 채움 -->
+      </nav>
+    </aside>
+
+    <!-- ── Stage: Main content ── -->
+    <main class="stage">
+      <!-- Header -->
+      <div class="stage-header">
+        <div class="stage-header-left">
+          <span class="stage-section-badge" data-section=""></span>
+          <span class="stage-topic-title"></span>
+        </div>
+        <span class="stage-progress"></span>
+      </div>
+
+      <!-- Body (iframe) -->
+      <div class="stage-body">
+        <iframe class="stage-iframe" title="Topic content" sandbox="allow-scripts allow-same-origin"></iframe>
+      </div>
+
+      <!-- Footer: Navigation -->
+      <div class="stage-footer">
+        <button id="btn-prev" class="nav-btn" aria-label="Previous topic">
+          <span class="arrow">&#8592;</span>
+          <span>Previous</span>
+        </button>
+        <div class="nav-dots" aria-hidden="true"></div>
+        <button id="btn-next" class="nav-btn" aria-label="Next topic">
+          <span>Next</span>
+          <span class="arrow">&#8594;</span>
+        </button>
+      </div>
+    </main>
+  </div>
+
+  <script src="presentation/presentation-manifest.js"></script>
+  <script src="presentation/presentation.js"></script>
+</body>
+</html>

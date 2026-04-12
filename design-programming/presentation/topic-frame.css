@@ -1,0 +1,63 @@
+/*
+ * topic-frame.css
+ * 모든 presentation/topics/*.html wrapper가 공유하는 기본 발표 토큰.
+ * 각 wrapper는 독립 문서이므로 이 파일 하나만 링크하면 된다.
+ */
+
+/* ── Design tokens (source HTML들이 참조하는 CSS 변수) ── */
+:root {
+  --color-background-primary: #FFFFFF;
+  --color-background-secondary: #F7F7F5;
+  --color-text-primary: #1A1A1A;
+  --color-text-secondary: #6B6B6B;
+  --color-text-tertiary: #9B9B9B;
+  --color-border-secondary: #E0E0E0;
+  --color-border-tertiary: #EBEBEB;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "SF Mono", "Cascadia Code", "Fira Code", Consolas, "Courier New", monospace;
+}
+
+/* ── 기본 리셋 및 레이아웃 ── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 24px;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--color-text-primary);
+  background: var(--color-background-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── 스크린 리더 전용 ── */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ── 이미지 기본 ── */
+img {
+  max-width: 100%;
+  height: auto;
+}

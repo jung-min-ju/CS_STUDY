@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Iterator Pattern</title>
+  <link rel="stylesheet" href="../topic-frame.css">
+</head>
+<body>
+<h2 class="sr-only">Iterator pattern interactive explainer with simulation, pros, cons, and use cases in Korean.</h2>
+<style>
+*{box-sizing:border-box}
+.tabs{display:flex;gap:0;border-bottom:0.5px solid var(--color-border-tertiary);margin-bottom:1.25rem;overflow-x:auto}
+.tab{padding:8px 14px;font-size:13px;font-weight:500;color:var(--color-text-secondary);cursor:pointer;border-bottom:2px solid transparent;transition:all 0.3s;background:none;border-top:none;border-left:none;border-right:none;white-space:nowrap}
+.tab:hover{color:var(--color-text-primary)}.tab.active{color:#3C3489;border-bottom-color:#534AB7}
+.pnl{display:none}.pnl.active{display:block}
+.sec{margin-bottom:1.25rem}
+.sec-title{font-size:14px;font-weight:500;color:var(--color-text-primary);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.sec-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.cw{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:14px 16px;font-family:var(--font-mono);font-size:12px;line-height:2.2;color:var(--color-text-secondary);overflow-x:auto;margin-bottom:10px}
+.cl{display:flex;align-items:baseline;min-height:24px;transition:background 0.5s;border-radius:3px;padding:0 4px;margin:0 -4px}
+.cl.hl{background:#EEEDFE}.cl.hlg{background:#E1F5EE}.cl.hlr{background:#FCEBEB}
+.ct{white-space:pre;flex-shrink:0}
+.ca{margin-left:12px;font-family:var(--font-sans);font-size:11px;opacity:0;transition:opacity 1s;white-space:nowrap;flex-shrink:0}
+.ca.show{opacity:1}
+.cap{color:#534AB7}.cag{color:#085041}.car{color:#791F1F}
+.kw{color:#534AB7}.vl{color:#0F6E56}.nl{color:#A32D2D}.cm{color:var(--color-text-tertiary)}.sv{color:#BA7517}
+
+.viz-area{position:relative;min-height:200px;margin:12px 0;padding:16px 0}
+.collection-row{display:flex;justify-content:center;gap:6px;margin-bottom:24px}
+.item-cell{width:52px;height:52px;border-radius:var(--border-radius-md);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:14px;font-weight:500;border:0.5px solid;transition:all 0.5s;position:relative}
+.item-cell.visited{opacity:0.45;transform:scale(0.92)}
+.item-cell.current{transform:scale(1.12);border-width:2px}
+.cursor-label{position:absolute;top:-18px;font-size:9px;font-family:var(--font-sans);color:var(--color-text-tertiary);opacity:0;transition:opacity 0.5s}
+.item-cell.current .cursor-label{opacity:1;color:#534AB7}
+.iter-info{display:flex;justify-content:center;gap:24px;font-size:13px;color:var(--color-text-secondary)}
+.iter-info span{font-family:var(--font-mono)}
+.iter-val{font-weight:500;color:var(--color-text-primary)}
+.result-row{display:flex;justify-content:center;gap:6px;margin-top:16px;min-height:52px;flex-wrap:wrap}
+.result-cell{width:44px;height:44px;border-radius:var(--border-radius-md);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:13px;font-weight:500;opacity:0;transform:translateY(8px);transition:all 0.5s}
+.result-cell.show{opacity:1;transform:translateY(0)}
+.result-label{text-align:center;font-size:11px;color:var(--color-text-tertiary);margin-top:4px}
+
+.pills{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.pill{font-size:12px;padding:4px 12px;border-radius:var(--border-radius-md);background:var(--color-background-secondary);color:var(--color-text-secondary);transition:all 0.5s}
+.pill.active{background:#EEEDFE;color:#3C3489}.pill.done{background:#E1F5EE;color:#085041}
+.sts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:12px 0}
+.stc{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 12px;text-align:center}
+.stn{font-size:20px;font-weight:500;color:var(--color-text-primary)}
+.stl{font-size:11px;color:var(--color-text-tertiary);margin-top:2px}
+.lga{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 14px;min-height:60px;max-height:200px;overflow-y:auto;font-family:var(--font-mono);font-size:11px;line-height:2;color:var(--color-text-secondary)}
+.ll{display:flex;gap:6px;align-items:baseline}
+.tg{display:inline-block;font-size:10px;padding:1px 7px;border-radius:var(--border-radius-md);font-weight:500}
+.tgn{background:#E1F5EE;color:#085041}.tgc{background:#EEEDFE;color:#3C3489}.tgk{background:#FAEEDA;color:#633806}.tgr{background:#FCEBEB;color:#791F1F}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+.btns button:disabled{opacity:0.4;cursor:not-allowed}
+.dnav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.dbtn{padding:6px 14px;font-size:12px;border-radius:var(--border-radius-md);background:var(--color-background-secondary);color:var(--color-text-secondary);border:0.5px solid var(--color-border-tertiary);cursor:pointer;transition:all 0.3s}
+.dbtn:hover{border-color:var(--color-border-secondary)}
+.dbtn.ag{background:#E1F5EE;color:#085041;border-color:#0F6E56}
+.dbtn.ar{background:#FCEBEB;color:#791F1F;border-color:#A32D2D}
+.dsc{font-size:13px;color:var(--color-text-secondary);line-height:1.7;padding:10px 14px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);min-height:40px;opacity:0;transition:opacity 0.8s}
+.dsc.show{opacity:1}
+
+.intro-block{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:14px 16px;margin-bottom:1.25rem;display:flex;flex-direction:column;gap:10px}
+.intro-item{display:flex;gap:10px;align-items:baseline}
+.intro-label{font-size:12px;font-weight:600;color:var(--color-text-primary);white-space:nowrap;min-width:100px;flex-shrink:0}
+.intro-text{font-size:13px;color:var(--color-text-secondary);line-height:1.6}
+
+.sim-row{display:flex;gap:1.25rem;align-items:flex-start}
+.sim-row>.sec{flex:1;min-width:0;margin-bottom:0}
+.sim-row>.sec:first-child{flex:0 0 38%;max-width:38%}
+.sim-row>.sec:last-child{flex:1}
+@media(max-width:860px){.sim-row{flex-direction:column}.sim-row>.sec:first-child{flex:1;max-width:100%}}
+
+
+
+</style>
+
+<div style="padding:0.5rem 0">
+<div class="intro-block">
+  <div class="intro-item"><span class="intro-label">무슨 패턴인가</span><span class="intro-text">컬렉션의 내부 구조(배열, 트리, 맵 등)를 몰라도 hasNext()/next()만으로 요소를 하나씩 꺼내 쓸 수 있게 해 줍니다.</span></div>
+  <div class="intro-item"><span class="intro-label">이 화면에서는</span><span class="intro-text">Collection 행의 숫자 셀이 컬렉션이고, "next() 한 칸" 버튼을 누르면 index 포인터가 이동하며 Result 행에 방문한 값이 쌓입니다. "while(hasNext) 전체" 버튼으로 순회를 한 번에 돌릴 수도 있습니다.</span></div>
+  <div class="intro-item"><span class="intro-label">언제 떠올리나</span><span class="intro-text">내부 구조가 다른 여러 컬렉션을 동일한 방식으로 순회해야 할 때. 예를 들어 DB 커서, 페이지네이션 결과, 파일 스트림을 같은 인터페이스로 읽어야 하는 상황.</span></div>
+</div>
+<div class="tabs">
+  <button class="tab active" onclick="sw('sim')">Simulation</button>
+  <button class="tab" onclick="sw('pro')">장점 (Pros)</button>
+  <button class="tab" onclick="sw('con')">단점 (Cons)</button>
+  <button class="tab" onclick="sw('use')">사용 예시</button>
+</div>
+
+<div class="pnl active" id="p-sim">
+<div class="sim-row">
+<div class="sec">
+  <div class="sec-title"><span class="sec-dot" style="background:#534AB7"></span>Iterator pattern</div>
+  <div class="cw">
+    <div class="cl" id="cl-0"><span class="ct"><span class="kw">interface</span> Iterator&lt;T&gt; {</span></div>
+    <div class="cl" id="cl-1"><span class="ct">  hasNext(): <span class="kw">boolean</span></span><span class="ca cap" id="an-1"></span></div>
+    <div class="cl" id="cl-2"><span class="ct">  next(): T</span><span class="ca cap" id="an-2"></span></div>
+    <div class="cl" id="cl-3"><span class="ct">}</span></div>
+    <div class="cl" id="cl-4"><span class="ct"></span></div>
+    <div class="cl" id="cl-5"><span class="ct"><span class="kw">class</span> ArrayIterator <span class="kw">implements</span> Iterator {</span></div>
+    <div class="cl" id="cl-6"><span class="ct">  <span class="kw">private</span> index = <span class="vl">0</span></span><span class="ca cap" id="an-6"></span></div>
+    <div class="cl" id="cl-7"><span class="ct">  <span class="kw">constructor</span>(<span class="kw">private</span> items: T[]) {}</span><span class="ca cap" id="an-7"></span></div>
+    <div class="cl" id="cl-8"><span class="ct"></span></div>
+    <div class="cl" id="cl-9"><span class="ct">  hasNext() {</span><span class="ca cap" id="an-9"></span></div>
+    <div class="cl" id="cl-10"><span class="ct">    <span class="kw">return</span> this.index &lt; this.items.length</span><span class="ca cap" id="an-10"></span></div>
+    <div class="cl" id="cl-11"><span class="ct">  }</span></div>
+    <div class="cl" id="cl-12"><span class="ct">  next() {</span><span class="ca cap" id="an-12"></span></div>
+    <div class="cl" id="cl-13"><span class="ct">    <span class="kw">return</span> this.items[this.index++]</span><span class="ca cap" id="an-13"></span></div>
+    <div class="cl" id="cl-14"><span class="ct">  }</span></div>
+    <div class="cl" id="cl-15"><span class="ct">}</span></div>
+  </div>
+</div>
+<div class="sec">
+  <div class="sec-title"><span class="sec-dot" style="background:#0F6E56"></span>Iterator diagram</div>
+  <div class="pills" id="steps"><div class="pill active" data-s="0">Ready</div><div class="pill" data-s="1">1. hasNext()</div><div class="pill" data-s="2">2. next()</div><div class="pill" data-s="3">3. process</div></div>
+  <div class="viz-area" id="viz">
+    <div style="text-align:center;font-size:11px;color:var(--color-text-tertiary);margin-bottom:6px">Collection</div>
+    <div class="collection-row" id="coll-row"></div>
+    <div class="iter-info">
+      <span>index: <span class="iter-val" id="idx-val">0</span></span>
+      <span>hasNext: <span class="iter-val" id="has-val">true</span></span>
+      <span>current: <span class="iter-val" id="cur-val">-</span></span>
+    </div>
+    <div style="text-align:center;font-size:11px;color:var(--color-text-tertiary);margin-top:16px">Result</div>
+    <div class="result-row" id="result-row"></div>
+  </div>
+<div class="sts">
+  <div class="stc"><div class="stn" id="s-steps">0</div><div class="stl">Steps</div></div>
+  <div class="stc"><div class="stn" id="s-visited">0</div><div class="stl">Visited</div></div>
+  <div class="stc"><div class="stn" id="s-remain">7</div><div class="stl">Remaining</div></div>
+</div>
+<div class="sec"><div class="sec-title"><span class="sec-dot" style="background:#888780"></span>Log</div><div class="lga" id="logbox"></div></div>
+<div class="btns">
+  <button id="btn-next" onclick="stepNext()">next() 한 칸</button>
+  <button id="btn-all" onclick="stepAll()">while(hasNext) 전체</button>
+  <button id="btn-reset" onclick="doReset()">Reset</button>
+</div>
+</div>
+</div>
+</div>
+
+<div class="pnl" id="p-pro">
+<div class="sec"><div class="sec-title"><span class="sec-dot" style="background:#1D9E75"></span>장점 코드 데모</div>
+<div class="dnav" id="pro-nav">
+  <button class="dbtn ag" onclick="proDem(0,this)">내부 구조 숨김</button>
+  <button class="dbtn" onclick="proDem(1,this)">통일된 순회 방식</button>
+  <button class="dbtn" onclick="proDem(2,this)">여러 순회 동시</button>
+  <button class="dbtn" onclick="proDem(3,this)">지연 평가</button>
+</div>
+<div class="cw" id="pro-code"></div>
+<div class="dsc" id="pro-desc"></div>
+</div>
+<div style="margin-top:8px"><button onclick="runPro()">실행해보기</button></div>
+</div>
+
+<div class="pnl" id="p-con">
+<div class="sec"><div class="sec-title"><span class="sec-dot" style="background:#A32D2D"></span>단점 코드 데모</div>
+<div class="dnav" id="con-nav">
+  <button class="dbtn ar" onclick="conDem(0,this)">단순 컬렉션엔 과잉</button>
+  <button class="dbtn" onclick="conDem(1,this)">수정 중 순회 위험</button>
+  <button class="dbtn" onclick="conDem(2,this)">인덱스 접근 불가</button>
+  <button class="dbtn" onclick="conDem(3,this)">성능 오버헤드</button>
+</div>
+<div class="cw" id="con-code"></div>
+<div class="dsc" id="con-desc"></div>
+</div>
+<div style="margin-top:8px"><button onclick="runCon()">실행해보기</button></div>
+</div>
+
+<div class="pnl" id="p-use">
+<div class="sec"><div class="sec-title"><span class="sec-dot" style="background:#534AB7"></span>실제 사용 예시</div>
+<div class="dnav" id="use-nav">
+  <button class="dbtn ag" onclick="useDem(0,this)">for...of</button>
+  <button class="dbtn" onclick="useDem(1,this)">DB 커서</button>
+  <button class="dbtn" onclick="useDem(2,this)">파일 읽기</button>
+  <button class="dbtn" onclick="useDem(3,this)">트리 순회</button>
+</div>
+<div class="cw" id="use-code"></div>
+<div class="dsc" id="use-desc"></div>
+</div>
+<div style="margin-top:8px"><button onclick="runUse()">실행해보기</button></div>
+</div>
+</div>
+
+<script>
+var D=2400;
+var items=[42,17,85,33,61,9,74];
+var itemColors=[
+{bg:'#E6F1FB',c:'#0C447C',b:'#85B7EB'},
+{bg:'#FAEEDA',c:'#633806',b:'#FAC775'},
+{bg:'#E1F5EE',c:'#085041',b:'#5DCAA5'},
+{bg:'#EEEDFE',c:'#3C3489',b:'#AFA9EC'},
+{bg:'#FAECE7',c:'#712B13',b:'#F0997B'},
+{bg:'#FBEAF0',c:'#72243E',b:'#ED93B1'},
+{bg:'#F1EFE8',c:'#444441',b:'#B4B2A9'}
+];
+
+function buildCollection(){
+var row=document.getElementById('coll-row');row.innerHTML='';
+for(var i=0;i<items.length;i++){
+var d=document.createElement('div');d.className='item-cell';d.id='ic-'+i;
+d.style.background=itemColors[i].bg;d.style.color=itemColors[i].c;d.style.borderColor=itemColors[i].b;
+d.innerHTML='<span class="cursor-label">cursor</span>'+items[i];
+row.appendChild(d);
+}
+var rrow=document.getElementById('result-row');rrow.innerHTML='';
+for(var j=0;j<items.length;j++){
+var r=document.createElement('div');r.className='result-cell';r.id='rc-'+j;
+r.style.background=itemColors[j].bg;r.style.color=itemColors[j].c;
+r.textContent=items[j];
+rrow.appendChild(r);
+}
+}
+
+var proData=[
+{lines:['// 배열이든 트리든 맵이든 — 같은 방식으로 순회!','const arrayIter = array.createIterator()','const treeIter  = tree.createIterator()','const mapIter   = map.createIterator()','','// 호출하는 쪽은 내부 구조를 전혀 몰라도 됨','while (arrayIter.hasNext()) arrayIter.next()','while (treeIter.hasNext())  treeIter.next()','while (mapIter.hasNext())   mapIter.next()','','// 전부 똑같은 코드! 내부가 뭐든 상관없음!'],
+annos:['','배열에서 이터레이터 꺼냄','트리에서도 이터레이터 꺼냄','맵에서도 이터레이터 꺼냄','','내부가 배열? 트리? 해시? 몰라도 됨!','hasNext/next로 순회','똑같은 방식!','또 똑같은 방식!','','구조가 달라도 사용법은 하나!'],
+desc:'자판기에서 음료를 꺼내는 방식은 항상 같죠? 안에 캔이든 병이든 상관없이 버튼만 누르면 돼요. 이터레이터도 마찬가지 — 내부 구조를 몰라도 hasNext/next만 쓰면 됩니다.',hl:'hlg'},
+{lines:['// 배열, Set, Map 전부 for...of로 통일!','','const array = [1, 2, 3]','const set = new Set([1, 2, 3])','const map = new Map([["a",1], ["b",2]])','','// 전부 같은 문법!','for (const item of array) { ... }','for (const item of set) { ... }','for (const [k,v] of map) { ... }','','// 이터레이터 프로토콜 덕분에 가능!'],
+annos:['','','배열','셋','맵','','','for...of 하나로!','셋도 같은 방식!','맵도 같은 방식!','','Symbol.iterator만 있으면 다 됨!'],
+desc:'USB 충전기처럼, 규격만 맞으면 어떤 기기든 충전할 수 있어요. 이터레이터 프로토콜이라는 규격 덕분에 for...of 하나로 배열, Set, Map 전부 순회할 수 있습니다.',hl:'hlg'},
+{lines:['// 같은 컬렉션에 이터레이터 여러 개!','const list = new MyList([10, 20, 30, 40])','','const iter1 = list.createIterator()','const iter2 = list.createIterator()','','iter1.next()  // 10','iter1.next()  // 20','iter2.next()  // 10 ← iter2는 아직 처음!','','// 각 이터레이터가 독립적인 커서를 가짐','// 서로 간섭하지 않음!'],
+annos:['','','','이터레이터 1번','이터레이터 2번','','1번은 두 칸 전진','','2번은 아직 첫 칸! 독립적!','','각자 자기 위치를 기억해요','동시에 여러 순회가 가능!'],
+desc:'같은 책에 북마크를 여러 개 꽂을 수 있는 것처럼, 이터레이터를 여러 개 만들면 각각 독립적으로 순회할 수 있어요. 서로 간섭하지 않아요.',hl:'hlg'},
+{lines:['// 100만 개를 한 번에 안 읽어도 됨!','','function* fibonacci() {','  let a = 0, b = 1','  while (true) {','    yield a','    ;[a, b] = [b, a + b]','  }','}','','// 필요할 때 하나씩만 꺼냄','const fib = fibonacci()','fib.next()  // { value: 0 }','fib.next()  // { value: 1 }','fib.next()  // { value: 1 }'],
+annos:['','','무한 수열을 정의!','','영원히 끝나지 않는 루프지만...','yield로 하나 뱉고 멈춤!','다음 호출 때 이어서 계산','','','','전부 계산하지 않고 하나씩만!','','0을 줌','1을 줌','또 1을 줌... 필요할 때만!'],
+desc:'뷔페에서 접시에 음식을 다 담지 않고, 먹을 만큼만 가져오는 거예요. Generator와 이터레이터를 쓰면 무한한 데이터도 메모리 걱정 없이 하나씩 처리할 수 있어요.',hl:'hlg'}
+];
+
+var conData=[
+{lines:['// 단순 배열 순회인데 이터레이터를 쓰면','','const iter = array.createIterator()','while (iter.hasNext()) {','  const item = iter.next()','  process(item)','}','','// 그냥 for문이면 끝나는 일인데...','for (let i = 0; i < array.length; i++) {','  process(array[i])','}'],
+annos:['','','이터레이터 생성하고','hasNext 확인하고','next로 꺼내고','처리하고...','','','','이게 훨씬 간단하잖아!','직접 접근이 더 직관적!','배열엔 과한 패턴!'],
+desc:'배열처럼 단순한 구조에 이터레이터를 만드는 건 숟가락 하나 쓰려고 식기 세트를 사는 거예요. for문이면 충분한 경우에는 그냥 for문을 쓰세요.',hl:'hlr'},
+{lines:['// 순회 중에 컬렉션을 수정하면?','','const iter = list.createIterator()','while (iter.hasNext()) {','  const item = iter.next()','  if (item === "삭제할것") {','    list.remove(item)  // 위험!','  }','}','','// 커서가 가리키던 위치가 엉망!','// ConcurrentModificationException 발생!'],
+annos:['','','이터레이터 생성','순회 시작','하나 꺼냄','','순회 중 삭제?!','','','','커서 위치가 꼬여버림!','자바에선 에러 발생!'],
+desc:'에스컬레이터 타는 중에 계단을 빼는 것과 같아요. 순회 중에 컬렉션을 수정하면 커서가 엉뚱한 곳을 가리키게 돼요. 수정이 필요하면 순회 후에 하세요.',hl:'hlr'},
+{lines:['// 이터레이터는 "앞으로만" 감','','const iter = list.createIterator()','iter.next()  // 1번째','iter.next()  // 2번째','iter.next()  // 3번째','','// "2번째로 돌아가고 싶은데?"','// → 못 돌아감! 앞으로만 감!','','// "5번째만 바로 보고 싶은데?"','// → 하나씩 넘겨야 함! 직접 점프 불가!'],
+annos:['','','','앞으로!','앞으로!','앞으로!','','','뒤로 가기 없음!','','','array[4]처럼 바로 접근 불가!'],
+desc:'책을 앞에서부터 한 장씩 넘기는 것처럼, 기본 이터레이터는 앞으로만 가요. 5번째 항목을 보려면 1~4번째를 다 넘겨야 해요. 랜덤 접근이 필요하면 인덱스가 더 나아요.',hl:'hlr'},
+{lines:['// 단순 배열 접근 vs 이터레이터','','// 직접 접근: 메모리 딱 한 번','array[3]  // O(1)','','// 이터레이터: 객체 생성 + 메서드 호출','const iter = array.createIterator()','iter.next()  // 1번째 + 메서드 호출 비용','iter.next()  // 2번째','iter.next()  // 3번째','iter.next()  // 4번째... 이제야 도착!','// 객체 생성 + 4번 호출 = 오버헤드!'],
+annos:['','','','배열은 바로 접근! 빠름!','','','이터레이터 객체 생성 비용','메서드 호출 1번','메서드 호출 2번','메서드 호출 3번','메서드 호출 4번... 느림','단순 접근엔 불필요한 비용!'],
+desc:'엘리베이터(인덱스)가 있는데 굳이 계단(이터레이터)으로 올라가는 거예요. 이터레이터는 순차 접근에 최적화되어 있지, 랜덤 접근에는 비효율적이에요.',hl:'hlr'}
+];
+
+var useData=[
+{lines:['// JS의 for...of = 이터레이터 패턴!','','const arr = ["a", "b", "c"]','','// 이게 실제로 하는 일:','const iter = arr[Symbol.iterator]()','','let result = iter.next()','while (!result.done) {','  console.log(result.value)  // "a","b","c"','  result = iter.next()','}','// for...of가 이걸 자동으로 해주는 거예요!'],
+annos:['우리가 매일 쓰는 그것!','','','','','배열의 이터레이터를 꺼내고','','첫 번째 값','done이 false인 동안 반복','값을 꺼내서 사용','다음으로 이동','','for...of = 이 코드의 축약형!'],
+desc:'for...of를 쓸 때마다 사실 이터레이터 패턴을 쓰고 있었어요! JS 엔진이 Symbol.iterator를 호출해서 이터레이터를 만들고, next()가 돌려주는 value/done 값을 기준으로 반복합니다.',hl:'hlg'},
+{lines:['// DB 쿼리 결과를 한 줄씩 가져오기','','const cursor = db.query("SELECT * FROM users")','','// 100만 건을 한 번에 메모리에 안 올림!','while (cursor.hasNext()) {','  const row = cursor.next()','  processUser(row)','}','','// 커서가 DB에서 한 줄씩 가져옴','// → 메모리 사용량 최소화!'],
+annos:['','','DB에 쿼리를 보내고 커서를 받음','','','다음 행이 있는지 확인','한 줄만 가져옴','처리!','','','100만 건이어도 메모리엔 1줄만!','이터레이터 덕분에 가능!'],
+desc:'도서관에서 책 100권을 한 번에 빌리지 않고, 읽을 책만 한 권씩 빌리는 거예요. DB 커서도 이터레이터 패턴으로 한 행씩 가져와서 메모리를 아낍니다.',hl:'hlg'},
+{lines:['// 대용량 파일을 한 줄씩 읽기','','const reader = new LineIterator("huge.log")','','// 10GB 파일도 메모리 걱정 없음!','while (reader.hasNext()) {','  const line = reader.next()','  if (line.includes("ERROR")) {','    reportError(line)','  }','}','// 한 줄씩 읽고 바로 처리 → 버림!'],
+annos:['','','파일 이터레이터 생성','','','다음 줄이 있으면','한 줄만 메모리에 올림','에러 라인인지 확인','에러면 리포트!','','','읽고 → 처리 → 버림! 효율적!'],
+desc:'10GB 로그 파일을 통째로 열면 컴퓨터가 멈추지만, 한 줄씩 읽으면 메모리가 얼마든 큰 파일도 처리할 수 있어요. 이터레이터 패턴 덕분이에요.',hl:'hlg'},
+{lines:['// 트리 구조를 이터레이터로 순회','','class TreeIterator implements Iterator {','  private stack = [root]','  hasNext() { return this.stack.length > 0 }','  next() {','    const node = this.stack.pop()','    if (node.right) this.stack.push(node.right)','    if (node.left) this.stack.push(node.left)','    return node.value','  }','}','// 복잡한 트리도 while(hasNext) next()로 끝!'],
+annos:['','','트리 전용 이터레이터','스택으로 위치 관리','스택이 비면 끝!','','현재 노드를 꺼내고','오른쪽 자식 넣고','왼쪽 자식 넣고','값 반환!','','','밖에서 보면 그냥 hasNext/next!'],
+desc:'트리를 직접 순회하려면 재귀나 스택을 써야 하는데, 이터레이터로 감싸면 밖에서는 while(hasNext) next()만 쓰면 돼요. 복잡한 순회 로직을 이터레이터 안에 숨기는 거예요.',hl:'hlg'}
+];
+
+var curPro=0,curCon=0,curUse=0,demoR=false;
+function buildHTML(data,idx,prefix,colorCls){var d=data[idx];var html='';for(var i=0;i<d.lines.length;i++){html+='<div class="cl" id="'+prefix+'-'+i+'"><span class="ct">'+d.lines[i]+'</span><span class="ca '+colorCls+'" id="'+prefix+'-a-'+i+'"></span></div>'}return html}
+function renderCode(t,data,idx,c){document.getElementById(t).innerHTML=buildHTML(data,idx,t,c)}
+function renderDesc(t,data,idx){var el=document.getElementById(t);el.textContent=data[idx].desc;el.classList.remove('show');requestAnimationFrame(function(){requestAnimationFrame(function(){el.classList.add('show')})})}
+function proDem(i,b){curPro=i;document.querySelectorAll('#pro-nav .dbtn').forEach(function(x){x.className='dbtn'});b.className='dbtn ag';renderCode('pro-code',proData,i,'cag');renderDesc('pro-desc',proData,i)}
+function conDem(i,b){curCon=i;document.querySelectorAll('#con-nav .dbtn').forEach(function(x){x.className='dbtn'});b.className='dbtn ar';renderCode('con-code',conData,i,'car');renderDesc('con-desc',conData,i)}
+function useDem(i,b){curUse=i;document.querySelectorAll('#use-nav .dbtn').forEach(function(x){x.className='dbtn'});b.className='dbtn ag';renderCode('use-code',useData,i,'cag');renderDesc('use-desc',useData,i)}
+function sl(ms){return new Promise(function(r){setTimeout(r,ms)})}
+async function animCode(p,data,idx){if(demoR)return;demoR=true;var d=data[idx];for(var i=0;i<d.lines.length;i++){var line=document.getElementById(p+'-'+i);var anno=document.getElementById(p+'-a-'+i);if(!d.annos[i]||d.annos[i]===''){await sl(200);continue}line.classList.add(d.hl);anno.textContent='\u2190 '+d.annos[i];(function(a){requestAnimationFrame(function(){requestAnimationFrame(function(){a.classList.add('show')})})})(anno);await sl(1800)}demoR=false}
+function runPro(){animCode('pro-code',proData,curPro)}
+function runCon(){animCode('con-code',conData,curCon)}
+function runUse(){animCode('use-code',useData,curUse)}
+renderCode('pro-code',proData,0,'cag');renderDesc('pro-desc',proData,0);
+renderCode('con-code',conData,0,'car');renderDesc('con-desc',conData,0);
+renderCode('use-code',useData,0,'cag');renderDesc('use-desc',useData,0);
+
+function sw(id){document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active')});document.querySelectorAll('.pnl').forEach(function(p){p.classList.remove('active')});document.querySelector('[onclick="sw(\''+id+'\')"]').classList.add('active');document.getElementById('p-'+id).classList.add('active')}
+
+var cursor=0,totalSteps=0,visited=0,running=false;
+var logbox=document.getElementById('logbox');
+var anIds=[1,2,6,7,9,10,12,13];
+
+function setStep(n){document.querySelectorAll('.pill').forEach(function(p){var s=parseInt(p.dataset.s);if(!isNaN(s))p.className='pill'+(s===n?' active':(s<n?' done':''))})}
+function clearHL(){for(var i=0;i<=15;i++){var e=document.getElementById('cl-'+i);if(e)e.classList.remove('hl')}anIds.forEach(function(j){var a=document.getElementById('an-'+j);if(a){a.classList.remove('show');a.textContent=''}})}
+function hlLine(n,txt){clearHL();var e=document.getElementById('cl-'+n);if(e)e.classList.add('hl');var a=document.getElementById('an-'+n);if(a&&txt){a.textContent='\u2190 '+txt;requestAnimationFrame(function(){requestAnimationFrame(function(){a.classList.add('show')})})}}
+function addLog(msg,type){var d=document.createElement('div');d.className='ll';var tg=document.createElement('span');tg.className='tg '+(type==='check'?'tgk':type==='next'?'tgn':type==='done'?'tgc':'tgr');tg.textContent=type==='check'?'CHECK':type==='next'?'NEXT':type==='done'?'DONE':'END';var tx=document.createElement('span');tx.textContent=msg;d.appendChild(tg);d.appendChild(tx);logbox.appendChild(d);logbox.scrollTop=logbox.scrollHeight}
+function updateStats(){document.getElementById('s-steps').textContent=totalSteps;document.getElementById('s-visited').textContent=visited;document.getElementById('s-remain').textContent=items.length-visited}
+function updateViz(){
+document.getElementById('idx-val').textContent=cursor;
+document.getElementById('has-val').textContent=cursor<items.length?'true':'false';
+document.getElementById('cur-val').textContent=cursor<items.length?items[cursor]:'-';
+for(var i=0;i<items.length;i++){
+var ic=document.getElementById('ic-'+i);
+ic.classList.remove('current','visited');
+if(i<cursor)ic.classList.add('visited');
+else if(i===cursor&&cursor<items.length)ic.classList.add('current');
+}}
+function setBtns(d){['btn-next','btn-all','btn-reset'].forEach(function(id){var e=document.getElementById(id);if(e)e.disabled=d})}
+
+async function stepNext(){
+if(running)return;
+if(cursor>=items.length){addLog('순회 완료! 더 이상 요소 없음','end');return}
+running=true;setBtns(true);totalSteps++;
+
+setStep(1);
+hlLine(9,'hasNext() 호출! index('+cursor+') < length('+items.length+') ?');
+addLog('hasNext() → '+(cursor<items.length?'true':'false')+' (index='+cursor+')','check');
+updateViz();
+await sl(D);
+
+setStep(2);
+hlLine(13,'next() → items['+cursor+'] = '+items[cursor]);
+addLog('next() → '+items[cursor]+' (index '+cursor+' → '+(cursor+1)+')','next');
+var rc=document.getElementById('rc-'+cursor);
+rc.classList.add('show');
+cursor++;visited++;
+updateViz();updateStats();
+await sl(D);
+
+setStep(3);
+if(cursor>=items.length){
+hlLine(10,'index('+cursor+') >= length('+items.length+') → 순회 끝!');
+addLog('hasNext() → false! 순회 완료!','done');
+}
+await sl(D/3);
+running=false;setBtns(false)}
+
+async function stepAll(){
+if(running)return;
+if(cursor>=items.length){addLog('이미 순회 완료!','end');return}
+running=true;setBtns(true);
+while(cursor<items.length){
+totalSteps++;
+setStep(1);
+hlLine(9,'hasNext() → true (index='+cursor+')');
+addLog('hasNext() → true (index='+cursor+')','check');
+updateViz();await sl(1200);
+
+setStep(2);
+hlLine(13,'next() → '+items[cursor]+' (index '+cursor+')');
+addLog('next() → '+items[cursor],'next');
+document.getElementById('rc-'+cursor).classList.add('show');
+cursor++;visited++;
+updateViz();updateStats();await sl(1000);
+}
+setStep(3);
+hlLine(10,'hasNext() → false! 순회 완료!');
+addLog('hasNext() → false! 전체 순회 완료!','done');
+await sl(D/3);
+running=false;setBtns(false)}
+
+function doReset(){cursor=0;totalSteps=0;visited=0;running=false;logbox.innerHTML='';setStep(0);clearHL();updateStats();updateViz();
+for(var i=0;i<items.length;i++){document.getElementById('rc-'+i).classList.remove('show')}
+setBtns(false)}
+
+buildCollection();updateViz();updateStats();
+</script>
+</body>
+</html>

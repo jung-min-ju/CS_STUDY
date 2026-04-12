@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Factory Pattern</title>
+  <link rel="stylesheet" href="../topic-frame.css">
+</head>
+<body>
+<h2 class="sr-only">Factory pattern interactive explainer with simulation, pros, cons, and use cases tabs in Korean.</h2>
+<style>
+*{box-sizing:border-box}
+.tabs{display:flex;gap:0;border-bottom:0.5px solid var(--color-border-tertiary);margin-bottom:1.25rem;overflow-x:auto}
+.tab{padding:8px 14px;font-size:13px;font-weight:500;color:var(--color-text-secondary);cursor:pointer;border-bottom:2px solid transparent;transition:all 0.3s;background:none;border-top:none;border-left:none;border-right:none;white-space:nowrap}
+.tab:hover{color:var(--color-text-primary)}
+.tab.active{color:#3C3489;border-bottom-color:#534AB7}
+.pnl{display:none}.pnl.active{display:block}
+.sec{margin-bottom:1.25rem}
+.sec-title{font-size:14px;font-weight:500;color:var(--color-text-primary);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.sec-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.cw{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:14px 16px;font-family:var(--font-mono);font-size:12px;line-height:2.2;color:var(--color-text-secondary);overflow-x:auto;margin-bottom:10px}
+.cl{display:flex;align-items:baseline;min-height:24px;transition:background 0.5s;border-radius:3px;padding:0 4px;margin:0 -4px}
+.cl.hl{background:#EEEDFE}.cl.hlg{background:#E1F5EE}.cl.hlr{background:#FCEBEB}
+.ct{white-space:pre;flex-shrink:0}
+.ca{margin-left:12px;font-family:var(--font-sans);font-size:11px;opacity:0;transition:opacity 1s;white-space:nowrap;flex-shrink:0}
+.ca.show{opacity:1}
+.cap{color:#534AB7}.cag{color:#085041}.car{color:#791F1F}
+.kw{color:#534AB7}.vl{color:#0F6E56}.nl{color:#A32D2D}.cm{color:var(--color-text-tertiary)}.sv{color:#BA7517}
+
+.viz-area{position:relative;height:300px;margin:12px 0}
+.fbox{position:absolute;left:50%;top:8px;transform:translateX(-50%);width:180px;text-align:center;z-index:2}
+.frect{background:var(--color-background-primary);border:2px solid #534AB7;border-radius:var(--border-radius-lg);padding:10px 12px;transition:all 0.6s}
+.frect.active{box-shadow:0 0 0 4px #EEEDFE}
+.flbl{font-size:14px;font-weight:500;color:#3C3489}
+.ftype{font-family:var(--font-mono);font-size:11px;color:#534AB7;margin-top:2px;min-height:14px}
+
+.product{position:absolute;bottom:8px;width:110px;text-align:center;opacity:0;transition:opacity 0.8s,transform 0.5s;transform:translateY(10px)}
+.product.show{opacity:1;transform:translateY(0)}
+.pbox{width:56px;height:56px;border-radius:var(--border-radius-lg);display:flex;align-items:center;justify-content:center;margin:0 auto 4px;font-size:18px;font-weight:500;transition:all 0.5s}
+.pname{font-size:12px;color:var(--color-text-secondary)}
+.pref{font-family:var(--font-mono);font-size:10px;color:var(--color-text-tertiary);margin-top:1px}
+
+.order-btns{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.obtn{padding:8px 16px;font-size:13px;border-radius:var(--border-radius-md);cursor:pointer;transition:all 0.3s;border:0.5px solid var(--color-border-tertiary);background:var(--color-background-secondary);color:var(--color-text-secondary)}
+.obtn:hover{border-color:var(--color-border-secondary)}
+.obtn:disabled{opacity:0.4;cursor:not-allowed}
+.obtn.car-btn{background:#E6F1FB;color:#0C447C;border-color:#85B7EB}
+.obtn.truck-btn{background:#FAEEDA;color:#633806;border-color:#FAC775}
+.obtn.bike-btn{background:#E1F5EE;color:#085041;border-color:#5DCAA5}
+
+svg.conn{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1}
+svg.conn line{stroke-width:1.5;stroke-dasharray:6 4;opacity:0;transition:opacity 0.8s}
+svg.conn line.show{opacity:0.6}
+
+.pills{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.pill{font-size:12px;padding:4px 12px;border-radius:var(--border-radius-md);background:var(--color-background-secondary);color:var(--color-text-secondary);transition:all 0.5s}
+.pill.active{background:#EEEDFE;color:#3C3489}.pill.done{background:#E1F5EE;color:#085041}
+.sts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:12px 0}
+.stc{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 12px;text-align:center}
+.stn{font-size:20px;font-weight:500;color:var(--color-text-primary)}
+.stl{font-size:11px;color:var(--color-text-tertiary);margin-top:2px}
+.lga{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 14px;min-height:60px;max-height:200px;overflow-y:auto;font-family:var(--font-mono);font-size:11px;line-height:2;color:var(--color-text-secondary)}
+.ll{display:flex;gap:6px;align-items:baseline}
+.tg{display:inline-block;font-size:10px;padding:1px 7px;border-radius:var(--border-radius-md);font-weight:500}
+.tgn{background:#E1F5EE;color:#085041}.tgc{background:#EEEDFE;color:#3C3489}.tgk{background:#FAEEDA;color:#633806}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+.btns button:disabled{opacity:0.4;cursor:not-allowed}
+.dnav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.dbtn{padding:6px 14px;font-size:12px;border-radius:var(--border-radius-md);background:var(--color-background-secondary);color:var(--color-text-secondary);border:0.5px solid var(--color-border-tertiary);cursor:pointer;transition:all 0.3s}
+.dbtn:hover{border-color:var(--color-border-secondary)}
+.dbtn.ag{background:#E1F5EE;color:#085041;border-color:#0F6E56}
+.dbtn.ar{background:#FCEBEB;color:#791F1F;border-color:#A32D2D}
+.dsc{font-size:13px;color:var(--color-text-secondary);line-height:1.7;padding:10px 14px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);min-height:40px;opacity:0;transition:opacity 0.8s}
+.dsc.show{opacity:1}
+
+.intro-block{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:14px 16px;margin-bottom:1.25rem;display:flex;flex-direction:column;gap:10px}
+.intro-item{display:flex;gap:10px;align-items:baseline}
+.intro-label{font-size:12px;font-weight:600;color:var(--color-text-primary);white-space:nowrap;min-width:100px;flex-shrink:0}
+.intro-text{font-size:13px;color:var(--color-text-secondary);line-height:1.6}
+
+.sim-row{display:flex;gap:1.25rem;align-items:flex-start}
+.sim-row>.sec{flex:1;min-width:0;margin-bottom:0}
+.sim-row>.sec:first-child{flex:0 0 38%;max-width:38%}
+.sim-row>.sec:last-child{flex:1}
+@media(max-width:860px){.sim-row{flex-direction:column}.sim-row>.sec:first-child{flex:1;max-width:100%}}
+
+
+
+</style>
+
+<div style="padding:0.5rem 0">
+<div class="intro-block">
+  <div class="intro-item"><span class="intro-label">무슨 패턴인가</span><span class="intro-text">객체를 직접 new로 만들지 않고, "어떤 타입인지"만 알려주면 팩토리가 대신 만들어 줍니다. 생성 방식이 바뀌어도 호출하는 쪽은 수정할 필요가 없어요.</span></div>
+  <div class="intro-item"><span class="intro-label">이 화면에서는</span><span class="intro-text">아래 VehicleFactory 박스에서 create("car") / create("truck") / create("bike") 버튼을 누르면, Product diagram의 Car·Truck·Bike 노드가 연결선과 함께 활성화되고 Log에 생성 과정이 기록됩니다.</span></div>
+  <div class="intro-item"><span class="intro-label">언제 떠올리나</span><span class="intro-text">생성할 객체의 종류가 여러 개이고, 조건에 따라 다른 클래스를 골라야 할 때. 예를 들어 결제 수단(카드/계좌/간편결제)별로 다른 처리 객체를 만들어야 하는 상황.</span></div>
+</div>
+<div class="tabs">
+  <button class="tab active" onclick="sw('sim')">Simulation</button>
+  <button class="tab" onclick="sw('pro')">장점 (Pros)</button>
+  <button class="tab" onclick="sw('con')">단점 (Cons)</button>
+  <button class="tab" onclick="sw('use')">사용 예시</button>
+</div>
+
+<div class="pnl active" id="p-sim">
+<div class="sim-row">
+<div class="sec">
+  <div class="sec-title"><span class="sec-dot" style="background:#534AB7"></span>Factory class</div>
+  <div class="cw">
+    <div class="cl" id="cl-0"><span class="ct"><span class="kw">class</span> VehicleFactory {</span></div>
+    <div class="cl" id="cl-1"><span class="ct">  <span class="kw">static</span> create(type) {</span><span class="ca cap" id="an-1"></span></div>
+    <div class="cl" id="cl-2"><span class="ct">    <span class="kw">switch</span>(type) {</span><span class="ca cap" id="an-2"></span></div>
+    <div class="cl" id="cl-3"><span class="ct">      <span class="kw">case</span> <span class="sv">"car"</span>:   <span class="kw">return new</span> Car()</span><span class="ca cap" id="an-3"></span></div>
+    <div class="cl" id="cl-4"><span class="ct">      <span class="kw">case</span> <span class="sv">"truck"</span>: <span class="kw">return new</span> Truck()</span><span class="ca cap" id="an-4"></span></div>
+    <div class="cl" id="cl-5"><span class="ct">      <span class="kw">case</span> <span class="sv">"bike"</span>:  <span class="kw">return new</span> Bike()</span><span class="ca cap" id="an-5"></span></div>
+    <div class="cl" id="cl-6"><span class="ct">    }</span></div>
+    <div class="cl" id="cl-7"><span class="ct">  }</span></div>
+    <div class="cl" id="cl-8"><span class="ct">}</span></div>
+  </div>
+</div>
+<div class="sec">
+  <div class="sec-title"><span class="sec-dot" style="background:#0F6E56"></span>Product diagram</div>
+  <div class="pills" id="steps"><div class="pill active" data-s="0">Ready</div><div class="pill" data-s="1">1. create(type)</div><div class="pill" data-s="2">2. switch</div><div class="pill" data-s="3">3. new Product</div><div class="pill" data-s="4">4. return</div></div>
+  <div style="position:relative">
+    <div class="viz-area" id="viz">
+      <div class="fbox"><div class="frect" id="f-rect"><div class="flbl">VehicleFactory</div><div class="ftype" id="f-type">create( ? )</div></div></div>
+      <div class="product" id="pd-0" style="left:calc(15% - 55px)"><div class="pbox" style="background:#E6F1FB;color:#0C447C;border:0.5px solid #85B7EB">Car</div><div class="pname">Car</div><div class="pref" id="pr-0"></div></div>
+      <div class="product" id="pd-1" style="left:calc(50% - 55px)"><div class="pbox" style="background:#FAEEDA;color:#633806;border:0.5px solid #FAC775">Trk</div><div class="pname">Truck</div><div class="pref" id="pr-1"></div></div>
+      <div class="product" id="pd-2" style="left:calc(85% - 55px)"><div class="pbox" style="background:#E1F5EE;color:#085041;border:0.5px solid #5DCAA5">Bike</div><div class="pname">Bike</div><div class="pref" id="pr-2"></div></div>
+      <svg class="conn" id="svg-conn">
+        <line id="ln-0" stroke="#378ADD"/><line id="ln-1" stroke="#BA7517"/><line id="ln-2" stroke="#1D9E75"/>
+      </svg>
+    </div>
+  </div>
+<div class="sts">
+  <div class="stc"><div class="stn" id="s-calls">0</div><div class="stl">create() calls</div></div>
+  <div class="stc"><div class="stn" id="s-products">0</div><div class="stl">Products</div></div>
+  <div class="stc"><div class="stn" id="s-types">-</div><div class="stl">Types</div></div>
+</div>
+<div class="sec"><div class="sec-title"><span class="sec-dot" style="background:#888780"></span>Log</div><div class="lga" id="logbox"></div></div>
+<div class="btns">
+  <button class="obtn car-btn" id="btn-car" onclick="req('car')">create("car")</button>
+  <button class="obtn truck-btn" id="btn-truck" onclick="req('truck')">create("truck")</button>
+  <button class="obtn bike-btn" id="btn-bike" onclick="req('bike')">create("bike")</button>
+  <button id="btn-reset" onclick="doReset()">Reset</button>
+</div>
+</div>
+</div>
+</div>
+
+<div class="pnl" id="p-pro">
+<div class="sec"><div class="sec-title"><span class="sec-dot" style="background:#1D9E75"></span>장점 코드 데모</div>
+<div class="dnav" id="pro-nav">
+  <button class="dbtn ag" onclick="proDem(0,this)">생성 로직 캡슐화</button>
+  <button class="dbtn" onclick="proDem(1,this)">느슨한 결합</button>
+  <button class="dbtn" onclick="proDem(2,this)">확장이 쉬움</button>
+  <button class="dbtn" onclick="proDem(3,this)">코드 중복 제거</button>
+</div>
+<div class="cw" id="pro-code"></div>
+<div class="dsc" id="pro-desc"></div>
+</div>
+<div style="margin-top:8px"><button onclick="runPro()">실행해보기</button></div>
+</div>
+
+<div class="pnl" id="p-con">
+<div class="sec"><div class="sec-title"><span class="sec-dot" style="background:#A32D2D"></span>단점 코드 데모</div>
+<div class="dnav" id="con-nav">
+  <button class="dbtn ar" onclick="conDem(0,this)">클래스 수 증가</button>
+  <button class="dbtn" onclick="conDem(1,this)">복잡도 증가</button>
+  <button class="dbtn" onclick="conDem(2,this)">switch 의존</button>
+  <button class="dbtn" onclick="conDem(3,this)">과도한 추상화</button>
+</div>
+<div class="cw" id="con-code"></div>
+<div class="dsc" id="con-desc"></div>
+</div>
+<div style="margin-top:8px"><button onclick="runCon()">실행해보기</button></div>
+</div>
+
+<div class="pnl" id="p-use">
+<div class="sec"><div class="sec-title"><span class="sec-dot" style="background:#534AB7"></span>실제 사용 예시</div>
+<div class="dnav" id="use-nav">
+  <button class="dbtn ag" onclick="useDem(0,this)">UI 컴포넌트</button>
+  <button class="dbtn" onclick="useDem(1,this)">결제 시스템</button>
+  <button class="dbtn" onclick="useDem(2,this)">문서 변환기</button>
+  <button class="dbtn" onclick="useDem(3,this)">Abstract Factory</button>
+</div>
+<div class="cw" id="use-code"></div>
+<div class="dsc" id="use-desc"></div>
+</div>
+<div style="margin-top:8px"><button onclick="runUse()">실행해보기</button></div>
+</div>
+</div>
+
+<script>
+var D=2400;
+var proData=[
+{lines:['// 호출하는 쪽은 만드는 방법을 몰라도 됨','const car = VehicleFactory.create("car")','','// Car가 내부적으로 뭘 하는지 신경 안 씀','// 엔진 초기화? 바퀴 장착? 팩토리가 알아서!','car.drive()','','// 나중에 Car 생성 방식이 바뀌어도','// 이 코드는 고칠 필요 없음!'],
+annos:['"만들어줘"라고 주문만 하면 됨!','타입만 말하면 완제품이 나옴','','내부 조립 과정은 팩토리 담당','엔진, 바퀴... 복잡한 건 숨겨짐','그냥 쓰기만 하면 됨','','팩토리 안만 고치면 됨','호출하는 쪽은 변경 제로!'],
+desc:'음식점에서 "파스타 주세요"라고 하면 끝이죠? 주방에서 어떻게 만드는지 알 필요 없어요. 팩토리도 마찬가지로, "car 만들어줘"하면 완성품이 나옵니다.',hl:'hlg'},
+{lines:['// 호출하는 쪽은 구체 클래스를 모름','function deliverPackage(type) {','  const vehicle = VehicleFactory.create(type)','  vehicle.drive()','  vehicle.load(package)','}','','// Car든 Truck이든 Bike든 상관없음','// Vehicle 인터페이스만 알면 됨!'],
+annos:['','어떤 탈것이 올지 모르지만','팩토리가 적절한 걸 골라줌','뭐가 오든 drive()는 있음','뭐가 오든 load()도 있음','','','구체적인 클래스에 안 묶여 있어요','인터페이스만 믿으면 됨!'],
+desc:'택배 기사가 "오늘은 트럭, 내일은 바이크"로 바뀌어도 배달은 똑같이 해요. 팩토리를 쓰면 코드도 마찬가지로 — 어떤 객체가 오든 같은 방식으로 쓸 수 있어요.',hl:'hlg'},
+{lines:['// 새 탈것 추가? 팩토리에 한 줄만 추가!','class VehicleFactory {','  static create(type) {','    switch(type) {','      case "car":   return new Car()','      case "truck": return new Truck()','      case "bike":  return new Bike()','      case "bus":   return new Bus()  // 새로!','    }','  }','}'],
+annos:['','','','','기존 코드 그대로','기존 코드 그대로','기존 코드 그대로','이 한 줄만 추가하면 끝!','','','기존 코드 안 건드림!'],
+desc:'레고 블록 추가하듯이 새 제품을 넣을 수 있어요. 기존 코드는 손대지 않고, 팩토리에 한 줄만 추가하면 새 타입이 바로 동작합니다.',hl:'hlg'},
+{lines:['// 팩토리 없이 — 곳곳에 생성 코드가 중복','// ── fileA.ts','const car = new Car("v8", 4, "auto", true)','','// ── fileB.ts','const car = new Car("v8", 4, "auto", true)','','// 팩토리 있으면 — 한 곳에서만 관리','const car = VehicleFactory.create("car")','// 생성 옵션이 바뀌면 팩토리만 수정!'],
+annos:['','','긴 파라미터를 직접 적어야 함','','','똑같은 코드를 또 씀... 중복!','','','깔끔! 옵션은 팩토리가 관리','한 곳만 고치면 전체 반영!'],
+desc:'같은 레시피를 여러 곳에 적어두면, 레시피가 바뀔 때 전부 고쳐야 해요. 팩토리에 레시피를 한 곳에 모아두면 거기만 고치면 됩니다.',hl:'hlg'}
+];
+
+var conData=[
+{lines:['// 제품이 늘어날수록 클래스도 늘어남','// Vehicle (인터페이스)','// ├── Car','// ├── Truck','// ├── Bike','// ├── Bus','// ├── Scooter','// └── Van','// + VehicleFactory','// = 총 8개 클래스!'],
+annos:['','부모 1개','자식 1','자식 2','자식 3','자식 4','자식 5','자식 6','팩토리까지 1개 더','제품마다 클래스가 하나씩 늘어나요'],
+desc:'제품 종류가 많아지면 클래스 수도 같이 늘어나요. 마치 메뉴가 늘어날 때마다 전담 요리사를 한 명씩 고용하는 것과 같아요.',hl:'hlr'},
+{lines:['// 간단한 객체인데도 팩토리를 만들면','class PointFactory {','  static create(x, y) {','    return new Point(x, y)','  }','}','','// 이러면 그냥 new가 더 명확함','const p = new Point(3, 5)','// 팩토리가 오히려 한 단계 더 감쌈'],
+annos:['','','','그냥 new 감싸기만 한 건데...','','','','','이게 훨씬 직관적!','불필요한 추상화 = 복잡도만 증가'],
+desc:'단순한 객체까지 팩토리로 만들면 오히려 코드가 복잡해져요. 종이 한 장 접는데 접는 기계를 만드는 격이에요. 팩토리는 생성이 복잡할 때만 쓰세요.',hl:'hlr'},
+{lines:['class VehicleFactory {','  static create(type) {','    switch(type) {','      case "car":   return new Car()','      case "truck": return new Truck()','      // 새 타입 추가할 때마다','      // 여기를 수정해야 함!','    }','  }','}','// 개방-폐쇄 원칙(OCP)에 어긋남!'],
+annos:['','','switch문이 점점 길어짐','','','','팩토리 코드를 매번 열어야 해요','','','','기존 코드 수정 없이 확장이 이상적인데...'],
+desc:'switch문이 길어지면 관리가 힘들어져요. 새 메뉴를 추가할 때마다 주방 전체를 리모델링하는 느낌이에요. 이걸 해결하려면 Registry 패턴이나 Map으로 개선할 수 있어요.',hl:'hlr'},
+{lines:['// 제품이 1~2종류뿐인데 팩토리를 쓰면','class NotificationFactory {','  static create(type) {','    if (type === "email")','      return new EmailNotification()','    // ... 끝? 이게 다?','  }','}','','// 1개짜리 팩토리 = 불필요한 계층','// 그냥 직접 만드는 게 나음'],
+annos:['','','','하나밖에 없는데...','','팩토리 치고 너무 허전','','','','쓸데없이 한 단계 더 감싼 꼴','new EmailNotification()이 더 나아요'],
+desc:'종류가 1~2개뿐이면 팩토리가 오히려 짐이에요. 카페에 메뉴가 아메리카노 하나인데 주문 시스템을 만드는 격이에요. 종류가 3개 이상일 때 팩토리가 빛납니다.',hl:'hlr'}
+];
+
+var useData=[
+{lines:['class ComponentFactory {','  static create(type, props) {','    switch(type) {','      case "button": return new Button(props)','      case "input":  return new Input(props)','      case "card":   return new Card(props)','    }','  }','}','','// JSON 설정으로 화면을 동적으로 구성!','config.forEach(c => ComponentFactory.create(c.type, c.props))'],
+annos:['','타입과 옵션을 받아서','','버튼 생성','입력창 생성','카드 생성','','','','','설정 파일만 바꾸면 화면이 바뀜!','반복문 한 줄로 전체 UI 구성'],
+desc:'관리자 화면처럼 설정으로 UI를 동적으로 만들 때 딱이에요. JSON에 "button, input, card" 순서만 적으면 팩토리가 알아서 화면을 조립해줍니다.',hl:'hlg'},
+{lines:['class PaymentFactory {','  static create(method) {','    switch(method) {','      case "card":   return new CardPayment()','      case "kakao":  return new KakaoPay()','      case "naver":  return new NaverPay()','    }','  }','}','','// 결제 수단이 바뀌어도 주문 로직은 그대로','const pay = PaymentFactory.create(userChoice)','pay.process(amount)'],
+annos:['','결제 수단 이름만 받아서','','카드 결제','카카오페이','네이버페이','','','','','어떤 결제든 process()로 통일!','사용자가 고른 걸 그대로 넘기면 끝','결제 처리!'],
+desc:'쇼핑몰에서 결제 수단을 고르면 팩토리가 맞는 결제 객체를 만들어줘요. 새 결제 수단(토스페이 등)이 추가돼도 주문 코드는 건드릴 필요 없어요.',hl:'hlg'},
+{lines:['class ExporterFactory {','  static create(format) {','    switch(format) {','      case "pdf":  return new PdfExporter()','      case "xlsx": return new ExcelExporter()','      case "csv":  return new CsvExporter()','    }','  }','}','','// "다운로드" 버튼에서 포맷만 선택하면 끝','const exp = ExporterFactory.create(userFormat)','exp.export(data)'],
+annos:['','포맷 이름만 받으면','','PDF 내보내기','엑셀 내보내기','CSV 내보내기','','','','','사용자가 고른 포맷을 전달','팩토리가 맞는 변환기를 줌','어떤 포맷이든 export()로 통일!'],
+desc:'"PDF로 다운로드", "엑셀로 다운로드" 버튼을 누르면 팩토리가 맞는 변환기를 만들어줘요. 새 포맷이 추가되면 팩토리에 한 줄만 추가하면 됩니다.',hl:'hlg'},
+{lines:['// Abstract Factory: 관련 객체를 묶어서 생성','class DarkThemeFactory {','  createButton() { return new DarkButton() }','  createInput()  { return new DarkInput() }','  createCard()   { return new DarkCard() }','}','','class LightThemeFactory {','  createButton() { return new LightButton() }','  createInput()  { return new LightInput() }','}','// 테마만 바꾸면 모든 UI가 한꺼번에 바뀜!'],
+annos:['팩토리의 업그레이드 버전!','다크 모드용 팩토리','다크 버튼','다크 입력창','다크 카드','','','라이트 모드용 팩토리','라이트 버튼','라이트 입력창','','팩토리 하나만 교체 → 전체 테마 변경!'],
+desc:'Abstract Factory는 관련 있는 객체들을 묶어서 만들어요. 다크 모드 ↔ 라이트 모드처럼 "세트 교체"가 필요할 때 사용합니다. 팩토리 하나만 바꾸면 모든 UI가 한꺼번에 바뀌어요.',hl:'hlg'}
+];
+
+var curPro=0,curCon=0,curUse=0,demoR=false;
+
+function buildHTML(data,idx,prefix,colorCls){
+var d=data[idx];var html='';
+for(var i=0;i<d.lines.length;i++){
+html+='<div class="cl" id="'+prefix+'-'+i+'"><span class="ct">'+d.lines[i]+'</span><span class="ca '+colorCls+'" id="'+prefix+'-a-'+i+'"></span></div>';
+}return html;
+}
+function renderCode(target,data,idx,colorCls){document.getElementById(target).innerHTML=buildHTML(data,idx,target,colorCls)}
+function renderDesc(target,data,idx){var el=document.getElementById(target);el.textContent=data[idx].desc;el.classList.remove('show');requestAnimationFrame(function(){requestAnimationFrame(function(){el.classList.add('show')})})}
+function proDem(i,btn){curPro=i;document.querySelectorAll('#pro-nav .dbtn').forEach(function(b){b.className='dbtn'});btn.className='dbtn ag';renderCode('pro-code',proData,i,'cag');renderDesc('pro-desc',proData,i)}
+function conDem(i,btn){curCon=i;document.querySelectorAll('#con-nav .dbtn').forEach(function(b){b.className='dbtn'});btn.className='dbtn ar';renderCode('con-code',conData,i,'car');renderDesc('con-desc',conData,i)}
+function useDem(i,btn){curUse=i;document.querySelectorAll('#use-nav .dbtn').forEach(function(b){b.className='dbtn'});btn.className='dbtn ag';renderCode('use-code',useData,i,'cag');renderDesc('use-desc',useData,i)}
+function sl(ms){return new Promise(function(r){setTimeout(r,ms)})}
+async function animCode(prefix,data,idx){
+if(demoR)return;demoR=true;var d=data[idx];
+for(var i=0;i<d.lines.length;i++){
+var line=document.getElementById(prefix+'-'+i);var anno=document.getElementById(prefix+'-a-'+i);
+if(!d.annos[i]||d.annos[i]===''){await sl(200);continue}
+line.classList.add(d.hl);anno.textContent='\u2190 '+d.annos[i];
+(function(a){requestAnimationFrame(function(){requestAnimationFrame(function(){a.classList.add('show')})})})(anno);
+await sl(1800);
+}demoR=false;
+}
+function runPro(){animCode('pro-code',proData,curPro)}
+function runCon(){animCode('con-code',conData,curCon)}
+function runUse(){animCode('use-code',useData,curUse)}
+renderCode('pro-code',proData,0,'cag');renderDesc('pro-desc',proData,0);
+renderCode('con-code',conData,0,'car');renderDesc('con-desc',conData,0);
+renderCode('use-code',useData,0,'cag');renderDesc('use-desc',useData,0);
+
+function sw(id){document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active')});document.querySelectorAll('.pnl').forEach(function(p){p.classList.remove('active')});document.querySelector('[onclick="sw(\''+id+'\')"]').classList.add('active');document.getElementById('p-'+id).classList.add('active');if(id==='sim')setTimeout(drawLines,50)}
+
+var totalCalls=0,products=[],typeSet=new Set(),running=false;
+var logbox=document.getElementById('logbox');
+var colorMap={car:'#378ADD',truck:'#BA7517',bike:'#1D9E75'};
+var idxMap={car:0,truck:1,bike:2};
+var labelMap={car:'Car',truck:'Truck',bike:'Bike'};
+
+function setStep(n){document.querySelectorAll('.pill').forEach(function(p){var s=parseInt(p.dataset.s);if(!isNaN(s))p.className='pill'+(s===n?' active':(s<n?' done':''))})}
+function clearHL(){for(var i=0;i<=8;i++){var e=document.getElementById('cl-'+i);if(e)e.classList.remove('hl')}for(var j=1;j<=5;j++){var a=document.getElementById('an-'+j);if(a){a.classList.remove('show');a.textContent=''}}}
+function hlLine(n,txt){clearHL();var e=document.getElementById('cl-'+n);if(e)e.classList.add('hl');var a=document.getElementById('an-'+n);if(a&&txt){a.textContent='\u2190 '+txt;requestAnimationFrame(function(){requestAnimationFrame(function(){a.classList.add('show')})})}}
+function addLog(msg,type){var d=document.createElement('div');d.className='ll';var tg=document.createElement('span');tg.className='tg '+(type==='new'?'tgn':type==='cached'?'tgc':'tgk');tg.textContent=type==='new'?'NEW':type==='cached'?'CACHED':'CHECK';var tx=document.createElement('span');tx.textContent=msg;d.appendChild(tg);d.appendChild(tx);logbox.appendChild(d);logbox.scrollTop=logbox.scrollHeight}
+function updateStats(){document.getElementById('s-calls').textContent=totalCalls;document.getElementById('s-products').textContent=products.length;var arr=[];typeSet.forEach(function(t){arr.push(t)});document.getElementById('s-types').textContent=arr.length>0?arr.join(', '):'-'}
+function drawLines(){var viz=document.getElementById('viz');if(!viz)return;var vr=viz.getBoundingClientRect();var fr=document.getElementById('f-rect');if(!fr)return;var frr=fr.getBoundingClientRect();var fx=frr.left+frr.width/2-vr.left,fy=frr.top+frr.height-vr.top;[0,1,2].forEach(function(i){var pd=document.getElementById('pd-'+i);if(!pd)return;var pb=pd.querySelector('.pbox').getBoundingClientRect();var px=pb.left+pb.width/2-vr.left,py=pb.top-vr.top;var ln=document.getElementById('ln-'+i);ln.setAttribute('x1',fx);ln.setAttribute('y1',fy);ln.setAttribute('x2',px);ln.setAttribute('y2',py)})}
+function setBtns(d){['btn-car','btn-truck','btn-bike','btn-reset'].forEach(function(id){var e=document.getElementById(id);if(e)e.disabled=d})}
+
+async function req(type){
+if(running)return;running=true;setBtns(true);totalCalls++;
+var idx=idxMap[type];
+document.getElementById('f-type').textContent='create("'+type+'")';
+document.getElementById('f-rect').classList.add('active');
+
+setStep(1);hlLine(1,'create("'+type+'") 호출됨!');addLog('VehicleFactory.create("'+type+'")','check');await sl(D);
+setStep(2);hlLine(2,'type이 뭔지 확인 중...');addLog('switch("'+type+'") 실행','check');await sl(D);
+var lineNum=3+idx;
+setStep(3);hlLine(lineNum,'매칭! new '+labelMap[type]+'() 생성');addLog('new '+labelMap[type]+'() 생성','new');
+
+var pd=document.getElementById('pd-'+idx);
+pd.classList.add('show');
+var ln=document.getElementById('ln-'+idx);
+ln.classList.add('show');
+products.push(type);typeSet.add(labelMap[type]);
+var count=products.filter(function(p){return p===type}).length;
+document.getElementById('pr-'+idx).textContent='x'+count;
+await sl(D);
+
+setStep(4);hlLine(1,labelMap[type]+' 객체를 돌려줌!');addLog('return '+labelMap[type]+' → 호출자에게 전달','cached');
+updateStats();drawLines();
+await sl(D/2);
+document.getElementById('f-rect').classList.remove('active');
+running=false;setBtns(false)}
+
+function doReset(){totalCalls=0;products=[];typeSet.clear();running=false;logbox.innerHTML='';setStep(0);clearHL();
+document.getElementById('f-type').textContent='create( ? )';
+document.getElementById('f-rect').classList.remove('active');
+updateStats();
+[0,1,2].forEach(function(i){document.getElementById('pd-'+i).classList.remove('show');document.getElementById('ln-'+i).classList.remove('show');document.getElementById('pr-'+i).textContent=''});
+setBtns(false);drawLines()}
+
+window.addEventListener('resize',drawLines);
+setTimeout(drawLines,100);
+</script>
+</body>
+</html>

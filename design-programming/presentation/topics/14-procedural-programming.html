@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Procedural Programming</title>
+  <link rel="stylesheet" href="../topic-frame.css">
+</head>
+<body>
+<h2 class="sr-only">Procedural programming deep dive: concepts, keywords, pros, cons with code demos in Korean.</h2>
+<style>
+*{box-sizing:border-box}
+.tabs{display:flex;gap:0;border-bottom:0.5px solid var(--color-border-tertiary);margin-bottom:1.25rem;overflow-x:auto}
+.tab{padding:8px 14px;font-size:13px;font-weight:500;color:var(--color-text-secondary);cursor:pointer;border-bottom:2px solid transparent;transition:all 0.3s;background:none;border-top:none;border-left:none;border-right:none;white-space:nowrap}
+.tab:hover{color:var(--color-text-primary)}.tab.active{color:#3C3489;border-bottom-color:#534AB7}
+.pnl{display:none}.pnl.active{display:block}
+.sec{margin-bottom:1.25rem}
+.sec-title{font-size:14px;font-weight:500;color:var(--color-text-primary);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.sec-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.cw{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:14px 16px;font-family:var(--font-mono);font-size:12px;line-height:2.2;color:var(--color-text-secondary);overflow-x:auto;margin-bottom:10px}
+.cl{display:flex;align-items:baseline;min-height:24px;transition:background 0.5s;border-radius:3px;padding:0 4px;margin:0 -4px}
+.cl.hl{background:#EEEDFE}.cl.hlg{background:#E1F5EE}.cl.hlr{background:#FCEBEB}
+.ct{white-space:pre;flex-shrink:0}
+.ca{margin-left:12px;font-family:var(--font-sans);font-size:11px;opacity:0;transition:opacity 1s;white-space:nowrap;flex-shrink:0}
+.ca.show{opacity:1}
+.cag{color:#085041}.car{color:#791F1F}.cap{color:#534AB7}
+.kw{color:#534AB7}.vl{color:#0F6E56}.nl{color:#A32D2D}.cm{color:var(--color-text-tertiary)}.sv{color:#BA7517}
+.dnav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.dbtn{padding:6px 14px;font-size:12px;border-radius:var(--border-radius-md);background:var(--color-background-secondary);color:var(--color-text-secondary);border:0.5px solid var(--color-border-tertiary);cursor:pointer;transition:all 0.3s}
+.dbtn:hover{border-color:var(--color-border-secondary)}
+.dbtn.ag{background:#E1F5EE;color:#085041;border-color:#0F6E56}
+.dbtn.ar{background:#FCEBEB;color:#791F1F;border-color:#A32D2D}
+.dsc{font-size:13px;color:var(--color-text-secondary);line-height:1.7;padding:10px 14px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);min-height:40px;opacity:0;transition:opacity 0.8s}
+.dsc.show{opacity:1}
+.cc{padding:12px 14px;background:var(--color-background-secondary);border-radius:0;border-left:3px solid;margin-bottom:8px;cursor:pointer;transition:all 0.3s}
+.cc:hover{background:var(--color-background-primary)}
+.cc.active{background:var(--color-background-primary);border-left-width:4px}
+.cc-t{font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:2px}
+.cc-s{font-size:12px;color:var(--color-text-secondary)}
+.cc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;margin-bottom:14px}
+.b1{border-color:#534AB7}.b2{border-color:#1D9E75}.b3{border-color:#378ADD}.b4{border-color:#D85A30}.b5{border-color:#BA7517}.b6{border-color:#D4537E}.b7{border-color:#639922}
+</style>
+
+<div style="padding:0.5rem 0">
+<div class="tabs">
+  <button class="tab active" onclick="sw('what')">절차지향이란?</button>
+  <button class="tab" onclick="sw('key')">핵심 키워드</button>
+  <button class="tab" onclick="sw('pro')">장점</button>
+  <button class="tab" onclick="sw('con')">단점</button>
+</div>
+
+<div class="pnl active" id="p-what">
+<div class="sec">
+  <div class="sec-title"><span class="sec-dot" style="background:#534AB7"></span>절차지향 프로그래밍이란?</div>
+  <div class="dnav" id="w-nav">
+    <button class="dbtn ag" onclick="wD(0,this)">한 줄 요약</button>
+    <button class="dbtn" onclick="wD(1,this)">OOP와 비교</button>
+    <button class="dbtn" onclick="wD(2,this)">실행 흐름</button>
+    <button class="dbtn" onclick="wD(3,this)">어디에 쓰이나?</button>
+  </div>
+  <div class="cw" id="w-code"></div>
+  <div class="dsc" id="w-desc"></div>
+</div>
+<div style="margin-top:8px"><button onclick="rW()">실행해보기</button></div>
+</div>
+
+<div class="pnl" id="p-key">
+<div class="sec">
+  <div class="sec-title"><span class="sec-dot" style="background:#0F6E56"></span>핵심 키워드 — 클릭하면 코드 데모</div>
+  <div class="cc-grid">
+    <div class="cc b1" onclick="kD(0,this)"><div class="cc-t">1. 순차 실행</div><div class="cc-s">위에서 아래로 한 줄씩</div></div>
+    <div class="cc b2" onclick="kD(1,this)"><div class="cc-t">2. 프로시저 (함수)</div><div class="cc-s">반복 작업을 묶어서 이름 붙이기</div></div>
+    <div class="cc b3" onclick="kD(2,this)"><div class="cc-t">3. 조건 분기</div><div class="cc-s">if/else/switch로 갈림길 만들기</div></div>
+    <div class="cc b4" onclick="kD(3,this)"><div class="cc-t">4. 반복문</div><div class="cc-s">for/while로 같은 작업 반복</div></div>
+    <div class="cc b5" onclick="kD(4,this)"><div class="cc-t">5. 전역/지역 변수</div><div class="cc-s">데이터의 범위를 나누기</div></div>
+    <div class="cc b6" onclick="kD(5,this)"><div class="cc-t">6. 구조체</div><div class="cc-s">관련 데이터를 묶기 (행동 없이)</div></div>
+    <div class="cc b7" onclick="kD(6,this)"><div class="cc-t">7. 포인터/참조</div><div class="cc-s">메모리 주소를 직접 다루기</div></div>
+  </div>
+  <div class="cw" id="k-code"></div>
+  <div class="dsc" id="k-desc"></div>
+</div>
+<div style="margin-top:8px"><button onclick="rK()">실행해보기</button></div>
+</div>
+
+<div class="pnl" id="p-pro">
+<div class="sec">
+  <div class="sec-title"><span class="sec-dot" style="background:#1D9E75"></span>장점 코드 데모</div>
+  <div class="dnav" id="pro-nav">
+    <button class="dbtn ag" onclick="proD(0,this)">직관적이고 단순</button>
+    <button class="dbtn" onclick="proD(1,this)">성능이 좋음</button>
+    <button class="dbtn" onclick="proD(2,this)">학습 곡선 낮음</button>
+    <button class="dbtn" onclick="proD(3,this)">작은 프로그램에 최적</button>
+  </div>
+  <div class="cw" id="pro-code"></div>
+  <div class="dsc" id="pro-desc"></div>
+</div>
+<div style="margin-top:8px"><button onclick="rPro()">실행해보기</button></div>
+</div>
+
+<div class="pnl" id="p-con">
+<div class="sec">
+  <div class="sec-title"><span class="sec-dot" style="background:#A32D2D"></span>단점 코드 데모</div>
+  <div class="dnav" id="con-nav">
+    <button class="dbtn ar" onclick="conD(0,this)">전역 상태 오염</button>
+    <button class="dbtn" onclick="conD(1,this)">코드 재사용 어려움</button>
+    <button class="dbtn" onclick="conD(2,this)">규모 커지면 스파게티</button>
+    <button class="dbtn" onclick="conD(3,this)">데이터-함수 분리</button>
+  </div>
+  <div class="cw" id="con-code"></div>
+  <div class="dsc" id="con-desc"></div>
+</div>
+<div style="margin-top:8px"><button onclick="rCon()">실행해보기</button></div>
+</div>
+</div>
+
+<script>
+var D=2400;
+
+var wData=[
+{lines:['// 절차지향 = 요리 레시피처럼 순서대로!','//','// 1. 재료 준비','// 2. 물 끓이기','// 3. 면 넣기','// 4. 5분 기다리기','// 5. 건져서 그릇에 담기','//','// 컴퓨터에게 "이렇게 해!" 순서를 알려줌','','function boilWater()   { /* 1단계 */ }','function addNoodles()  { /* 2단계 */ }','function wait(min)     { /* 3단계 */ }','function serve()       { /* 4단계 */ }','','// 위에서 아래로 순서대로 실행!','boilWater()','addNoodles()','wait(5)','serve()'],
+annos:['','','레시피 1단계','레시피 2단계','레시피 3단계','레시피 4단계','레시피 5단계','','','','함수(프로시저)로 묶고','','','','','순서대로 호출!','1단계!','2단계!','3단계!','4단계! 완성!'],
+desc:'절차지향은 "요리 레시피"와 똑같아요. 1단계 → 2단계 → 3단계... 위에서 아래로 순서대로 실행합니다. 각 단계를 함수(프로시저)로 묶고, 순서대로 호출하는 게 전부예요. 가장 직관적인 프로그래밍 방식이에요.',hl:'hlg'},
+{lines:['// 절차지향: 함수가 데이터를 "밖에서" 가공','let name = "철수"','let balance = 10000','','function deposit(amount) {','  balance += amount  // 전역 데이터를 직접 수정!','}','function getInfo() {','  return name + ": " + balance + "원"','}','','deposit(5000)','getInfo()  // "철수: 15000원"','','// OOP: 데이터가 자기 "안에서" 관리','class Account {','  name = "철수"; balance = 10000','  deposit(amount) { this.balance += amount }','  getInfo() { return this.name + ": " + this.balance + "원" }','}','// 데이터 + 행동이 한 덩어리!'],
+annos:['데이터가 밖에 노출!','전역 변수','전역 변수','','','전역 변수를 직접 수정!','','','전역 변수를 직접 읽음!','','','','','','데이터가 안에 보호됨!','','내 안에!','자기 데이터를 자기가 수정','자기 데이터를 자기가 읽음','',''],
+desc:'절차지향은 "재료(데이터)를 탁자에 놓고, 요리사(함수)가 가져다 쓰는 것"이에요. OOP는 "재료가 냉장고(객체) 안에 있고, 냉장고가 알아서 관리하는 것"이에요. 절차지향은 단순하지만 데이터가 노출되어 위험할 수 있어요.',hl:'hlg'},
+{lines:['// 절차지향의 실행 흐름 3가지','','// 1. 순차 — 위에서 아래로','a()','b()','c()  // a → b → c 순서!','','// 2. 분기 — 조건에 따라 갈림길','if (age >= 18) {','  allowEntry()','} else {','  denyEntry()','}','','// 3. 반복 — 같은 작업을 여러 번','for (let i = 0; i < 10; i++) {','  process(i)','}','','// 순차 + 분기 + 반복 = 모든 프로그램의 기본!','// 어떤 복잡한 프로그램도 이 3가지의 조합!'],
+annos:['','','1번 흐름: 순차!','','','a 다음에 b, b 다음에 c','','2번 흐름: 분기!','조건에 따라','이쪽이거나','','저쪽!','','','3번 흐름: 반복!','10번 반복!','','','','이 3가지면 뭐든 만들 수 있어요!',''],
+desc:'모든 프로그램은 "순차(위→아래) + 분기(if/else) + 반복(for/while)" 3가지의 조합이에요. 이게 절차지향의 핵심 실행 흐름이에요. 놀랍게도 이 3가지만으로 어떤 복잡한 프로그램이든 만들 수 있어요.',hl:'hlg'},
+{lines:['// 절차지향이 쓰이는 곳','','// 1. 시스템 프로그래밍 — OS, 드라이버','//    Linux 커널 = C (절차지향!)','//    성능이 최우선인 곳','','// 2. 임베디드 — 아두이노, IoT 기기','//    메모리 512B짜리 칩에 OOP는 사치!','','// 3. 스크립트 — Bash, 자동화','//    서버 배포 스크립트에 클래스? 과잉!','','// 4. 게임 루프의 뼈대','//    while(running) { input→update→render }','','// 5. 알고리즘 — 정렬, 탐색, DP','//    함수 몇 개로 끝나는 문제에 딱!','','// "간단하고 빠르고 직접 제어" = 절차지향!'],
+annos:['','','','Linux = C로 작성!','','','','메모리 제약!','','','간단한 자동화!','','','순서가 중요한 루프!','','','','','',''],
+desc:'Linux 커널(C), 아두이노(C), Bash 스크립트, 게임 루프, 알고리즘 문제 — 성능이 중요하거나 규모가 작은 곳에서 절차지향이 빛나요. "간단하고 빠르고 직접 제어"가 필요하면 절차지향이 최고예요.',hl:'hlg'}
+];
+
+var kData=[
+{lines:['// 1. 순차 실행 (Sequential Execution)','// 코드가 위에서 아래로 한 줄씩 실행됨!','','console.log("1번")  // 먼저!','console.log("2번")  // 그다음!','console.log("3번")  // 마지막!','','// 절대 3→1→2 순서로 실행 안 됨!','// 위에서 아래, 한 줄씩! 이게 기본!','','// 함수 호출도 마찬가지','function step1() { console.log("준비") }','function step2() { console.log("실행") }','function step3() { console.log("완료") }','','step1()  // 1번째','step2()  // 2번째','step3()  // 3번째','// 레시피의 각 단계가 곧 한 줄의 코드!'],
+annos:['','','','1!','2!','3!','','순서가 보장됨!','','','','','','','','준비!','실행!','완료!','순서가 곧 로직!'],
+desc:'절차지향의 가장 기본: 위에서 아래로 한 줄씩! 에스컬레이터처럼 올라가기만 해요. 중간에 건너뛰거나 되돌아가지 않아요(분기/반복 제외). 이 단순함이 절차지향의 최대 장점이자 직관성의 원천이에요.',hl:'hlg'},
+{lines:['// 2. 프로시저 (Procedure/Function)','// 반복되는 작업을 묶어서 이름을 붙인 것!','','// 프로시저 없이 — 중복!','console.log("==========")','console.log("보고서 시작")','console.log("==========")','// ... 100줄 뒤에 또 ...','console.log("==========")','console.log("보고서 끝")','console.log("==========")','','// 프로시저로 묶기!','function printHeader(title) {','  console.log("==========")','  console.log(title)','  console.log("==========")','}',' ','printHeader("보고서 시작")  // 한 줄로!','printHeader("보고서 끝")    // 재사용!'],
+annos:['','','','','같은 패턴이','반복되고','있음!','','또 같은 패턴!','','','','이름을 붙여서 묶기!','','','','','','','한 줄로 끝!','또 쓸 수 있음!'],
+desc:'프로시저(함수)는 "반복되는 레시피에 이름을 붙이는 것"이에요. "구분선+제목+구분선"이라는 패턴을 printHeader라고 이름 붙이면, 아무 데서나 한 줄로 불러 쓸 수 있어요. 절차지향의 유일한 재사용 도구예요.',hl:'hlg'},
+{lines:['// 3. 조건 분기 (Conditional Branch)','// if/else/switch로 실행 경로를 나눔!','','// if-else: 두 갈래 길','const age = 20','if (age >= 18) {','  console.log("성인입니다")','} else {','  console.log("미성년입니다")','}',' ','// switch: 여러 갈래 길','const grade = "A"','switch (grade) {','  case "A": console.log("최우수"); break','  case "B": console.log("우수"); break','  case "C": console.log("보통"); break','  default:  console.log("노력 필요")','}','','// 분기 = 레시피에서 "재료가 있으면 이쪽,','//         없으면 저쪽" 같은 갈림길!'],
+annos:['','','','두 갈래!','','18 이상이면','이 길!','아니면','이 길!','','','여러 갈래!','','','A면 이 길!','B면 이 길!','C면 이 길!','나머지는 이 길!','','','요리할 때 "소금 있으면 넣고, 없으면 건너뛰기"',''],
+desc:'조건 분기는 "갈림길"이에요. 레시피에서 "매운 걸 좋아하면 고추 넣기, 아니면 건너뛰기"처럼 상황에 따라 다른 코드를 실행해요. if/else는 2갈래, switch는 여러 갈래예요.',hl:'hlg'},
+{lines:['// 4. 반복문 (Loop)','// 같은 작업을 여러 번 반복!','','// for: 횟수가 정해진 반복','for (let i = 1; i <= 5; i++) {','  console.log(i + "번째 실행!")','}',' ','// while: 조건이 참인 동안 반복','let fuel = 100','while (fuel > 0) {','  drive()','  fuel -= 10  // 연료 소모','  // 연료가 0이 되면 멈춤!','}','','// 반복문이 없으면?','// console.log("1번째 실행!")','// console.log("2번째 실행!")','// ... 100번 복붙? 불가능!'],
+annos:['','','','5번 반복!','i가 1부터 5까지','','','','조건이 참인 동안!','연료 100','연료 > 0이면 계속!','운전하고','연료 소모','','','','','1번...','2번... 이러고 있을 순 없죠!',''],
+desc:'반복문은 "세탁기의 탈수 과정"이에요. 같은 동작을 조건이 충족될 때까지 반복해요. for는 "5번 돌려!"처럼 횟수가 정해진 경우, while은 "깨끗해질 때까지 돌려!"처럼 조건 기반이에요.',hl:'hlg'},
+{lines:['// 5. 전역 변수 vs 지역 변수','// 데이터의 "보이는 범위"가 다름!','','// 전역 변수: 어디서든 접근 가능','let totalScore = 0  // 프로그램 전체에서 보임','','function addScore(points) {','  totalScore += points  // 전역 변수를 수정!','}','function resetScore() {','  totalScore = 0  // 이 함수도 수정 가능!','}','','// 지역 변수: 함수 안에서만 존재','function calculate() {','  let temp = 0  // 이 함수 안에서만!','  temp += 10','  return temp','  // 함수 끝나면 temp는 사라짐!','}','// console.log(temp)  // 에러! 밖에서 못 봄!'],
+annos:['','','','어디서든 접근!','프로그램 전체에서 보임!','','','전역을 수정!','','','또 수정! 누가 바꿨지?','','','함수 안에서만!','','이 안에서만 존재','','','함수 끝나면 소멸!','','밖에서 접근 불가!'],
+desc:'전역 변수는 "거실 탁자 위의 물건"이에요 — 가족 누구나 쓸 수 있지만 누가 옮겼는지 모르죠. 지역 변수는 "내 방 서랍 속 물건"이에요 — 나만 쓸 수 있어서 안전해요. 절차지향에서 전역 변수 남용이 가장 큰 문제예요.',hl:'hlg'},
+{lines:['// 6. 구조체 (Struct)','// 관련 데이터를 묶는 것 (행동은 없음!)','','// 구조체 없이 — 변수가 따로따로','let userName = "철수"','let userAge = 25','let userEmail = "cs@mail.com"','// 사용자가 100명이면? 변수 300개?!','','// 구조체로 묶기! (C 스타일)','// struct User {','//   char name[50];','//   int age;','//   char email[100];','// };','','// JS에서는 객체 리터럴로 비슷하게','const user = { name: "철수", age: 25, email: "cs@mail.com" }','','// OOP 클래스와 차이: 메서드(행동)가 없음!','// 데이터만 묶고, 함수는 따로 만듦','function getUserInfo(user) { return user.name + " " + user.age }'],
+annos:['','','','변수가 흩어져 있음!','','','','100명이면 변수 300개!','','데이터를 묶음!','C 언어의 struct','','','','','','JS에서는 이렇게','관련 데이터를 하나로!','','행동은 없음!','데이터만 묶기!','함수는 밖에 따로!'],
+desc:'구조체는 "서류 봉투"예요 — 관련 서류(데이터)를 한 봉투에 넣어서 관리해요. 하지만 봉투가 스스로 서류를 정리하진 않아요(행동 없음). OOP의 클래스와 비슷하지만 메서드가 없다는 게 핵심 차이예요.',hl:'hlg'},
+{lines:['// 7. 포인터/참조 (Pointer/Reference)','// 데이터의 메모리 주소를 직접 다루기!','','// C 스타일 포인터 (의사 코드)','// int x = 42;','// int *ptr = &x;   // x의 주소를 저장!','// *ptr = 100;      // 주소를 통해 x를 변경!','// printf(x);       // 100! x가 바뀜!','','// JS에서의 참조 (포인터와 비슷한 개념)','const arr = [1, 2, 3]','const ref = arr       // 같은 배열을 가리킴!','ref.push(4)','console.log(arr)      // [1,2,3,4] — arr도 바뀜!','','// 복사 vs 참조 주의!','const a = [1, 2, 3]','const copy = [...a]   // 복사! 별개의 배열','const ref2 = a        // 참조! 같은 배열','ref2.push(4)          // ref2 수정 = a도 수정!'],
+annos:['','','','','변수 x = 42','ptr은 x의 주소!','ptr을 통해 x 변경!','x가 100으로!','','','배열 생성','같은 배열을 가리킴!','ref에 추가하면','arr도 바뀜! 같은 거니까!','','','','스프레드 = 복사!','대입 = 참조!','ref2 수정 = a도 수정!'],
+desc:'포인터는 "집 열쇠"예요. 열쇠(포인터)를 복사해서 주면 같은 집에 들어갈 수 있어요. C에서는 포인터로 메모리를 직접 제어하는데, JS에서는 객체/배열의 참조가 비슷한 역할을 해요. 참조를 이해하면 "왜 배열이 같이 바뀌지?" 문제를 해결할 수 있어요.',hl:'hlg'}
+];
+
+var proData=[
+{lines:['// 장점 1: 직관적이고 단순!','','// 순서대로 읽으면 로직이 바로 보임','function makeBreakfast() {','  boilWater()','  fryEgg()','  toastBread()','  pourCoffee()','  serve()','}','','// 위에서 아래로 읽기만 하면 됨!','// "물 끓이고 → 계란 굽고 → 빵 굽고 → 커피 따르고 → 서빙"','// 코드가 레시피처럼 읽혀요!','','// OOP라면?','// Kitchen.boiler.start(Water.new(Temperature.BOILING))','// ... 어떤 객체가 뭘 하는지 따라가야 함!'],
+annos:['','','','아침 만들기!','1단계!','2단계!','3단계!','4단계!','5단계!','','','위→아래로 읽기만 하면 됨!','','레시피처럼 직관적!','','','객체 따라가기... 복잡!',''],
+desc:'절차지향 코드는 "소설처럼" 위에서 아래로 읽으면 끝이에요. 함수 이름만 보면 흐름이 바로 보여요. OOP처럼 "이 객체가 저 객체를 호출하고..." 따라갈 필요 없어요.',hl:'hlg'},
+{lines:['// 장점 2: 성능이 좋음!','','// 절차지향 (C): 직접 메모리 제어','// int arr[1000];          // 스택에 바로 할당!','// for(int i=0; i<1000; i++)','//   arr[i] = i * 2;       // 직접 접근!','','// OOP (Java): 객체 생성 비용','// List<Integer> list = new ArrayList<>();','// for(int i=0; i<1000; i++)','//   list.add(i * 2);  // 객체 생성 + GC 비용!','','// 차이:','// C: 메모리 직접 할당 → 빠름!','// Java: 객체 래핑 + 힙 할당 + GC → 느림','','// Linux 커널, 게임 엔진이 C/C++인 이유!'],
+annos:['','','','스택 할당 = 초고속!','','메모리 직접 접근!','','','힙 할당 = 느림','','객체 생성 비용!','','','','','','성능이 생명인 곳 = C!'],
+desc:'절차지향(C)은 메모리를 직접 다루니까 중간 비용이 없어요. OOP(Java)는 객체 생성, 힙 할당, 가비지 컬렉션 비용이 추가돼요. 그래서 Linux 커널, 게임 엔진, 임베디드 같은 성능이 생명인 곳에서 C를 써요.',hl:'hlg'},
+{lines:['// 장점 3: 학습 곡선이 낮음!','','// 프로그래밍 첫날부터 쓸 수 있음','','// "안녕하세요" 출력','console.log("안녕하세요!")','','// 두 수 더하기','function add(a, b) { return a + b }','console.log(add(3, 5))  // 8','','// 구구단 출력','for (let i = 2; i <= 9; i++) {','  for (let j = 1; j <= 9; j++) {','    console.log(i + " x " + j + " = " + i*j)','  }','}','','// 클래스? 인터페이스? 상속? 다형성?','// 몰라도 됨! 함수 + if + for = 끝!'],
+annos:['','','','','','1줄이면 출력!','','','함수 만들기!','','','','중첩 반복문!','','','','','','OOP 개념 없이도!','이것만 알면 프로그래밍 가능!'],
+desc:'절차지향은 "함수, if, for" 3가지만 알면 프로그래밍을 시작할 수 있어요. OOP의 클래스, 상속, 다형성, SOLID 같은 복잡한 개념 없이도 프로그램을 만들 수 있어서 입문자에게 최고예요.',hl:'hlg'},
+{lines:['// 장점 4: 작은 프로그램에 최적!','','// 파일 이름 일괄 변경 스크립트','const files = getFiles("./photos")','','for (const file of files) {','  const newName = formatDate(file.date) + file.ext','  rename(file.path, newName)','  console.log(file.name + " → " + newName)','}','','console.log("완료! " + files.length + "개 변경됨")','','// 이걸 OOP로 만들면?','// class FileRenamer { ... }','// class NamingStrategy { ... }','// class FileValidator { ... }','// 30줄짜리 일에 클래스 3개? 과잉!'],
+annos:['','','','파일 목록 가져오고','','하나씩 반복!','새 이름 만들고','이름 변경하고','결과 출력!','','','완료!','','','클래스 1...','클래스 2...','클래스 3... 과잉!','30줄이면 함수만으로 충분!'],
+desc:'간단한 자동화 스크립트에 OOP를 적용하면 오히려 코드가 길어져요. 파일 30줄이면 충분한 일에 클래스 3개를 만드는 건 낭비예요. "100줄 이하의 작은 프로그램"이면 절차지향이 가장 효율적이에요.',hl:'hlg'}
+];
+
+var conData=[
+{lines:['// 단점 1: 전역 상태 오염!','','let users = []       // 전역!','let currentUser = null // 전역!','','function login(name) {','  currentUser = name   // 전역 수정!','}','function addUser(name) {','  users.push(name)     // 전역 수정!','}','function deleteAll() {','  users = []           // 전역 수정!','  currentUser = null   // 전역 수정!','}','','// 3개 함수가 전부 전역 변수를 건드림!','// "누가 users를 비웠지?" 추적이 불가능!','// 함수가 100개 되면? 악몽!'],
+annos:['','','누구나 접근 가능!','누구나 접근 가능!','','','전역 수정!','','','전역 수정!','','','전역 수정!','전역 수정!','','','3곳에서 수정!','범인 찾기 불가능!',''],
+desc:'전역 변수는 "공용 화이트보드"예요. 아무나 지우고 쓸 수 있어서 "누가 이걸 지웠지?" 추적이 불가능해요. 함수가 많아질수록 전역 변수를 누가 언제 바꿨는지 추적하기 어려워져요. 이게 절차지향의 가장 큰 약점이에요.',hl:'hlr'},
+{lines:['// 단점 2: 코드 재사용 어려움!','','// "사용자" 관련 함수들','function createUser(name, email) { ... }','function validateUser(user) { ... }','function saveUser(user) { ... }','','// "상품" 관련 함수들 — 거의 비슷한데 또 만듦!','function createProduct(name, price) { ... }','function validateProduct(product) { ... }','function saveProduct(product) { ... }','','// 검증 로직이 비슷한데 재사용이 안 됨!','// OOP라면?','// class Entity { validate() { ... } }','// class User extends Entity { ... }','// class Product extends Entity { ... }','// 공통 로직은 부모에서 한 번만!'],
+annos:['','','','사용자 생성','사용자 검증','사용자 저장','','비슷한 패턴이 또!','상품 생성','상품 검증','상품 저장','','validate 로직이 비슷한데!','','공통 로직은 부모에!','User는 부모를 상속!','Product도 상속!','중복 제거!'],
+desc:'절차지향에는 "상속"이 없어서 비슷한 함수를 반복 작성해야 해요. 사용자 검증과 상품 검증이 90% 같은데도 따로 만들어야 해요. OOP의 상속이 이 문제를 해결하기 위해 탄생한 거예요.',hl:'hlr'},
+{lines:['// 단점 3: 규모가 커지면 스파게티 코드!','','// 파일 1개, 함수 5개: 깔끔!','// 파일 10개, 함수 50개: 좀 복잡...','// 파일 100개, 함수 500개: 스파게티!','','function processOrder() {','  validateUser()       // user.js의 함수','  checkInventory()     // inventory.js의 함수','  calculatePrice()     // price.js의 함수','  applyDiscount()      // discount.js의 함수','  processPayment()     // payment.js의 함수','  sendConfirmation()   // email.js의 함수','  updateInventory()    // inventory.js의 또 다른 함수','  // 7개 파일의 함수가 뒤엉킴!','}','','// 어떤 함수가 어떤 전역 변수를 쓰는지?','// 함수 간 의존 관계는? 추적 불가!'],
+annos:['','','깔끔!','음...','스파게티!','','','여기서 호출!','저기서 호출!','또 호출!','또!','또!','또!','또!','7개 파일이 얽힘!','','','누가 뭘 쓰는지 모름!',''],
+desc:'함수 5개일 때는 레시피처럼 깔끔한데, 500개가 되면 면발이 엉킨 스파게티가 돼요. 함수 간 의존 관계, 전역 변수 추적이 불가능해져요. 이 문제를 해결하기 위해 OOP(캡슐화, 모듈화)가 등장한 거예요.',hl:'hlr'},
+{lines:['// 단점 4: 데이터와 함수가 분리됨!','','// 사용자 데이터','const user = { name: "철수", age: 25, balance: 10000 }','','// 사용자 관련 함수들 — 어디에 있는지 모름!','function getUserName(user) { ... }    // user.js?','function deposit(user, amount) { ... } // bank.js?','function validateAge(user) { ... }     // validator.js?','','// user 데이터를 다루는 함수가 3개 파일에 흩어짐!','// "user와 관련된 기능이 뭐가 있지?"','// → 모든 파일을 뒤져봐야 함!','','// OOP라면?','class User {','  getUserName() { ... }   // 여기!','  deposit(amount) { ... } // 여기!','  validateAge() { ... }   // 전부 여기!','}','// User 클래스 하나만 보면 됨!'],
+annos:['','','데이터만 덩그러니','','','','여기?','저기?','또 다른 곳?','','3곳에 흩어짐!','','전부 뒤져야 함!','','','','한 곳에!','한 곳에!','한 곳에!','','하나만 보면 끝!'],
+desc:'절차지향에서는 "이 데이터를 다루는 함수가 어디 있지?" 찾기가 어려워요. 도서관 책이 분류 없이 쌓여있는 것처럼요. OOP는 관련 데이터와 함수를 클래스 하나에 모아서 "여기만 보면 됨!"을 가능하게 해요.',hl:'hlr'}
+];
+
+var cW=0,cK=0,cPro=0,cCon=0,dR=false;
+function bH(data,idx,pfx,cc){var d=data[idx];var h='';for(var i=0;i<d.lines.length;i++){h+='<div class="cl" id="'+pfx+'-'+i+'"><span class="ct">'+d.lines[i]+'</span><span class="ca '+cc+'" id="'+pfx+'-a-'+i+'"></span></div>'}return h}
+function rC(t,data,idx,c){document.getElementById(t).innerHTML=bH(data,idx,t,c)}
+function rDc(t,data,idx){var el=document.getElementById(t);el.textContent=data[idx].desc;el.classList.remove('show');requestAnimationFrame(function(){requestAnimationFrame(function(){el.classList.add('show')})})}
+function wD(i,b){cW=i;document.querySelectorAll('#w-nav .dbtn').forEach(function(x){x.className='dbtn'});b.className='dbtn ag';rC('w-code',wData,i,'cag');rDc('w-desc',wData,i)}
+function kD(i,el){cK=i;document.querySelectorAll('#p-key .cc').forEach(function(x){x.classList.remove('active')});el.classList.add('active');rC('k-code',kData,i,'cag');rDc('k-desc',kData,i)}
+function proD(i,b){cPro=i;document.querySelectorAll('#pro-nav .dbtn').forEach(function(x){x.className='dbtn'});b.className='dbtn ag';rC('pro-code',proData,i,'cag');rDc('pro-desc',proData,i)}
+function conD(i,b){cCon=i;document.querySelectorAll('#con-nav .dbtn').forEach(function(x){x.className='dbtn'});b.className='dbtn ar';rC('con-code',conData,i,'car');rDc('con-desc',conData,i)}
+function sl(ms){return new Promise(function(r){setTimeout(r,ms)})}
+async function aC(p,data,idx){if(dR)return;dR=true;var d=data[idx];for(var i=0;i<d.lines.length;i++){var ln=document.getElementById(p+'-'+i);var an=document.getElementById(p+'-a-'+i);if(!d.annos[i]||d.annos[i]===''){await sl(200);continue}ln.classList.add(d.hl);an.textContent='\u2190 '+d.annos[i];(function(a){requestAnimationFrame(function(){requestAnimationFrame(function(){a.classList.add('show')})})})(an);await sl(1800)}dR=false}
+function rW(){aC('w-code',wData,cW)}
+function rK(){aC('k-code',kData,cK)}
+function rPro(){aC('pro-code',proData,cPro)}
+function rCon(){aC('con-code',conData,cCon)}
+rC('w-code',wData,0,'cag');rDc('w-desc',wData,0);
+rC('k-code',kData,0,'cag');rDc('k-desc',kData,0);
+rC('pro-code',proData,0,'cag');rDc('pro-desc',proData,0);
+rC('con-code',conData,0,'car');rDc('con-desc',conData,0);
+function sw(id){document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active')});document.querySelectorAll('.pnl').forEach(function(p){p.classList.remove('active')});document.querySelector('[onclick="sw(\''+id+'\')"]').classList.add('active');document.getElementById('p-'+id).classList.add('active')}
+</script>
+</body>
+</html>

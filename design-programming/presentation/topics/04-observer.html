@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Observer Pattern</title>
+  <link rel="stylesheet" href="../topic-frame.css">
+</head>
+<body>
+<h2 class="sr-only">Observer pattern interactive explainer with simulation, pros, cons, and use cases in Korean.</h2>
+<style>
+*{box-sizing:border-box}
+.tabs{display:flex;gap:0;border-bottom:0.5px solid var(--color-border-tertiary);margin-bottom:1.25rem;overflow-x:auto}
+.tab{padding:8px 14px;font-size:13px;font-weight:500;color:var(--color-text-secondary);cursor:pointer;border-bottom:2px solid transparent;transition:all 0.3s;background:none;border-top:none;border-left:none;border-right:none;white-space:nowrap}
+.tab:hover{color:var(--color-text-primary)}.tab.active{color:#3C3489;border-bottom-color:#534AB7}
+.pnl{display:none}.pnl.active{display:block}
+.sec{margin-bottom:1.25rem}
+.sec-title{font-size:14px;font-weight:500;color:var(--color-text-primary);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.sec-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.cw{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:14px 16px;font-family:var(--font-mono);font-size:12px;line-height:2.2;color:var(--color-text-secondary);overflow-x:auto;margin-bottom:10px}
+.cl{display:flex;align-items:baseline;min-height:24px;transition:background 0.5s;border-radius:3px;padding:0 4px;margin:0 -4px}
+.cl.hl{background:#EEEDFE}.cl.hlg{background:#E1F5EE}.cl.hlr{background:#FCEBEB}
+.ct{white-space:pre;flex-shrink:0}
+.ca{margin-left:12px;font-family:var(--font-sans);font-size:11px;opacity:0;transition:opacity 1s;white-space:nowrap;flex-shrink:0}
+.ca.show{opacity:1}
+.cap{color:#534AB7}.cag{color:#085041}.car{color:#791F1F}
+.kw{color:#534AB7}.vl{color:#0F6E56}.nl{color:#A32D2D}.cm{color:var(--color-text-tertiary)}.sv{color:#BA7517}
+
+.viz-area{position:relative;height:320px;margin:12px 0}
+.subj-box{position:absolute;left:50%;top:8px;transform:translateX(-50%);width:200px;text-align:center;z-index:2}
+.subj-rect{background:var(--color-background-primary);border:2px solid #534AB7;border-radius:var(--border-radius-lg);padding:12px;transition:all 0.6s}
+.subj-rect.active{box-shadow:0 0 0 4px #EEEDFE}
+.subj-rect.notify{box-shadow:0 0 0 4px #FAEEDA}
+.subj-lbl{font-size:14px;font-weight:500;color:#3C3489}
+.subj-state{font-family:var(--font-mono);font-size:11px;color:#534AB7;margin-top:4px}
+.subj-count{font-family:var(--font-mono);font-size:10px;color:var(--color-text-tertiary);margin-top:2px}
+
+.obs-node{position:absolute;bottom:8px;width:110px;text-align:center;transition:all 0.5s}
+.obs-box{height:56px;border-radius:var(--border-radius-lg);display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 4px;font-size:13px;font-weight:500;transition:all 0.5s;border:0.5px solid;padding:0 8px;opacity:0.4}
+.obs-box.subscribed{opacity:1}
+.obs-box.notified{transform:scale(1.08)}
+.obs-name{font-size:11px;color:var(--color-text-secondary)}
+.obs-msg{font-family:var(--font-mono);font-size:9px;color:var(--color-text-tertiary);margin-top:1px;min-height:12px;transition:opacity 0.5s}
+
+svg.conn{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1}
+svg.conn line{stroke-width:1.5;stroke-dasharray:6 4;opacity:0;transition:all 0.8s}
+svg.conn line.sub{opacity:0.5;stroke-dasharray:6 4}
+svg.conn line.pulse{opacity:0.9;stroke-dasharray:none;stroke-width:2}
+
+.pills{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.pill{font-size:12px;padding:4px 12px;border-radius:var(--border-radius-md);background:var(--color-background-secondary);color:var(--color-text-secondary);transition:all 0.5s}
+.pill.active{background:#EEEDFE;color:#3C3489}.pill.done{background:#E1F5EE;color:#085041}
+.sts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:12px 0}
+.stc{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 12px;text-align:center}
+.stn{font-size:20px;font-weight:500;color:var(--color-text-primary)}
+.stl{font-size:11px;color:var(--color-text-tertiary);margin-top:2px}
+.lga{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 14px;min-height:60px;max-height:200px;overflow-y:auto;font-family:var(--font-mono);font-size:11px;line-height:2;color:var(--color-text-secondary)}
+.ll{display:flex;gap:6px;align-items:baseline}
+.tg{display:inline-block;font-size:10px;padding:1px 7px;border-radius:var(--border-radius-md);font-weight:500}
+.tgn{background:#E1F5EE;color:#085041}.tgc{background:#EEEDFE;color:#3C3489}.tgk{background:#FAEEDA;color:#633806}.tgr{background:#FCEBEB;color:#791F1F}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+.btns button:disabled{opacity:0.4;cursor:not-allowed}
+.dnav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.dbtn{padding:6px 14px;font-size:12px;border-radius:var(--border-radius-md);background:var(--color-background-secondary);color:var(--color-text-secondary);border:0.5px solid var(--color-border-tertiary);cursor:pointer;transition:all 0.3s}
+.dbtn:hover{border-color:var(--color-border-secondary)}
+.dbtn.ag{background:#E1F5EE;color:#085041;border-color:#0F6E56}
+.dbtn.ar{background:#FCEBEB;color:#791F1F;border-color:#A32D2D}
+.dsc{font-size:13px;color:var(--color-text-secondary);line-height:1.7;padding:10px 14px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);min-height:40px;opacity:0;transition:opacity 0.8s}
+.dsc.show{opacity:1}
+
+.intro-block{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:14px 16px;margin-bottom:1.25rem;display:flex;flex-direction:column;gap:10px}
+.intro-item{display:flex;gap:10px;align-items:baseline}
+.intro-label{font-size:12px;font-weight:600;color:var(--color-text-primary);white-space:nowrap;min-width:100px;flex-shrink:0}
+.intro-text{font-size:13px;color:var(--color-text-secondary);line-height:1.6}
+
+.sim-row{display:flex;gap:1.25rem;align-items:flex-start}
+.sim-row>.sec{flex:1;min-width:0;margin-bottom:0}
+.sim-row>.sec:first-child{flex:0 0 38%;max-width:38%}
+.sim-row>.sec:last-child{flex:1}
+@media(max-width:860px){.sim-row{flex-direction:column}.sim-row>.sec:first-child{flex:1;max-width:100%}}
+
+
+
+</style>
+
+<div style="padding:0.5rem 0">
+<div class="intro-block">
+  <div class="intro-item"><span class="intro-label">무슨 패턴인가</span><span class="intro-text">한 객체(Subject)의 상태가 바뀌면, 구독 중인 모든 Observer에게 자동으로 알림이 갑니다. 발행자와 구독자가 서로를 몰라도 되어 느슨한 결합을 유지할 수 있어요.</span></div>
+  <div class="intro-item"><span class="intro-label">이 화면에서는</span><span class="intro-text">위쪽 Subject(Publisher) 박스와 아래 Email·Slack·SMS·Logger 노드가 SVG 연결선으로 이어집니다. 구독 버튼으로 Observer를 등록한 뒤 "notify() 발송!" 버튼을 누르면 연결된 노드에만 알림이 전달되는 과정을 확인하세요.</span></div>
+  <div class="intro-item"><span class="intro-label">언제 떠올리나</span><span class="intro-text">이벤트가 발생하면 여러 모듈이 각자 반응해야 할 때. 예를 들어 주문 완료 시 이메일, 재고 차감, 로그 기록이 동시에 필요한 상황.</span></div>
+</div>
+<div class="tabs">
+  <button class="tab active" onclick="sw('sim')">Simulation</button>
+  <button class="tab" onclick="sw('pro')">장점 (Pros)</button>
+  <button class="tab" onclick="sw('con')">단점 (Cons)</button>
+  <button class="tab" onclick="sw('use')">사용 예시</button>
+</div>
+
+<div class="pnl active" id="p-sim">
+<div class="sim-row">
+<div class="sec">
+  <div class="sec-title"><span class="sec-dot" style="background:#534AB7"></span>Observer pattern</div>
+  <div class="cw">
+    <div class="cl" id="cl-0"><span class="ct"><span class="kw">interface</span> Observer {</span></div>
+    <div class="cl" id="cl-1"><span class="ct">  update(data): <span class="kw">void</span></span><span class="ca cap" id="an-1"></span></div>
+    <div class="cl" id="cl-2"><span class="ct">}</span></div>
+    <div class="cl" id="cl-3"><span class="ct"></span></div>
+    <div class="cl" id="cl-4"><span class="ct"><span class="kw">class</span> Subject {</span></div>
+    <div class="cl" id="cl-5"><span class="ct">  <span class="kw">private</span> observers: Observer[] = []</span><span class="ca cap" id="an-5"></span></div>
+    <div class="cl" id="cl-6"><span class="ct"></span></div>
+    <div class="cl" id="cl-7"><span class="ct">  subscribe(obs) {</span><span class="ca cap" id="an-7"></span></div>
+    <div class="cl" id="cl-8"><span class="ct">    this.observers.push(obs)</span><span class="ca cap" id="an-8"></span></div>
+    <div class="cl" id="cl-9"><span class="ct">  }</span></div>
+    <div class="cl" id="cl-10"><span class="ct">  unsubscribe(obs) {</span><span class="ca cap" id="an-10"></span></div>
+    <div class="cl" id="cl-11"><span class="ct">    this.observers = this.observers.filter(o => o !== obs)</span><span class="ca cap" id="an-11"></span></div>
+    <div class="cl" id="cl-12"><span class="ct">  }</span></div>
+    <div class="cl" id="cl-13"><span class="ct">  notify(data) {</span><span class="ca cap" id="an-13"></span></div>
+    <div class="cl" id="cl-14"><span class="ct">    this.observers.forEach(o => o.update(data))</span><span class="ca cap" id="an-14"></span></div>
+    <div class="cl" id="cl-15"><span class="ct">  }</span></div>
+    <div class="cl" id="cl-16"><span class="ct">}</span></div>
+  </div>
+</div>
+<div class="sec">
+  <div class="sec-title"><span class="sec-dot" style="background:#0F6E56"></span>Subject / Observer diagram</div>
+  <div class="pills" id="steps"><div class="pill active" data-s="0">Ready</div><div class="pill" data-s="1">1. subscribe</div><div class="pill" data-s="2">2. notify</div><div class="pill" data-s="3">3. update</div></div>
+  <div style="position:relative">
+    <div class="viz-area" id="viz">
+      <div class="subj-box"><div class="subj-rect" id="subj-rect"><div class="subj-lbl">Subject (Publisher)</div><div class="subj-state" id="subj-state">observers: []</div><div class="subj-count" id="subj-count"></div></div></div>
+      <div class="obs-node" style="left:calc(12% - 55px)" id="on-0">
+        <div class="obs-box" id="ob-0" style="background:#E6F1FB;color:#0C447C;border-color:#85B7EB">Email</div>
+        <div class="obs-name">EmailAlert</div>
+        <div class="obs-msg" id="om-0"></div>
+      </div>
+      <div class="obs-node" style="left:calc(37% - 55px)" id="on-1">
+        <div class="obs-box" id="ob-1" style="background:#FAEEDA;color:#633806;border-color:#FAC775">Slack</div>
+        <div class="obs-name">SlackBot</div>
+        <div class="obs-msg" id="om-1"></div>
+      </div>
+      <div class="obs-node" style="left:calc(62% - 55px)" id="on-2">
+        <div class="obs-box" id="ob-2" style="background:#E1F5EE;color:#085041;border-color:#5DCAA5">SMS</div>
+        <div class="obs-name">SMSAlert</div>
+        <div class="obs-msg" id="om-2"></div>
+      </div>
+      <div class="obs-node" style="left:calc(87% - 55px)" id="on-3">
+        <div class="obs-box" id="ob-3" style="background:#FBEAF0;color:#72243E;border-color:#ED93B1">Log</div>
+        <div class="obs-name">Logger</div>
+        <div class="obs-msg" id="om-3"></div>
+      </div>
+      <svg class="conn" id="svg-conn"><line id="ln-0" stroke="#378ADD"/><line id="ln-1" stroke="#BA7517"/><line id="ln-2" stroke="#1D9E75"/><line id="ln-3" stroke="#D4537E"/></svg>
+    </div>
+  </div>
+<div class="sts">
+  <div class="stc"><div class="stn" id="s-subs">0</div><div class="stl">Subscribers</div></div>
+  <div class="stc"><div class="stn" id="s-notifs">0</div><div class="stl">Notifications</div></div>
+  <div class="stc"><div class="stn" id="s-deliveries">0</div><div class="stl">Deliveries</div></div>
+</div>
+<div class="sec"><div class="sec-title"><span class="sec-dot" style="background:#888780"></span>Log</div><div class="lga" id="logbox"></div></div>
+<div class="btns">
+  <button id="btn-s0" onclick="sub(0)" style="background:#E6F1FB;color:#0C447C;border-color:#85B7EB">+ Email 구독</button>
+  <button id="btn-s1" onclick="sub(1)" style="background:#FAEEDA;color:#633806;border-color:#FAC775">+ Slack 구독</button>
+  <button id="btn-s2" onclick="sub(2)" style="background:#E1F5EE;color:#085041;border-color:#5DCAA5">+ SMS 구독</button>
+  <button id="btn-s3" onclick="sub(3)" style="background:#FBEAF0;color:#72243E;border-color:#ED93B1">+ Log 구독</button>
+  <button id="btn-notify" onclick="doNotify()">notify() 발송!</button>
+  <button id="btn-reset" onclick="doReset()">Reset</button>
+</div>
+</div>
+</div>
+</div>
+
+<div class="pnl" id="p-pro">
+<div class="sec"><div class="sec-title"><span class="sec-dot" style="background:#1D9E75"></span>장점 코드 데모</div>
+<div class="dnav" id="pro-nav">
+  <button class="dbtn ag" onclick="proDem(0,this)">느슨한 결합</button>
+  <button class="dbtn" onclick="proDem(1,this)">동적 구독/해제</button>
+  <button class="dbtn" onclick="proDem(2,this)">1:N 브로드캐스트</button>
+  <button class="dbtn" onclick="proDem(3,this)">개방-폐쇄 원칙</button>
+</div>
+<div class="cw" id="pro-code"></div>
+<div class="dsc" id="pro-desc"></div>
+</div>
+<div style="margin-top:8px"><button onclick="runPro()">실행해보기</button></div>
+</div>
+
+<div class="pnl" id="p-con">
+<div class="sec"><div class="sec-title"><span class="sec-dot" style="background:#A32D2D"></span>단점 코드 데모</div>
+<div class="dnav" id="con-nav">
+  <button class="dbtn ar" onclick="conDem(0,this)">메모리 누수</button>
+  <button class="dbtn" onclick="conDem(1,this)">순서 보장 없음</button>
+  <button class="dbtn" onclick="conDem(2,this)">디버깅 어려움</button>
+  <button class="dbtn" onclick="conDem(3,this)">연쇄 업데이트</button>
+</div>
+<div class="cw" id="con-code"></div>
+<div class="dsc" id="con-desc"></div>
+</div>
+<div style="margin-top:8px"><button onclick="runCon()">실행해보기</button></div>
+</div>
+
+<div class="pnl" id="p-use">
+<div class="sec"><div class="sec-title"><span class="sec-dot" style="background:#534AB7"></span>실제 사용 예시</div>
+<div class="dnav" id="use-nav">
+  <button class="dbtn ag" onclick="useDem(0,this)">이벤트 리스너</button>
+  <button class="dbtn" onclick="useDem(1,this)">React useState</button>
+  <button class="dbtn" onclick="useDem(2,this)">채팅 앱</button>
+  <button class="dbtn" onclick="useDem(3,this)">주식 알림</button>
+</div>
+<div class="cw" id="use-code"></div>
+<div class="dsc" id="use-desc"></div>
+</div>
+<div style="margin-top:8px"><button onclick="runUse()">실행해보기</button></div>
+</div>
+</div>
+
+<script>
+var D=2400;
+var obsNames=['EmailAlert','SlackBot','SMSAlert','Logger'];
+var obsColors=['#378ADD','#BA7517','#1D9E75','#D4537E'];
+
+var proData=[
+{lines:['// Subject는 Observer가 "누구"인지 몰라도 됨','const subject = new Subject()','','// 어떤 객체든 update()만 있으면 구독 가능!','subject.subscribe(emailAlert)','subject.subscribe(slackBot)','subject.subscribe(smsAlert)','','// Subject는 그냥 "알림 보냄" 그게 끝','subject.notify("서버 다운!")','// → 각자 알아서 처리함!'],
+annos:['','발행자 하나 만들고','','구독자의 구체 타입을 몰라도 OK!','이메일 구독','슬랙 구독','SMS 구독','','누가 있는지 신경 안 씀!','알림 발송!','각 구독자가 자기 방식으로 처리'],
+desc:'유튜브 채널이 구독자가 누구인지 일일이 모르는 것처럼, Subject도 Observer가 누구인지 몰라요. update() 메서드만 있으면 누구든 구독할 수 있어요.',hl:'hlg'},
+{lines:['const subject = new Subject()','const email = new EmailAlert()','const slack = new SlackBot()','','// 런타임에 자유롭게 구독!','subject.subscribe(email)','subject.subscribe(slack)','subject.notify("이벤트1")  // email, slack 둘 다 받음','','// 슬랙 구독 해제!','subject.unsubscribe(slack)','subject.notify("이벤트2")  // email만 받음!'],
+annos:['','','','','실행 중에 언제든 구독 가능!','이메일 구독','슬랙 구독','둘 다 알림 받음','','실행 중에 언제든 해제 가능!','슬랙 빠짐','이메일만 알림 받음!'],
+desc:'넷플릭스 구독처럼 언제든 시작하고, 언제든 취소할 수 있어요. 앱을 껐다 켤 필요 없이 실행 중에 구독자를 추가하거나 빼면 바로 반영됩니다.',hl:'hlg'},
+{lines:['// 한 번 notify()하면 모든 구독자가 받음','const store = new Subject()','','store.subscribe(cartUI)','store.subscribe(headerUI)','store.subscribe(analytics)','store.subscribe(logger)','','// 상태 변경 한 번이면 전부 업데이트!','store.notify({ items: 3, total: 50000 })','// → 4곳이 동시에 업데이트됨!'],
+annos:['','상태 저장소','','장바구니 UI','헤더 UI','분석 도구','로거','','','알림 1번 = 업데이트 4번!','한 번의 호출로 전부 갱신!'],
+desc:'방송국이 뉴스를 한 번 보내면 모든 TV가 동시에 받는 것처럼, notify() 한 번이면 구독자 전원이 업데이트돼요. 하나하나 따로 알려줄 필요 없어요.',hl:'hlg'},
+{lines:['// 새 구독자 추가? 클래스 하나만!','','class PushNotification implements Observer {','  update(data) {','    // 푸시 알림 보내기','    sendPush(data)','  }','}','','// 기존 Subject 코드는 안 건드림!','subject.subscribe(new PushNotification())','// 끝! 바로 동작!'],
+annos:['','','새 클래스를 만들기만 하면!','update()만 구현하면 OK','','','','','','Subject 수정 제로!','그냥 구독하면 끝','바로 알림 받기 시작!'],
+desc:'새 구독자를 추가할 때 기존 코드를 전혀 안 건드려요. update()만 구현한 새 클래스를 만들고 subscribe() 하면 끝! 개방-폐쇄 원칙을 자연스럽게 지킵니다.',hl:'hlg'}
+];
+
+var conData=[
+{lines:['// 구독 해제를 깜빡하면?','function setupPage() {','  const handler = new HeavyObserver()','  subject.subscribe(handler)','  // ... 페이지 사용 ...','  // unsubscribe() 안 함!','}','','// 페이지를 떠나도 handler가 메모리에 남아있음','// Subject가 참조를 쥐고 있어서 GC가 못 지움!','// → 메모리 누수!'],
+annos:['','','무거운 구독자 생성','구독!','','해제를 깜빡함!','','','','Subject의 배열에 아직 남아있음!','가비지 컬렉터가 못 치움...'],
+desc:'구독을 걸어놓고 해제를 안 하면, 안 쓰는 객체가 메모리에 계속 남아요. 헬스장 회원권처럼 — 안 가도 탈퇴 안 하면 돈이 계속 빠져나가는 거예요.',hl:'hlr'},
+{lines:['subject.subscribe(emailAlert)   // 1번째','subject.subscribe(slackBot)     // 2번째','subject.subscribe(smsAlert)     // 3번째','','subject.notify("서버 다운!")','','// 실행 순서가 보장될까?','// emailAlert → slackBot → smsAlert?','// 보통은 등록 순이지만...','// 구현에 따라 다를 수 있음!','// 순서에 의존하면 위험!'],
+annos:['','','','','알림 발송!','','','보통은 등록 순서대로지만...','','비동기면 순서가 뒤바뀔 수 있음!','순서에 의존하는 코드는 버그 위험!'],
+desc:'편지를 세 명에게 동시에 보내면 누가 먼저 받을지 모르는 것처럼, Observer들이 update()를 받는 순서는 보장되지 않아요. 순서에 의존하는 로직은 위험합니다.',hl:'hlr'},
+{lines:['// notify()가 불렸는데... 누가 부른 거지?','','subject.notify("데이터 변경")','','// EmailAlert.update() 실행됨','// SlackBot.update() 실행됨','// SMSAlert.update() 실행됨','','// 에러 발생! 근데 어디서?','// notify() 호출 → 누가? 어디서? 왜?','// 콜스택을 추적하기가 어려움...'],
+annos:['','','어디선가 notify()가 불림','','이메일은 실행됐고','슬랙도 실행됐고','SMS에서 에러 발생!','','어디서 notify()가 불렸지?','호출 경로가 간접적이라 추적 힘듦','구독자가 많을수록 복잡해져요'],
+desc:'택배가 잘못 왔는데 어느 단계에서 문제가 생겼는지 추적하기 어려운 것처럼, notify()로 연결된 간접 호출은 디버깅이 어려워요. 콜스택이 복잡해지거든요.',hl:'hlr'},
+{lines:['// Observer A가 update()에서 상태를 바꾸면','class ObserverA implements Observer {','  update(data) {','    subject.setState(newData) // 또 notify 발생!','  }','}','','// ObserverA 알림 → 상태 변경 → 또 notify','// → 모든 Observer 다시 알림 → 또 상태 변경?','// → 무한 루프 위험!','// notify 안에서 notify가 또 불림!'],
+annos:['','','','여기서 상태를 바꿔버림!','','','','알림 → 변경 → 알림 → 변경...','','끝나지 않는 연쇄 반응!','notify가 notify를 부르는 무한 루프!'],
+desc:'도미노가 서로를 다시 세우면 영원히 쓰러지는 것처럼, Observer가 update() 안에서 상태를 변경하면 notify()가 또 불리고, 또 불리고... 무한 루프에 빠질 수 있어요.',hl:'hlr'}
+];
+
+var useData=[
+{lines:['// DOM 이벤트 리스너 = 옵저버 패턴!','','button.addEventListener("click", handler1)','button.addEventListener("click", handler2)','button.addEventListener("click", handler3)','','// 버튼 클릭 한 번이면','// handler1, handler2, handler3 전부 실행!','','// 해제도 자유롭게','button.removeEventListener("click", handler2)'],
+annos:['우리가 매일 쓰는 그것!','','구독자 1 등록','구독자 2 등록','구독자 3 등록','','클릭 = notify()','3개 핸들러가 전부 반응!','','','구독 해제 = unsubscribe()'],
+desc:'addEventListener()가 바로 옵저버 패턴이에요! 버튼(Subject)을 클릭하면 등록된 모든 핸들러(Observer)가 실행돼요. 사실 우리는 매일 옵저버 패턴을 쓰고 있었어요.',hl:'hlg'},
+{lines:['// React의 useState도 옵저버 패턴!','','const [count, setCount] = useState(0)','','// setCount = notify() 역할','setCount(count + 1)','','// React가 알아서:','// 1. 상태 변경 감지','// 2. 이 state를 쓰는 컴포넌트 찾기','// 3. 해당 컴포넌트만 리렌더링!','// Subject = state, Observer = component'],
+annos:['','','상태(Subject) 선언','','','상태 변경 = notify()!','','','변경 감지됨!','이 state를 구독 중인 컴포넌트 찾기','자동 리렌더링 = update()!','이게 옵저버 패턴!'],
+desc:'React에서 setCount()를 부르면 화면이 자동으로 바뀌죠? state가 Subject이고, 그 state를 쓰는 컴포넌트가 Observer예요. React가 옵저버 패턴을 내부적으로 쓰고 있는 거예요.',hl:'hlg'},
+{lines:['// 채팅방 = Subject, 참가자 = Observer','','class ChatRoom extends Subject {','  sendMessage(msg) {','    this.notify({ sender, msg, time })',  '  }','}','','room.subscribe(userA)','room.subscribe(userB)','room.subscribe(userC)','room.sendMessage("안녕!")','// → A, B, C 모두에게 전달!'],
+annos:['','','채팅방이 Subject!','','메시지 = notify()!','','','','A가 채팅방 입장','B도 입장','C도 입장','메시지 보내기!','전원에게 동시 전달!'],
+desc:'카톡 단체방에서 한 명이 메시지를 보내면 방에 있는 전원이 받죠? 채팅방이 Subject이고 참가자가 Observer예요. 누군가 나가면(unsubscribe) 더 이상 메시지를 못 받아요.',hl:'hlg'},
+{lines:['// 주식 가격 알림 시스템','','class StockTicker extends Subject {','  updatePrice(symbol, price) {','    this.price = price','    this.notify({ symbol, price })',  '  }','}','','ticker.subscribe(traderApp)','ticker.subscribe(alertBot)','ticker.subscribe(dashboard)','ticker.updatePrice("AAPL", 198.5)','// → 3곳이 동시에 가격 업데이트!'],
+annos:['','','주식 시세가 Subject!','','가격 변경!','모든 구독자에게 알림!','','','','트레이딩 앱','알림 봇','대시보드','애플 주가 변경!','3곳이 동시에 갱신!'],
+desc:'주식 시세가 바뀌면 트레이딩 앱, 알림 봇, 대시보드가 동시에 업데이트되죠? 시세 서버가 Subject이고 각 앱이 Observer예요. 새 앱을 추가해도 서버 코드는 안 고쳐요.',hl:'hlg'}
+];
+
+var curPro=0,curCon=0,curUse=0,demoR=false;
+function buildHTML(data,idx,prefix,colorCls){var d=data[idx];var html='';for(var i=0;i<d.lines.length;i++){html+='<div class="cl" id="'+prefix+'-'+i+'"><span class="ct">'+d.lines[i]+'</span><span class="ca '+colorCls+'" id="'+prefix+'-a-'+i+'"></span></div>'}return html}
+function renderCode(t,data,idx,c){document.getElementById(t).innerHTML=buildHTML(data,idx,t,c)}
+function renderDesc(t,data,idx){var el=document.getElementById(t);el.textContent=data[idx].desc;el.classList.remove('show');requestAnimationFrame(function(){requestAnimationFrame(function(){el.classList.add('show')})})}
+function proDem(i,b){curPro=i;document.querySelectorAll('#pro-nav .dbtn').forEach(function(x){x.className='dbtn'});b.className='dbtn ag';renderCode('pro-code',proData,i,'cag');renderDesc('pro-desc',proData,i)}
+function conDem(i,b){curCon=i;document.querySelectorAll('#con-nav .dbtn').forEach(function(x){x.className='dbtn'});b.className='dbtn ar';renderCode('con-code',conData,i,'car');renderDesc('con-desc',conData,i)}
+function useDem(i,b){curUse=i;document.querySelectorAll('#use-nav .dbtn').forEach(function(x){x.className='dbtn'});b.className='dbtn ag';renderCode('use-code',useData,i,'cag');renderDesc('use-desc',useData,i)}
+function sl(ms){return new Promise(function(r){setTimeout(r,ms)})}
+async function animCode(p,data,idx){if(demoR)return;demoR=true;var d=data[idx];for(var i=0;i<d.lines.length;i++){var line=document.getElementById(p+'-'+i);var anno=document.getElementById(p+'-a-'+i);if(!d.annos[i]||d.annos[i]===''){await sl(200);continue}line.classList.add(d.hl);anno.textContent='\u2190 '+d.annos[i];(function(a){requestAnimationFrame(function(){requestAnimationFrame(function(){a.classList.add('show')})})})(anno);await sl(1800)}demoR=false}
+function runPro(){animCode('pro-code',proData,curPro)}
+function runCon(){animCode('con-code',conData,curCon)}
+function runUse(){animCode('use-code',useData,curUse)}
+renderCode('pro-code',proData,0,'cag');renderDesc('pro-desc',proData,0);
+renderCode('con-code',conData,0,'car');renderDesc('con-desc',conData,0);
+renderCode('use-code',useData,0,'cag');renderDesc('use-desc',useData,0);
+
+function sw(id){document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active')});document.querySelectorAll('.pnl').forEach(function(p){p.classList.remove('active')});document.querySelector('[onclick="sw(\''+id+'\')"]').classList.add('active');document.getElementById('p-'+id).classList.add('active');if(id==='sim')setTimeout(drawLines,50)}
+
+var subscribed=new Set(),totalNotifs=0,totalDeliveries=0,running=false;
+var logbox=document.getElementById('logbox');
+var anIds=[1,5,7,8,10,11,13,14];
+
+function setStep(n){document.querySelectorAll('.pill').forEach(function(p){var s=parseInt(p.dataset.s);if(!isNaN(s))p.className='pill'+(s===n?' active':(s<n?' done':''))})}
+function clearHL(){for(var i=0;i<=16;i++){var e=document.getElementById('cl-'+i);if(e)e.classList.remove('hl')}anIds.forEach(function(j){var a=document.getElementById('an-'+j);if(a){a.classList.remove('show');a.textContent=''}})}
+function hlLine(n,txt){clearHL();var e=document.getElementById('cl-'+n);if(e)e.classList.add('hl');var a=document.getElementById('an-'+n);if(a&&txt){a.textContent='\u2190 '+txt;requestAnimationFrame(function(){requestAnimationFrame(function(){a.classList.add('show')})})}}
+function addLog(msg,type){var d=document.createElement('div');d.className='ll';var tg=document.createElement('span');tg.className='tg '+(type==='sub'?'tgn':type==='unsub'?'tgr':type==='notify'?'tgk':'tgc');tg.textContent=type==='sub'?'SUB':type==='unsub'?'UNSUB':type==='notify'?'NOTIFY':'UPDATE';var tx=document.createElement('span');tx.textContent=msg;d.appendChild(tg);d.appendChild(tx);logbox.appendChild(d);logbox.scrollTop=logbox.scrollHeight}
+function updateStats(){document.getElementById('s-subs').textContent=subscribed.size;document.getElementById('s-notifs').textContent=totalNotifs;document.getElementById('s-deliveries').textContent=totalDeliveries;var arr=[];subscribed.forEach(function(i){arr.push(obsNames[i])});document.getElementById('subj-state').textContent='observers: ['+arr.join(', ')+']';document.getElementById('subj-count').textContent=subscribed.size>0?subscribed.size+'명 구독 중':''}
+function drawLines(){var viz=document.getElementById('viz');if(!viz)return;var vr=viz.getBoundingClientRect();var sr=document.getElementById('subj-rect');if(!sr)return;var srr=sr.getBoundingClientRect();var sx=srr.left+srr.width/2-vr.left,sy=srr.top+srr.height-vr.top;[0,1,2,3].forEach(function(i){var on=document.getElementById('on-'+i);if(!on)return;var ob=on.querySelector('.obs-box').getBoundingClientRect();var ox=ob.left+ob.width/2-vr.left,oy=ob.top-vr.top;var ln=document.getElementById('ln-'+i);ln.setAttribute('x1',sx);ln.setAttribute('y1',sy);ln.setAttribute('x2',ox);ln.setAttribute('y2',oy);if(subscribed.has(i))ln.className.baseVal='sub';else ln.className.baseVal=''})}
+function updateBoxes(){[0,1,2,3].forEach(function(i){var ob=document.getElementById('ob-'+i);if(subscribed.has(i))ob.classList.add('subscribed');else ob.classList.remove('subscribed')})}
+function setBtns(d){['btn-s0','btn-s1','btn-s2','btn-s3','btn-notify','btn-reset'].forEach(function(id){var e=document.getElementById(id);if(e)e.disabled=d})}
+
+async function sub(idx){
+if(running)return;running=true;setBtns(true);
+if(subscribed.has(idx)){
+subscribed.delete(idx);
+setStep(1);hlLine(10,'unsubscribe('+obsNames[idx]+') 호출!');
+addLog(obsNames[idx]+' 구독 해제','unsub');
+await sl(D);
+hlLine(11,obsNames[idx]+'를 목록에서 제거!');
+addLog('observers에서 '+obsNames[idx]+' 빠짐','unsub');
+document.getElementById('btn-s'+idx).textContent='+ '+obsNames[idx].replace('Alert','').replace('Bot','')+' 구독';
+document.getElementById('om-'+idx).textContent='';
+}else{
+subscribed.add(idx);
+setStep(1);hlLine(7,'subscribe('+obsNames[idx]+') 호출!');
+addLog(obsNames[idx]+' 구독 시작!','sub');
+await sl(D);
+hlLine(8,'observers 배열에 '+obsNames[idx]+' 추가!');
+addLog('observers에 '+obsNames[idx]+' 추가됨','sub');
+document.getElementById('btn-s'+idx).textContent='- '+obsNames[idx].replace('Alert','').replace('Bot','')+' 해제';
+}
+updateStats();updateBoxes();drawLines();
+await sl(D/2);running=false;setBtns(false)}
+
+async function doNotify(){
+if(running)return;
+if(subscribed.size===0){addLog('구독자가 없어요! 먼저 구독하세요','notify');return}
+running=true;setBtns(true);totalNotifs++;
+setStep(2);hlLine(13,'notify("서버 점검 예정!") 호출!');
+addLog('notify() 발송! → 구독자 '+subscribed.size+'명에게','notify');
+document.getElementById('subj-rect').classList.add('notify');
+await sl(D);
+
+setStep(3);
+var subs=[];subscribed.forEach(function(i){subs.push(i)});
+for(var k=0;k<subs.length;k++){
+var i=subs[k];
+hlLine(14,obsNames[i]+'.update() 실행 중!');
+addLog(obsNames[i]+'.update("서버 점검 예정!")','update');
+var ob=document.getElementById('ob-'+i);
+ob.classList.add('notified');
+var ln=document.getElementById('ln-'+i);
+ln.className.baseVal='pulse';
+document.getElementById('om-'+i).textContent='수신 완료!';
+totalDeliveries++;updateStats();
+await sl(1200);
+ob.classList.remove('notified');
+ln.className.baseVal='sub';
+}
+document.getElementById('subj-rect').classList.remove('notify');
+updateStats();
+await sl(D/3);running=false;setBtns(false)}
+
+function doReset(){subscribed.clear();totalNotifs=0;totalDeliveries=0;running=false;logbox.innerHTML='';setStep(0);clearHL();
+document.getElementById('subj-rect').classList.remove('active','notify');
+document.getElementById('subj-state').textContent='observers: []';
+document.getElementById('subj-count').textContent='';
+updateStats();
+[0,1,2,3].forEach(function(i){document.getElementById('ob-'+i).classList.remove('subscribed','notified');document.getElementById('ln-'+i).className.baseVal='';document.getElementById('om-'+i).textContent='';document.getElementById('btn-s'+i).textContent='+ '+['Email','Slack','SMS','Log'][i]+' 구독'});
+setBtns(false);drawLines()}
+
+window.addEventListener('resize',drawLines);
+setTimeout(drawLines,100);
+</script>
+</body>
+</html>

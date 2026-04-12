@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MVP Pattern</title>
+  <link rel="stylesheet" href="../topic-frame.css">
+</head>
+<body>
+<h2 class="sr-only">MVP pattern interactive explainer with simulation, pros, cons, and use cases in Korean.</h2>
+<style>
+*{box-sizing:border-box}
+.tabs{display:flex;gap:0;border-bottom:0.5px solid var(--color-border-tertiary);margin-bottom:1.25rem;overflow-x:auto}
+.tab{padding:8px 14px;font-size:13px;font-weight:500;color:var(--color-text-secondary);cursor:pointer;border-bottom:2px solid transparent;transition:all 0.3s;background:none;border-top:none;border-left:none;border-right:none;white-space:nowrap}
+.tab:hover{color:var(--color-text-primary)}.tab.active{color:#3C3489;border-bottom-color:#534AB7}
+.pnl{display:none}.pnl.active{display:block}
+.sec{margin-bottom:1.25rem}
+.sec-title{font-size:14px;font-weight:500;color:var(--color-text-primary);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.sec-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.cw{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:14px 16px;font-family:var(--font-mono);font-size:12px;line-height:2.2;color:var(--color-text-secondary);overflow-x:auto;margin-bottom:10px}
+.cl{display:flex;align-items:baseline;min-height:24px;transition:background 0.5s;border-radius:3px;padding:0 4px;margin:0 -4px}
+.cl.hl{background:#EEEDFE}.cl.hlg{background:#E1F5EE}.cl.hlr{background:#FCEBEB}.cl.hlb{background:#E6F1FB}.cl.hla{background:#FAEEDA}
+.ct{white-space:pre;flex-shrink:0}
+.ca{margin-left:12px;font-family:var(--font-sans);font-size:11px;opacity:0;transition:opacity 1s;white-space:nowrap;flex-shrink:0}
+.ca.show{opacity:1}
+.cap{color:#534AB7}.cag{color:#085041}.car{color:#791F1F}.cab{color:#0C447C}.caa{color:#633806}
+.kw{color:#534AB7}.vl{color:#0F6E56}.nl{color:#A32D2D}.cm{color:var(--color-text-tertiary)}.sv{color:#BA7517}
+
+.viz-area{position:relative;min-height:240px;margin:12px 0;padding:8px 0}
+.mvc-row{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+.mvc-box{width:150px;border-radius:var(--border-radius-lg);padding:12px;text-align:center;border:2px solid;transition:all 0.6s}
+.mvc-box.pulse{transform:scale(1.05)}
+.mvc-label{font-size:14px;font-weight:500;margin-bottom:4px}
+.mvc-desc{font-size:10px;margin-bottom:6px}
+.mvc-state{font-family:var(--font-mono);font-size:11px;min-height:16px;transition:opacity 0.5s}
+.box-model{background:#EEEDFE;border-color:#AFA9EC;color:#3C3489}
+.box-model .mvc-desc{color:#534AB7}
+.box-view{background:#E6F1FB;border-color:#85B7EB;color:#0C447C}
+.box-view .mvc-desc{color:#378ADD}
+.box-pres{background:#FAEEDA;border-color:#FAC775;color:#633806}
+.box-pres .mvc-desc{color:#BA7517}
+.flow-row{display:flex;justify-content:center;align-items:center;gap:8px;margin:12px 0;font-size:11px;color:var(--color-text-tertiary);flex-wrap:wrap}
+.flow-arrow{font-size:16px;color:var(--color-border-secondary);transition:color 0.5s}
+.flow-arrow.av{color:#378ADD}.flow-arrow.ap{color:#BA7517}.flow-arrow.am{color:#534AB7}
+.flow-step{padding:3px 10px;border-radius:var(--border-radius-md);background:var(--color-background-secondary);transition:all 0.5s;font-family:var(--font-mono)}
+.flow-step.av{background:#E6F1FB;color:#0C447C}.flow-step.ap{background:#FAEEDA;color:#633806}.flow-step.am{background:#EEEDFE;color:#3C3489}
+.no-arrow{font-size:10px;color:var(--color-text-tertiary);text-align:center;margin:4px 0;font-style:italic}
+.user-zone{margin-top:12px;padding:10px 12px;background:var(--color-background-secondary);border-radius:var(--border-radius-md)}
+.user-label{font-size:10px;font-weight:500;color:var(--color-text-tertiary);margin-bottom:6px}
+.user-msg{font-family:var(--font-mono);font-size:12px;color:var(--color-text-primary);min-height:18px}
+
+.pills{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.pill{font-size:12px;padding:4px 12px;border-radius:var(--border-radius-md);background:var(--color-background-secondary);color:var(--color-text-secondary);transition:all 0.5s}
+.pill.active{background:#EEEDFE;color:#3C3489}.pill.done{background:#E1F5EE;color:#085041}
+.sts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:12px 0}
+.stc{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 12px;text-align:center}
+.stn{font-size:20px;font-weight:500;color:var(--color-text-primary)}
+.stl{font-size:11px;color:var(--color-text-tertiary);margin-top:2px}
+.lga{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 14px;min-height:60px;max-height:200px;overflow-y:auto;font-family:var(--font-mono);font-size:11px;line-height:2;color:var(--color-text-secondary)}
+.ll{display:flex;gap:6px;align-items:baseline}
+.tg{display:inline-block;font-size:10px;padding:1px 7px;border-radius:var(--border-radius-md);font-weight:500}
+.tgm{background:#EEEDFE;color:#3C3489}.tgv{background:#E6F1FB;color:#0C447C}.tgp{background:#FAEEDA;color:#633806}.tgu{background:#E1F5EE;color:#085041}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+.btns button:disabled{opacity:0.4;cursor:not-allowed}
+.dnav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.dbtn{padding:6px 14px;font-size:12px;border-radius:var(--border-radius-md);background:var(--color-background-secondary);color:var(--color-text-secondary);border:0.5px solid var(--color-border-tertiary);cursor:pointer;transition:all 0.3s}
+.dbtn:hover{border-color:var(--color-border-secondary)}
+.dbtn.ag{background:#E1F5EE;color:#085041;border-color:#0F6E56}
+.dbtn.ar{background:#FCEBEB;color:#791F1F;border-color:#A32D2D}
+.dsc{font-size:13px;color:var(--color-text-secondary);line-height:1.7;padding:10px 14px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);min-height:40px;opacity:0;transition:opacity 0.8s}
+.dsc.show{opacity:1}
+
+.intro-block{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:14px 16px;margin-bottom:1.25rem;display:flex;flex-direction:column;gap:10px}
+.intro-item{display:flex;gap:10px;align-items:baseline}
+.intro-label{font-size:12px;font-weight:600;color:var(--color-text-primary);white-space:nowrap;min-width:100px;flex-shrink:0}
+.intro-text{font-size:13px;color:var(--color-text-secondary);line-height:1.6}
+
+.sim-row{display:flex;gap:1.25rem;align-items:flex-start}
+.sim-row>.sec{flex:1;min-width:0;margin-bottom:0}
+.sim-row>.sec:first-child{flex:0 0 38%;max-width:38%}
+.sim-row>.sec:last-child{flex:1}
+@media(max-width:860px){.sim-row{flex-direction:column}.sim-row>.sec:first-child{flex:1;max-width:100%}}
+
+
+
+</style>
+
+<div style="padding:0.5rem 0">
+<div class="intro-block">
+  <div class="intro-item"><span class="intro-label">무슨 패턴인가</span><span class="intro-text">View는 화면만, Model은 데이터만 담당하고, 모든 로직은 Presenter가 중재합니다. View와 Model이 서로 직접 통신하지 않아 테스트가 쉬워요.</span></div>
+  <div class="intro-item"><span class="intro-label">이 화면에서는</span><span class="intro-text">Model·Presenter·View 세 박스가 흐름 화살표로 연결되어 있고, View와 Model 사이에 직접 연결이 없습니다. "+ 할 일 추가" 버튼으로 Presenter가 모든 중재를 맡는 과정을 확인하세요.</span></div>
+  <div class="intro-item"><span class="intro-label">언제 떠올리나</span><span class="intro-text">View를 Mock으로 바꿔 Presenter 로직만 단위 테스트하고 싶을 때. Android Activity처럼 화면 프레임워크 의존도가 높은 환경에서 특히 유용합니다.</span></div>
+</div>
+<div class="tabs">
+  <button class="tab active" onclick="sw('sim')">Simulation</button>
+  <button class="tab" onclick="sw('pro')">장점 (Pros)</button>
+  <button class="tab" onclick="sw('con')">단점 (Cons)</button>
+  <button class="tab" onclick="sw('use')">사용 예시</button>
+</div>
+
+<div class="pnl active" id="p-sim">
+<div class="sim-row">
+<div class="sec">
+  <div class="sec-title"><span class="sec-dot" style="background:#534AB7"></span>MVP pattern</div>
+  <div class="cw">
+    <div class="cl" id="cl-0"><span class="ct"><span class="cm">// View — 화면만 담당 (멍청한 View!)</span></span></div>
+    <div class="cl" id="cl-1"><span class="ct"><span class="kw">interface</span> TodoView {</span></div>
+    <div class="cl" id="cl-2"><span class="ct">  showTodos(todos): <span class="kw">void</span></span><span class="ca cab" id="an-2"></span></div>
+    <div class="cl" id="cl-3"><span class="ct">  showError(msg): <span class="kw">void</span></span><span class="ca cab" id="an-3"></span></div>
+    <div class="cl" id="cl-4"><span class="ct">  getInputText(): <span class="kw">string</span></span><span class="ca cab" id="an-4"></span></div>
+    <div class="cl" id="cl-5"><span class="ct">}</span></div>
+    <div class="cl" id="cl-6"><span class="ct"></span></div>
+    <div class="cl" id="cl-7"><span class="ct"><span class="cm">// Model — 데이터만 담당</span></span></div>
+    <div class="cl" id="cl-8"><span class="ct"><span class="kw">class</span> TodoModel {</span></div>
+    <div class="cl" id="cl-9"><span class="ct">  addTodo(text) { this.todos.push({ text, done: <span class="nl">false</span> }) }</span><span class="ca cap" id="an-9"></span></div>
+    <div class="cl" id="cl-10"><span class="ct">  toggle(i) { this.todos[i].done = !this.todos[i].done }</span><span class="ca cap" id="an-10"></span></div>
+    <div class="cl" id="cl-11"><span class="ct">  getTodos() { <span class="kw">return</span> [...this.todos] }</span><span class="ca cap" id="an-11"></span></div>
+    <div class="cl" id="cl-12"><span class="ct">}</span></div>
+    <div class="cl" id="cl-13"><span class="ct"></span></div>
+    <div class="cl" id="cl-14"><span class="ct"><span class="cm">// Presenter — 모든 로직의 중심!</span></span></div>
+    <div class="cl" id="cl-15"><span class="ct"><span class="kw">class</span> TodoPresenter {</span></div>
+    <div class="cl" id="cl-16"><span class="ct">  <span class="kw">constructor</span>(<span class="kw">private</span> model, <span class="kw">private</span> view) {}</span><span class="ca caa" id="an-16"></span></div>
+    <div class="cl" id="cl-17"><span class="ct">  onAddClicked() {</span><span class="ca caa" id="an-17"></span></div>
+    <div class="cl" id="cl-18"><span class="ct">    <span class="kw">const</span> text = this.view.getInputText()</span><span class="ca caa" id="an-18"></span></div>
+    <div class="cl" id="cl-19"><span class="ct">    this.model.addTodo(text)</span><span class="ca caa" id="an-19"></span></div>
+    <div class="cl" id="cl-20"><span class="ct">    this.view.showTodos(this.model.getTodos())</span><span class="ca caa" id="an-20"></span></div>
+    <div class="cl" id="cl-21"><span class="ct">  }</span></div>
+    <div class="cl" id="cl-22"><span class="ct">}</span></div>
+  </div>
+</div>
+<div class="sec">
+  <div class="sec-title"><span class="sec-dot" style="background:#0F6E56"></span>MVP flow diagram</div>
+  <div class="pills" id="steps"><div class="pill active" data-s="0">Ready</div><div class="pill" data-s="1">1. User → View</div><div class="pill" data-s="2">2. View → Presenter</div><div class="pill" data-s="3">3. Presenter → Model</div><div class="pill" data-s="4">4. Presenter → View</div></div>
+  <div class="viz-area">
+    <div class="mvc-row">
+      <div class="mvc-box box-model" id="box-m"><div class="mvc-label">Model</div><div class="mvc-desc">데이터 + 로직</div><div class="mvc-state" id="m-state">todos: []</div></div>
+      <div class="mvc-box box-pres" id="box-p"><div class="mvc-label">Presenter</div><div class="mvc-desc">모든 로직의 허브</div><div class="mvc-state" id="p-state">대기 중</div></div>
+      <div class="mvc-box box-view" id="box-v"><div class="mvc-label">View</div><div class="mvc-desc">멍청한 화면</div><div class="mvc-state" id="v-state">render 대기</div></div>
+    </div>
+    <div class="flow-row">
+      <span class="flow-step" id="fs-1">User action</span>
+      <span class="flow-arrow" id="fa-1">→</span>
+      <span class="flow-step" id="fs-2">View 전달</span>
+      <span class="flow-arrow" id="fa-2">→</span>
+      <span class="flow-step" id="fs-3">Presenter</span>
+      <span class="flow-arrow" id="fa-3">→</span>
+      <span class="flow-step" id="fs-4">Model</span>
+      <span class="flow-arrow" id="fa-4">→</span>
+      <span class="flow-step" id="fs-5">View 갱신</span>
+    </div>
+    <div class="no-arrow">View ↔ Model 직접 연결 없음! Presenter가 전부 중재</div>
+    <div class="user-zone">
+      <div class="user-label">사용자 화면</div>
+      <div class="user-msg" id="user-msg">버튼을 눌러 Todo를 추가해보세요!</div>
+    </div>
+  </div>
+<div class="sts">
+  <div class="stc"><div class="stn" id="s-actions">0</div><div class="stl">User actions</div></div>
+  <div class="stc"><div class="stn" id="s-updates">0</div><div class="stl">Model updates</div></div>
+  <div class="stc"><div class="stn" id="s-renders">0</div><div class="stl">View renders</div></div>
+</div>
+<div class="sec"><div class="sec-title"><span class="sec-dot" style="background:#888780"></span>Log</div><div class="lga" id="logbox"></div></div>
+<div class="btns">
+  <button id="btn-add" onclick="doAdd()">+ "할 일 추가"</button>
+  <button id="btn-tog" onclick="doToggle()">첫 번째 토글</button>
+  <button id="btn-reset" onclick="doReset()">Reset</button>
+</div>
+</div>
+</div>
+</div>
+
+<div class="pnl" id="p-pro">
+<div class="sec"><div class="sec-title"><span class="sec-dot" style="background:#1D9E75"></span>장점 코드 데모</div>
+<div class="dnav" id="pro-nav">
+  <button class="dbtn ag" onclick="proDem(0,this)">View-Model 완전 분리</button>
+  <button class="dbtn" onclick="proDem(1,this)">테스트 최강</button>
+  <button class="dbtn" onclick="proDem(2,this)">멍청한 View</button>
+  <button class="dbtn" onclick="proDem(3,this)">View 교체 자유</button>
+</div>
+<div class="cw" id="pro-code"></div>
+<div class="dsc" id="pro-desc"></div>
+</div>
+<div style="margin-top:8px"><button onclick="runPro()">실행해보기</button></div>
+</div>
+
+<div class="pnl" id="p-con">
+<div class="sec"><div class="sec-title"><span class="sec-dot" style="background:#A32D2D"></span>단점 코드 데모</div>
+<div class="dnav" id="con-nav">
+  <button class="dbtn ar" onclick="conDem(0,this)">뚱뚱한 Presenter</button>
+  <button class="dbtn" onclick="conDem(1,this)">보일러플레이트</button>
+  <button class="dbtn" onclick="conDem(2,this)">View 인터페이스 폭발</button>
+  <button class="dbtn" onclick="conDem(3,this)">수동 동기화</button>
+</div>
+<div class="cw" id="con-code"></div>
+<div class="dsc" id="con-desc"></div>
+</div>
+<div style="margin-top:8px"><button onclick="runCon()">실행해보기</button></div>
+</div>
+
+<div class="pnl" id="p-use">
+<div class="sec"><div class="sec-title"><span class="sec-dot" style="background:#534AB7"></span>실제 사용 예시</div>
+<div class="dnav" id="use-nav">
+  <button class="dbtn ag" onclick="useDem(0,this)">Android (Java)</button>
+  <button class="dbtn" onclick="useDem(1,this)">WinForms (.NET)</button>
+  <button class="dbtn" onclick="useDem(2,this)">GWT (Google)</button>
+  <button class="dbtn" onclick="useDem(3,this)">MVC vs MVP vs MVVM</button>
+</div>
+<div class="cw" id="use-code"></div>
+<div class="dsc" id="use-desc"></div>
+</div>
+<div style="margin-top:8px"><button onclick="runUse()">실행해보기</button></div>
+</div>
+</div>
+
+<script>
+var D=2400;var todos=[];var acts=0,upds=0,rnds=0,running=false;
+var txts=["우유 사기","코드 리뷰","운동하기","책 읽기","빨래하기"];var tIdx=0;
+
+var proData=[
+{lines:['// MVC에서는 View가 Model을 직접 봄','// View → Model (직접 참조!)','','// MVP에서는 Presenter가 완전 차단!','// View ← Presenter → Model','// View는 Model의 존재 자체를 모름!','','interface TodoView {','  showTodos(items: ViewItem[]): void','  // ViewItem은 Model의 Todo가 아님!','  // Presenter가 변환해서 넘겨줌','}',' ','// View가 Model 구조에 의존하지 않음!','// Model이 바뀌어도 View는 수정 제로!'],
+annos:['MVC의 문제점','View가 Model을 직접 알아야 함','','MVP의 해결책!','Presenter가 중간 차단!','완전한 분리!','','','View 전용 데이터 타입!','','Presenter가 변환 담당','','','','Model 변경 → Presenter만 수정!'],
+desc:'MVC에서는 View가 Model의 구조를 알아야 했어요. MVP에서는 Presenter가 통역사처럼 중간에서 데이터를 변환해주니까, View와 Model이 서로의 존재를 전혀 몰라요.',hl:'hlg'},
+{lines:['// Presenter를 View 없이 테스트!','','class MockView implements TodoView {','  shownTodos = []','  showTodos(items) { this.shownTodos = items }','  getInputText() { return "테스트 할 일" }','}','','// 진짜 화면 없이 로직만 테스트!','const view = new MockView()','const model = new TodoModel()','const presenter = new TodoPresenter(model, view)','','presenter.onAddClicked()','expect(view.shownTodos.length).toBe(1) // 통과!'],
+annos:['','','가짜 View 만들기!','보여준 걸 기록','','가짜 입력값','','','','가짜 View 사용!','진짜 Model 사용','연결!','','추가 버튼 시뮬레이션','화면에 1개 보여졌는지 확인!'],
+desc:'View를 인터페이스로 만들었기 때문에, 진짜 화면(DOM/Android) 없이도 가짜 View로 테스트할 수 있어요. UI 테스트의 최대 난관인 "화면 없이 로직 테스트"가 가능해집니다.',hl:'hlg'},
+{lines:['// View는 "멍청(Passive/Dumb)"해야 함!','','class TodoViewImpl implements TodoView {','  // 1. 보여주기만 함','  showTodos(items) {','    this.list.innerHTML = items.map(renderItem)','  }','','  // 2. 입력값 꺼내주기만 함','  getInputText() {','    return this.input.value','  }','','  // 로직? 판단? 계산? 없음!','  // 그건 전부 Presenter의 몫!','}'],
+annos:['View는 바보여야 해요!','','','할 일 1: 보여주기','HTML에 그리기만','','','','할 일 2: 값 전달','input에서 읽어주기만','','','','if문? 계산? 전혀 없음!','로직은 Presenter에게!'],
+desc:'View는 TV 화면 같은 거예요 — 보여주기만 하고 자기가 뭘 보여주는지는 판단하지 않아요. 모든 판단과 로직은 Presenter(리모컨)가 합니다. 그래서 "Passive View"라고 불러요.',hl:'hlg'},
+{lines:['// 같은 Presenter로 여러 View!','','const model = new TodoModel()','','// 웹 View','const webPresenter = new TodoPresenter(','  model, new WebTodoView()',')',' ','// 모바일 View','const mobilePresenter = new TodoPresenter(','  model, new MobileTodoView()',')',' ','// Presenter의 로직은 100% 재사용!','// View만 인터페이스 맞추면 됨!'],
+annos:['','','Model 하나!','','','같은 Presenter 로직!','웹 View 연결','','','','같은 Presenter 로직!','모바일 View 연결','','','비즈니스 로직 재사용!','인터페이스만 맞추면 끝!'],
+desc:'같은 Presenter(두뇌)에 다른 View(화면)를 꽂으면 돼요. 웹/모바일/데스크톱 전부 같은 비즈니스 로직을 쓰고, 화면만 다르게 만들면 됩니다.',hl:'hlg'}
+];
+
+var conData=[
+{lines:['// 기능이 많아지면 Presenter가 비대해짐!','class TodoPresenter {','  onAddClicked() { ... }','  onDeleteClicked(id) { ... }','  onToggleClicked(id) { ... }','  onEditClicked(id) { ... }','  onFilterChanged(type) { ... }','  onSortChanged(field) { ... }','  onSearchChanged(query) { ... }','  onExportClicked() { ... }','  // 모든 이벤트 핸들러가 여기에!','  // MVC의 Fat Controller와 같은 문제!','}'],
+annos:['','','추가','삭제','토글','수정','필터','정렬','검색','내보내기','이벤트마다 메서드가 하나씩...','Presenter가 점점 뚱뚱해져요!'],
+desc:'MVC에서 Controller가 뚱뚱해지는 것처럼, MVP에서는 Presenter가 뚱뚱해져요. 모든 사용자 이벤트를 Presenter가 처리하니까, 기능이 많아지면 거대한 클래스가 됩니다.',hl:'hlr'},
+{lines:['// 기능 하나에 필요한 파일들','','// 1. Model','class TodoModel { ... }','','// 2. View 인터페이스','interface TodoView { ... }','','// 3. View 구현체','class TodoViewImpl implements TodoView { ... }','','// 4. Presenter','class TodoPresenter { ... }','','// 간단한 기능에도 최소 4개!','// MVC(3개)보다 1개 더 많음!'],
+annos:['','','','데이터 클래스','','','인터페이스 정의','','','실제 화면 구현','','','로직 처리','','4개 파일이 최소!','인터페이스 때문에 1개 더!'],
+desc:'MVP는 View를 인터페이스 + 구현체로 나누니까, MVC보다 파일이 1개 더 필요해요. 집 한 채 짓는데 설계도(인터페이스)를 꼭 따로 만들어야 하는 느낌이에요.',hl:'hlr'},
+{lines:['// View에 기능이 추가될 때마다','// 인터페이스도 수정해야 함!','','interface TodoView {','  showTodos(items): void','  showError(msg): void','  showLoading(): void        // 새 기능!','  hideLoading(): void        // 새 기능!','  showEmptyState(): void     // 새 기능!','  showDeleteConfirm(): void  // 새 기능!','  highlightItem(id): void    // 새 기능!','}',' ','// 화면에 뭔가 추가할 때마다','// 인터페이스 → 구현체 → Presenter 3곳 수정!'],
+annos:['','','','','기존','기존','추가!','추가!','추가!','추가!','추가!','','','인터페이스 커지면','3곳을 동시에 수정해야 해요!'],
+desc:'TV에 새 기능(화면 분할, 자막 등)을 추가할 때마다 리모컨 버튼도 추가해야 하는 것처럼, View에 메서드가 추가되면 인터페이스 → 구현체 → Presenter 3곳을 수정해야 해요.',hl:'hlr'},
+{lines:['// Presenter가 직접 View를 업데이트해야 함','','class TodoPresenter {','  onAddClicked() {','    const text = this.view.getInputText()','    this.model.addTodo(text)','    ','    // 데이터 변경 후 View를 직접 갱신!','    this.view.showTodos(this.model.getTodos())','    this.view.clearInput()','    this.view.showSuccess("추가 완료!")','    // 빠뜨리면 화면이 안 바뀜!','  }','}'],
+annos:['','','','','View에서 값 꺼내고','Model 업데이트하고','','','View에 결과 보여주고','입력창 비우고','성공 메시지도!','하나라도 빠뜨리면 버그!',''],
+desc:'MVVM은 데이터 바인딩으로 자동 갱신되는데, MVP는 Presenter가 하나하나 수동으로 View를 업데이트해야 해요. 깜빡하면 화면이 안 바뀌는 버그가 생겨요.',hl:'hlr'}
+];
+
+var useData=[
+{lines:['// Android MVP (Java/Kotlin)','','// View (Activity)','class TodoActivity implements TodoView {','  @Override','  void showTodos(List<Todo> items) {','    adapter.setData(items)','    recyclerView.notifyDataSetChanged()','  }','  // Activity는 화면만! 로직 없음!','}','','// Presenter','class TodoPresenter {','  void onAddClicked() { /* 모든 로직 여기 */ }','}'],
+annos:['','','','Activity가 View 역할!','','','RecyclerView에 데이터 넣기','화면 갱신','','Activity가 가벼움!','','','','','로직은 전부 Presenter!',''],
+desc:'Android에서 Activity가 너무 커지는 "God Activity" 문제를 해결하기 위해 MVP를 많이 써요. Activity는 화면만 담당하고, 로직은 전부 Presenter로 빼서 Activity를 가볍게 유지합니다.',hl:'hlg'},
+{lines:['// WinForms MVP (.NET)','','// View 인터페이스','interface ILoginView {','  string Username { get; }','  string Password { get; }','  void ShowError(string msg)','  void NavigateToHome()','}','','// Presenter','class LoginPresenter {','  void OnLoginClicked() {','    var user = auth.Login(view.Username, view.Password)','    if (user != null) view.NavigateToHome()','    else view.ShowError("로그인 실패!")','  }','}'],
+annos:['','','','','username 가져오기','password 가져오기','에러 메시지 보여주기','홈 화면으로 이동','','','','','로그인 버튼 클릭 시','인증 로직은 Presenter가!','성공 → 화면 전환','실패 → 에러 표시'],
+desc:'.NET WinForms에서 MVP는 전통적인 선택이에요. Form(화면)은 View 인터페이스만 구현하고, 로그인 검증 같은 로직은 전부 Presenter에 넣어서 Form을 깔끔하게 유지해요.',hl:'hlg'},
+{lines:['// Google GWT (Google Web Toolkit)','','// Google이 MVP를 공식 권장!','// "Activities and Places" 패턴','','// View 인터페이스','interface GreetingView extends IsWidget {','  HasClickHandlers getGreetButton()','  void showGreeting(String msg)','}','','// Presenter(Activity)','class GreetingActivity extends AbstractActivity {','  void start(AcceptsOneWidget panel) {','    panel.setWidget(view)','    // View를 화면에 배치하고 이벤트 연결','  }','}'],
+annos:['','','','GWT에서 많이 쓰인 구조!','','','','버튼 이벤트 노출','인사말 표시','','','','Activity가 Presenter 역할!','','View를 화면에 배치','이벤트 연결은 Presenter가!','',''],
+desc:'Google의 GWT에서는 Activity and Places 구조와 함께 MVP 스타일이 널리 쓰였어요. 화면 전환과 비즈니스 로직을 분리하기 쉬워서 당시 웹 UI 구조 설명에 자주 등장했습니다.',hl:'hlg'},
+{lines:['// MVC / MVP / MVVM 핵심 차이!','','// MVC:  View ←→ Model (서로 앎!)','//       Controller는 교통정리','','// MVP:  View ✕ Model (서로 모름!)','//       Presenter가 전부 중재','//       View는 가능한 한 수동적','','// MVVM: View ← 상태 연결 → ViewModel','//       상태 변화에 맞춰 View를 다시 그림','//       자동화 수준은 도구마다 다름','','// 세 패턴은 자주 비교되지만','// 항상 한 줄로 발전한 역사라고 보긴 어려움'],
+annos:['','','View가 Model을 직접 봄','','','완전 분리! 이게 MVP의 핵심!','Presenter가 통역사','','','상태를 ViewModel에 연결','','프레임워크마다 차이','','자주 비교되는 패턴들','역사는 더 복잡함'],
+desc:'세 패턴은 자주 비교되지만, 꼭 MVC → MVP → MVVM으로 일직선 발전했다고 보기는 어려워요. 서로 다른 환경에서 강조점이 달랐고, 프로젝트 성격에 따라 더 잘 맞는 선택이 달라집니다.',hl:'hlg'}
+];
+
+var curPro=0,curCon=0,curUse=0,demoR=false;
+function buildHTML(data,idx,prefix,colorCls){var d=data[idx];var html='';for(var i=0;i<d.lines.length;i++){html+='<div class="cl" id="'+prefix+'-'+i+'"><span class="ct">'+d.lines[i]+'</span><span class="ca '+colorCls+'" id="'+prefix+'-a-'+i+'"></span></div>'}return html}
+function renderCode(t,data,idx,c){document.getElementById(t).innerHTML=buildHTML(data,idx,t,c)}
+function renderDesc(t,data,idx){var el=document.getElementById(t);el.textContent=data[idx].desc;el.classList.remove('show');requestAnimationFrame(function(){requestAnimationFrame(function(){el.classList.add('show')})})}
+function proDem(i,b){curPro=i;document.querySelectorAll('#pro-nav .dbtn').forEach(function(x){x.className='dbtn'});b.className='dbtn ag';renderCode('pro-code',proData,i,'cag');renderDesc('pro-desc',proData,i)}
+function conDem(i,b){curCon=i;document.querySelectorAll('#con-nav .dbtn').forEach(function(x){x.className='dbtn'});b.className='dbtn ar';renderCode('con-code',conData,i,'car');renderDesc('con-desc',conData,i)}
+function useDem(i,b){curUse=i;document.querySelectorAll('#use-nav .dbtn').forEach(function(x){x.className='dbtn'});b.className='dbtn ag';renderCode('use-code',useData,i,'cag');renderDesc('use-desc',useData,i)}
+function sl(ms){return new Promise(function(r){setTimeout(r,ms)})}
+async function animCode(p,data,idx){if(demoR)return;demoR=true;var d=data[idx];for(var i=0;i<d.lines.length;i++){var line=document.getElementById(p+'-'+i);var anno=document.getElementById(p+'-a-'+i);if(!d.annos[i]||d.annos[i]===''){await sl(200);continue}line.classList.add(d.hl);anno.textContent='\u2190 '+d.annos[i];(function(a){requestAnimationFrame(function(){requestAnimationFrame(function(){a.classList.add('show')})})})(anno);await sl(1800)}demoR=false}
+function runPro(){animCode('pro-code',proData,curPro)}
+function runCon(){animCode('con-code',conData,curCon)}
+function runUse(){animCode('use-code',useData,curUse)}
+renderCode('pro-code',proData,0,'cag');renderDesc('pro-desc',proData,0);
+renderCode('con-code',conData,0,'car');renderDesc('con-desc',conData,0);
+renderCode('use-code',useData,0,'cag');renderDesc('use-desc',useData,0);
+
+function sw(id){document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active')});document.querySelectorAll('.pnl').forEach(function(p){p.classList.remove('active')});document.querySelector('[onclick="sw(\''+id+'\')"]').classList.add('active');document.getElementById('p-'+id).classList.add('active')}
+
+var logbox=document.getElementById('logbox');
+var anIds=[2,3,4,9,10,11,16,17,18,19,20];
+function setStep(n){document.querySelectorAll('.pill').forEach(function(p){var s=parseInt(p.dataset.s);if(!isNaN(s))p.className='pill'+(s===n?' active':(s<n?' done':''))})}
+function clearHL(){for(var i=0;i<=22;i++){var e=document.getElementById('cl-'+i);if(e)e.classList.remove('hl','hlg','hlr','hlb','hla')}anIds.forEach(function(j){var a=document.getElementById('an-'+j);if(a){a.classList.remove('show');a.textContent=''}})}
+function hlLine(n,txt,cls){clearHL();var c=cls||'hl';var e=document.getElementById('cl-'+n);if(e)e.classList.add(c);var a=document.getElementById('an-'+n);if(a&&txt){var acls=c==='hlg'?'cag':c==='hlr'?'car':c==='hlb'?'cab':c==='hla'?'caa':'cap';a.className='ca '+acls;a.textContent='\u2190 '+txt;requestAnimationFrame(function(){requestAnimationFrame(function(){a.classList.add('show')})})}}
+function addLog(msg,type){var d=document.createElement('div');d.className='ll';var tg=document.createElement('span');tg.className='tg '+(type==='model'?'tgm':type==='view'?'tgv':type==='pres'?'tgp':'tgu');tg.textContent=type==='model'?'MODEL':type==='view'?'VIEW':type==='pres'?'PRES':'USER';var tx=document.createElement('span');tx.textContent=msg;d.appendChild(tg);d.appendChild(tx);logbox.appendChild(d);logbox.scrollTop=logbox.scrollHeight}
+function updateStats(){document.getElementById('s-actions').textContent=acts;document.getElementById('s-updates').textContent=upds;document.getElementById('s-renders').textContent=rnds}
+function pulseBox(id){var el=document.getElementById(id);el.classList.add('pulse');setTimeout(function(){el.classList.remove('pulse')},600)}
+function activateFlow(n,cls){for(var i=1;i<=5;i++){document.getElementById('fs-'+i).className='flow-step';if(i<=4)document.getElementById('fa-'+i).className='flow-arrow'}if(n>=1){document.getElementById('fs-'+n).className='flow-step '+cls;if(n>1)document.getElementById('fa-'+(n-1)).className='flow-arrow '+cls}}
+function todoDisplay(){return todos.map(function(t){return(t.done?'[x]':'[ ]')+' '+t.text}).join(', ')||'(비어있음)'}
+function setBtns(d){['btn-add','btn-tog','btn-reset'].forEach(function(id){var e=document.getElementById(id);if(e)e.disabled=d})}
+
+async function doAdd(){
+if(running)return;running=true;setBtns(true);acts++;
+var text=txts[tIdx%txts.length];tIdx++;
+
+setStep(1);activateFlow(1,'av');
+hlLine(4,'사용자 클릭! View가 입력값을 가지고 있음','hlb');
+pulseBox('box-v');
+document.getElementById('v-state').textContent='클릭 감지!';
+addLog('사용자 → "'+text+'" 추가 버튼 클릭','user');
+document.getElementById('user-msg').textContent='버튼 클릭! → "'+text+'"';
+await sl(D);
+
+setStep(2);activateFlow(2,'av');
+hlLine(17,'View → Presenter: onAddClicked() 호출!','hla');
+pulseBox('box-p');
+document.getElementById('p-state').textContent='onAddClicked 처리';
+addLog('View → Presenter: onAddClicked()','pres');
+await sl(D);
+
+hlLine(18,'Presenter → View: getInputText()로 값 꺼냄!','hla');
+addLog('Presenter ← View: getInputText() = "'+text+'"','view');
+await sl(D);
+
+setStep(3);activateFlow(4,'am');
+hlLine(19,'Presenter → Model: addTodo("'+text+'")','hl');
+todos.push({text:text,done:false});upds++;
+pulseBox('box-m');
+document.getElementById('m-state').textContent='todos: '+todos.length+'개';
+addLog('Presenter → Model: addTodo("'+text+'")','model');
+await sl(D);
+
+setStep(4);activateFlow(5,'av');
+hlLine(20,'Presenter → View: showTodos() 호출! 화면 갱신','hlb');
+rnds++;
+pulseBox('box-v');
+document.getElementById('v-state').textContent='렌더링: '+todos.length+'개';
+document.getElementById('user-msg').textContent=todoDisplay();
+addLog('Presenter → View: showTodos('+todos.length+'개)','view');
+updateStats();
+await sl(D/2);activateFlow(0,'');
+document.getElementById('p-state').textContent='대기 중';
+running=false;setBtns(false)}
+
+async function doToggle(){
+if(running)return;
+if(todos.length===0){addLog('할 일이 없어요! 먼저 추가하세요','user');return}
+running=true;setBtns(true);acts++;
+
+setStep(1);activateFlow(1,'av');
+hlLine(4,'사용자 클릭! View가 이벤트 전달','hlb');
+pulseBox('box-v');
+addLog('사용자 → "'+todos[0].text+'" 토글 클릭','user');
+await sl(D);
+
+setStep(2);activateFlow(2,'av');
+hlLine(17,'View → Presenter: onToggleClicked(0)','hla');
+pulseBox('box-p');
+document.getElementById('p-state').textContent='toggle 처리';
+addLog('View → Presenter: onToggleClicked(0)','pres');
+await sl(D);
+
+setStep(3);activateFlow(4,'am');
+hlLine(10,'Presenter → Model: toggle(0)','hl');
+todos[0].done=!todos[0].done;upds++;
+pulseBox('box-m');
+document.getElementById('m-state').textContent='todos[0].done='+todos[0].done;
+addLog('Presenter → Model: toggle(0) done='+todos[0].done,'model');
+await sl(D);
+
+setStep(4);activateFlow(5,'av');
+hlLine(20,'Presenter → View: showTodos() 호출!','hlb');
+rnds++;
+pulseBox('box-v');
+document.getElementById('v-state').textContent='렌더링 갱신';
+document.getElementById('user-msg').textContent=todoDisplay();
+addLog('Presenter → View: 화면 갱신','view');
+updateStats();
+await sl(D/2);activateFlow(0,'');
+document.getElementById('p-state').textContent='대기 중';
+running=false;setBtns(false)}
+
+function doReset(){todos=[];tIdx=0;acts=0;upds=0;rnds=0;running=false;logbox.innerHTML='';setStep(0);clearHL();updateStats();activateFlow(0,'');
+document.getElementById('m-state').textContent='todos: []';
+document.getElementById('v-state').textContent='render 대기';
+document.getElementById('p-state').textContent='대기 중';
+document.getElementById('user-msg').textContent='버튼을 눌러 Todo를 추가해보세요!';
+['box-m','box-v','box-p'].forEach(function(id){document.getElementById(id).classList.remove('pulse')});
+setBtns(false)}
+</script>
+</body>
+</html>

@@ -1,0 +1,138 @@
+Phase 4: Browser-Verified Shell Integration Review
+Date: 2026-04-11
+Method: Playwright Chromium headless via index.html shell (http://localhost:8765/index.html)
+Tool: test-shell-integration.js
+
+All tests executed through the root index.html presentation shell.
+Screenshots saved to review-screenshots/ (13 files, not committed — binary).
+
+════════════════════════════════════════════════════════════
+Scenario A: 첫 장 진입 (index.html 통한)
+════════════════════════════════════════════════════════════
+URL: http://localhost:8765/index.html
+  [x] 셸 제목: "Singleton" 확인
+  [x] section badge: "Design Patterns" (data-section="designPattern")
+  [x] progress: "1 / 13"
+  [x] iframe src: "presentation/topics/01-singleton.html"
+  [x] agenda 첫 항목 (index=0) active 클래스 확인
+  [x] Previous 버튼 disabled=true
+  [x] Next 버튼 disabled=false
+Screenshot: review-screenshots/01-initial-load.png
+
+════════════════════════════════════════════════════════════
+Scenario B: Next 버튼으로 순차 이동
+════════════════════════════════════════════════════════════
+Action: Next 버튼 1번 클릭
+  [x] 제목 변경: "Factory"
+  [x] iframe src: "presentation/topics/02-factory.html"
+  [x] progress: "2 / 13"
+  [x] agenda highlight: index=1 (Factory)로 이동
+  [x] Previous 버튼 활성화됨 (disabled=false)
+Screenshot: review-screenshots/02-next-to-factory.png
+
+════════════════════════════════════════════════════════════
+Scenario C: 구역 전환 (MVVM -> Programming Paradigms)
+════════════════════════════════════════════════════════════
+Action: agenda에서 MVVM (index=9) 클릭
+  [x] 제목: "MVVM"
+  [x] section badge: "Design Patterns"
+  [x] progress: "10 / 13"
+  [x] iframe src: "presentation/topics/10-mvvm.html"
+Screenshot: review-screenshots/03-mvvm.png
+
+Action: Next 버튼 1번 클릭
+  [x] 제목: "Programming Paradigms Overview"
+  [x] section badge: "Programming Paradigms" (data-section="programming")
+  [x] badge data-section 속성이 "programming"으로 변경됨
+  [x] progress: "11 / 13"
+Screenshot: review-screenshots/04-section-transition.png
+
+════════════════════════════════════════════════════════════
+Scenario D: 마지막 장 도달
+════════════════════════════════════════════════════════════
+Action: agenda에서 마지막 항목 (index=12, Procedural Programming) 클릭
+  [x] 제목: "Procedural Programming"
+  [x] Next 버튼 disabled=true
+  [x] Previous 버튼 disabled=false (활성)
+  [x] progress: "13 / 13"
+Screenshot: review-screenshots/05-last-topic.png
+
+════════════════════════════════════════════════════════════
+Scenario E: iframe 내부 인터랙션 (셸 내에서)
+════════════════════════════════════════════════════════════
+모든 인터랙션은 index.html 셸의 iframe context (page.frameLocator('.stage-iframe'))에서 수행.
+
+E.1: Singleton (index=0)
+  탭 수: 4 (Simulation, 장점, 단점, 사용 예시)
+  [x] 두 번째 탭 클릭 후 첫 번째 탭 복귀 — 탭 전환 동작 확인
+Screenshot: review-screenshots/06-iframe-interaction.png
+
+E.2: MVC (index=7)
+  Action: agenda에서 MVC (index=7) 클릭 후 iframe 인터랙션
+  탭 수: 4 (Simulation, 장점, 단점, 사용 예시)
+  [x] 탭 전환 정상 동작
+Screenshot: review-screenshots/07-mvc-iframe.png
+
+E.3: MVVM (index=9)
+  Action: agenda에서 MVVM (index=9) 클릭 후 iframe 인터랙션
+  탭 수: 4 (Simulation, 장점, 단점, 사용 예시)
+  [x] 탭 전환 정상 동작
+Screenshot: review-screenshots/08-mvvm-iframe.png
+
+E.4: Programming Paradigms Overview (index=10)
+  Action: agenda에서 PP Overview (index=10) 클릭 후 iframe 인터랙션
+  탭 수: 4 (패러다임 지도, 코드 비교, 역사, 어떤 걸 쓸까?)
+  [x] 탭 전환 정상 동작
+Screenshot: review-screenshots/09-paradigms-iframe.png
+
+E.5: Functional Programming (index=11)
+  Action: agenda에서 Functional (index=11) 클릭 후 iframe 인터랙션
+  탭 수: 2 (함수형이란?, 핵심 키워드 8개)
+  [x] 탭 전환 정상 동작
+Screenshot: review-screenshots/10-functional-iframe.png
+
+E.6: Procedural Programming (index=12)
+  Action: agenda에서 Procedural (index=12) 클릭 후 iframe 인터랙션
+  탭 수: 4 (절차지향이란?, 핵심 키워드, 장점, 단점)
+  [x] 탭 전환 정상 동작
+Screenshot: review-screenshots/11-procedural-iframe.png
+
+════════════════════════════════════════════════════════════
+Scenario F: 좁은 폭 확인
+════════════════════════════════════════════════════════════
+
+F.1: 600px 폭
+  [x] sidebar 보임 (width=200px, 768px 이하 반응형)
+  [x] stage 보임
+  [x] sidebar와 stage 겹치지 않음
+  [x] progress dots 숨김 (display:none at <=768px)
+Screenshot: review-screenshots/12-narrow-600px.png
+
+F.2: 480px 폭
+  [x] sidebar 아이콘 모드 (width=52px, 560px 이하 반응형)
+  [x] sidebar-header 숨김
+  [x] section-label 모두 숨김
+  [x] agenda-title 모두 숨김
+  [x] stage-section-badge 숨김
+  [x] sidebar와 stage 겹치지 않음
+  [x] stage 폭 428px — 읽을 수 있는 크기 유지
+Screenshot: review-screenshots/13-narrow-480px.png
+
+════════════════════════════════════════════════════════════
+Scenario G: 콘솔 에러 수집
+════════════════════════════════════════════════════════════
+  [x] 전체 테스트 과정(Scenario A~F)에서 콘솔 에러 0건
+  [x] 페이지 에러(pageerror) 0건
+
+════════════════════════════════════════════════════════════
+Issues Found & Fixes Applied
+════════════════════════════════════════════════════════════
+  없음. 모든 시나리오가 수정 없이 통과됨.
+
+════════════════════════════════════════════════════════════
+FINAL RESULT: ALL 7 SCENARIOS (A~G) PASSED
+════════════════════════════════════════════════════════════
+  - 40+ individual assertions: ALL PASSED
+  - 13 screenshots generated as evidence
+  - 0 console errors, 0 page errors
+  - 0 CSS/JS/HTML fixes required

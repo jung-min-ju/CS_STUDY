@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OOP Deep Dive</title>
+  <link rel="stylesheet" href="../topic-frame.css">
+</head>
+<body>
+<h2 class="sr-only">Object-Oriented Programming deep dive: 4 pillars, overloading/overriding, SOLID principles with code demos in Korean.</h2>
+<style>
+*{box-sizing:border-box}
+.tabs{display:flex;gap:0;border-bottom:0.5px solid var(--color-border-tertiary);margin-bottom:1.25rem;overflow-x:auto}
+.tab{padding:8px 14px;font-size:13px;font-weight:500;color:var(--color-text-secondary);cursor:pointer;border-bottom:2px solid transparent;transition:all 0.3s;background:none;border-top:none;border-left:none;border-right:none;white-space:nowrap}
+.tab:hover{color:var(--color-text-primary)}.tab.active{color:#3C3489;border-bottom-color:#534AB7}
+.pnl{display:none}.pnl.active{display:block}
+.sec{margin-bottom:1.25rem}
+.sec-title{font-size:14px;font-weight:500;color:var(--color-text-primary);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.sec-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.cw{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:14px 16px;font-family:var(--font-mono);font-size:12px;line-height:2.2;color:var(--color-text-secondary);overflow-x:auto;margin-bottom:10px}
+.cl{display:flex;align-items:baseline;min-height:24px;transition:background 0.5s;border-radius:3px;padding:0 4px;margin:0 -4px}
+.cl.hl{background:#EEEDFE}.cl.hlg{background:#E1F5EE}.cl.hlr{background:#FCEBEB}
+.ct{white-space:pre;flex-shrink:0}
+.ca{margin-left:12px;font-family:var(--font-sans);font-size:11px;opacity:0;transition:opacity 1s;white-space:nowrap;flex-shrink:0}
+.ca.show{opacity:1}
+.cag{color:#085041}.car{color:#791F1F}.cap{color:#534AB7}
+.kw{color:#534AB7}.vl{color:#0F6E56}.nl{color:#A32D2D}.cm{color:var(--color-text-tertiary)}.sv{color:#BA7517}
+.dnav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.dbtn{padding:6px 14px;font-size:12px;border-radius:var(--border-radius-md);background:var(--color-background-secondary);color:var(--color-text-secondary);border:0.5px solid var(--color-border-tertiary);cursor:pointer;transition:all 0.3s}
+.dbtn:hover{border-color:var(--color-border-secondary)}
+.dbtn.ag{background:#E1F5EE;color:#085041;border-color:#0F6E56}
+.dsc{font-size:13px;color:var(--color-text-secondary);line-height:1.7;padding:10px 14px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);min-height:40px;opacity:0;transition:opacity 0.8s}
+.dsc.show{opacity:1}
+.cc{padding:12px 14px;background:var(--color-background-secondary);border-radius:0;border-left:3px solid;margin-bottom:8px;cursor:pointer;transition:all 0.3s}
+.cc:hover{background:var(--color-background-primary)}
+.cc.active{background:var(--color-background-primary);border-left-width:4px}
+.cc-t{font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:2px}
+.cc-s{font-size:12px;color:var(--color-text-secondary)}
+.cc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;margin-bottom:14px}
+.b1{border-color:#534AB7}.b2{border-color:#1D9E75}.b3{border-color:#378ADD}.b4{border-color:#D85A30}
+.b5{border-color:#BA7517}.b6{border-color:#D4537E}
+.s1{border-color:#1D9E75}.s2{border-color:#378ADD}.s3{border-color:#534AB7}.s4{border-color:#D85A30}.s5{border-color:#BA7517}
+</style>
+
+<div style="padding:0.5rem 0">
+<div class="tabs">
+  <button class="tab active" onclick="sw('what')">OOP란?</button>
+  <button class="tab" onclick="sw('pillar')">4대 특성</button>
+  <button class="tab" onclick="sw('over')">오버로딩/라이딩</button>
+  <button class="tab" onclick="sw('solid')">SOLID 원칙</button>
+</div>
+
+<div class="pnl active" id="p-what">
+<div class="sec">
+  <div class="sec-title"><span class="sec-dot" style="background:#534AB7"></span>객체지향 프로그래밍이란?</div>
+  <div class="dnav" id="w-nav">
+    <button class="dbtn ag" onclick="wD(0,this)">한 줄 요약</button>
+    <button class="dbtn" onclick="wD(1,this)">절차지향과 비교</button>
+    <button class="dbtn" onclick="wD(2,this)">객체란?</button>
+    <button class="dbtn" onclick="wD(3,this)">왜 써야 할까?</button>
+    <button class="dbtn" onclick="wD(4,this)">어디에 쓰이나?</button>
+  </div>
+  <div class="cw" id="w-code"></div>
+  <div class="dsc" id="w-desc"></div>
+</div>
+<div style="margin-top:8px"><button onclick="rW()">실행해보기</button></div>
+</div>
+
+<div class="pnl" id="p-pillar">
+<div class="sec">
+  <div class="sec-title"><span class="sec-dot" style="background:#0F6E56"></span>4대 특성 — 클릭하면 코드 데모</div>
+  <div class="cc-grid">
+    <div class="cc b1" onclick="pD(0,this)"><div class="cc-t">1. 추상화</div><div class="cc-s">핵심만 드러내고 세부는 숨김</div></div>
+    <div class="cc b2" onclick="pD(1,this)"><div class="cc-t">2. 캡슐화</div><div class="cc-s">데이터+행동 묶기, 외부 차단</div></div>
+    <div class="cc b3" onclick="pD(2,this)"><div class="cc-t">3. 상속성</div><div class="cc-s">부모의 것을 물려받아 재사용</div></div>
+    <div class="cc b4" onclick="pD(3,this)"><div class="cc-t">4. 다형성</div><div class="cc-s">같은 이름, 다른 동작</div></div>
+  </div>
+  <div class="cw" id="p-code"></div>
+  <div class="dsc" id="p-desc"></div>
+</div>
+<div style="margin-top:8px"><button onclick="rP()">실행해보기</button></div>
+</div>
+
+<div class="pnl" id="p-over">
+<div class="sec">
+  <div class="sec-title"><span class="sec-dot" style="background:#BA7517"></span>오버로딩 vs 오버라이딩</div>
+  <div class="dnav" id="o-nav">
+    <button class="dbtn ag" onclick="oD(0,this)">오버로딩</button>
+    <button class="dbtn" onclick="oD(1,this)">오버라이딩</button>
+    <button class="dbtn" onclick="oD(2,this)">비교 정리</button>
+  </div>
+  <div class="cw" id="o-code"></div>
+  <div class="dsc" id="o-desc"></div>
+</div>
+<div style="margin-top:8px"><button onclick="rO()">실행해보기</button></div>
+</div>
+
+<div class="pnl" id="p-solid">
+<div class="sec">
+  <div class="sec-title"><span class="sec-dot" style="background:#D85A30"></span>SOLID 원칙 — 클릭하면 코드 데모</div>
+  <div class="cc-grid">
+    <div class="cc s1" onclick="sD(0,this)"><div class="cc-t">S — 단일 책임</div><div class="cc-s">한 클래스는 한 가지 이유로만 변경</div></div>
+    <div class="cc s2" onclick="sD(1,this)"><div class="cc-t">O — 개방 폐쇄</div><div class="cc-s">확장에 열림, 수정에 닫힘</div></div>
+    <div class="cc s3" onclick="sD(2,this)"><div class="cc-t">L — 리스코프 치환</div><div class="cc-s">자식은 부모를 대체할 수 있어야</div></div>
+    <div class="cc s4" onclick="sD(3,this)"><div class="cc-t">I — 인터페이스 분리</div><div class="cc-s">안 쓰는 메서드에 의존하지 말 것</div></div>
+    <div class="cc s5" onclick="sD(4,this)"><div class="cc-t">D — 의존 역전</div><div class="cc-s">구체가 아닌 추상에 의존</div></div>
+  </div>
+  <div class="cw" id="s-code"></div>
+  <div class="dsc" id="s-desc"></div>
+</div>
+<div style="margin-top:8px"><button onclick="rS()">실행해보기</button></div>
+</div>
+</div>
+
+<script>
+var D=2400;
+var wData=[
+{lines:['// OOP = 현실 세계를 코드로 옮기는 방식!','//','// 현실: 자동차는 색상, 속도를 가지고','//       달리고, 멈추는 행동을 한다','//','// 코드: 데이터(속성) + 행동(메서드) = 객체','class Car {','  color = "red"        // 속성 (데이터)','  speed = 0            // 속성 (데이터)','  drive() { this.speed = 60 }  // 메서드 (행동)','  stop()  { this.speed = 0 }   // 메서드 (행동)','}','','const myCar = new Car()','myCar.drive()  // 속도가 60이 됨!','// 데이터와 행동이 한 덩어리 = 객체!'],
+annos:['','','현실 세계의 자동차','','','','코드의 자동차','데이터!','데이터!','행동!','행동!','','','객체 생성!','행동 실행!','이게 OOP의 핵심!'],
+desc:'OOP는 현실 세계의 "물건"을 코드로 옮기는 거예요. 자동차에는 색상/속도(데이터)가 있고, 달리기/멈추기(행동)를 해요. 이 두 가지를 하나로 묶은 게 "객체"이고, 이 객체를 중심으로 프로그래밍하는 게 OOP예요.',hl:'hlg'},
+{lines:['// 절차지향: 데이터와 함수가 따로 놀아요','let name = "철수"','let balance = 10000','','function deposit(amount) {','  balance += amount  // 전역 변수를 직접 수정!','}','function getBalance() { return balance }','','// OOP: 데이터와 행동이 한 덩어리!','class Account {','  constructor(name, balance) {','    this.name = name','    this.balance = balance  // 내 안에 있음!','  }','  deposit(amount) { this.balance += amount }','  getBalance() { return this.balance }','}','const acc = new Account("철수", 10000)','acc.deposit(5000)  // 자기 데이터를 자기가 관리!'],
+annos:['데이터가 바깥에 노출됨!','전역 변수','전역 변수','','','전역 변수 직접 수정... 위험!','','','','데이터가 안에 보호됨!','','','','내 안에 들어있음!','','자기 데이터를 자기가 수정','자기 데이터를 자기가 반환','','','안전하게 관리!'],
+desc:'절차지향은 "데이터를 밖에 두고 함수가 가져다 쓰는 것"이고, OOP는 "데이터가 자기 안에 있고 자기가 관리하는 것"이에요. 방 안에 물건을 넣고 문을 잠그는 것(OOP) vs 복도에 놓고 아무나 쓰게 하는 것(절차지향)의 차이예요.',hl:'hlg'},
+{lines:['// 객체 = 상태(속성) + 행동(메서드)','//','// 붕어빵 틀 = 클래스','// 붕어빵     = 객체 (인스턴스)','','class Dog {','  // 속성 (이 개의 상태)','  name: string','  breed: string','  energy = 100','','  // 메서드 (이 개의 행동)','  bark() { return `${this.name}: 멍멍!` }','  run()  { this.energy -= 10 }','  eat()  { this.energy += 30 }','}','','const myDog = new Dog("초코", "골든리트리버")','const yourDog = new Dog("뽀삐", "푸들")','// 같은 클래스에서 다른 객체가 탄생!'],
+annos:['','','설계도!','실제 제품!','','','','이름','품종','에너지','','','짖기!','달리기!','먹기!','','','초코 = 객체1','뽀삐 = 객체2','같은 틀, 다른 개체!'],
+desc:'클래스는 "붕어빵 틀"이고, 객체는 "실제 붕어빵"이에요. 같은 틀(Dog)에서 초코, 뽀삐라는 서로 다른 객체가 만들어져요. 각 객체는 자기만의 이름, 품종, 에너지를 가지고 독립적으로 행동해요.',hl:'hlg'},
+{lines:['// OOP를 써야 하는 5가지 이유!','','// 1. 코드 재사용 — 상속으로 기존 코드 물려받기','//    Dog extends Animal → 중복 코드 제로!','','// 2. 유지보수 쉬움 — 관련 코드가 한 곳에','//    Account 관련은 Account 클래스만 보면 됨','','// 3. 확장성 — 새 기능을 기존 코드 안 고치고 추가','//    새 결제 수단? PaymentStrategy만 추가!','','// 4. 현실 모델링 — 비개발자도 구조를 이해','//    "User가 Order를 만들고 Payment를 한다"','','// 5. 팀 협업 — 인터페이스만 정하면 분업 가능','//    "이 메서드 이름과 파라미터만 맞추자!"'],
+annos:['','','상속!','','','캡슐화!','','','다형성!','','','추상화!','','','인터페이스!',''],
+desc:'코드 재사용(상속), 유지보수(캡슐화), 확장성(다형성), 현실 모델링(추상화), 팀 협업(인터페이스) — OOP의 4대 특성이 곧 장점이에요. 특히 규모가 큰 프로젝트에서 OOP의 구조적 장점이 빛을 발해요.',hl:'hlg'},
+{lines:['// OOP가 쓰이는 곳 — 거의 모든 곳!','','// 백엔드 프레임워크','// Spring(Java), NestJS(TS), Django(Python)','class UserController { ... }','class UserService { ... }','class UserRepository { ... }','','// 프론트엔드','// React 클래스 컴포넌트, Angular 서비스','class UserComponent extends Component { ... }','','// 게임 개발','class Enemy extends Character { ... }','class Weapon extends Item { ... }','','// 모바일 앱','// Android(Kotlin), iOS(Swift)','class LoginActivity : AppCompatActivity() { ... }'],
+annos:['','','','','Controller!','Service!','Repository!','','','','컴포넌트!','','','적 캐릭터!','무기 아이템!','','','','액티비티!'],
+desc:'Spring, NestJS, Django, Unity, Android, iOS — 대부분의 주요 프레임워크가 OOP 기반이에요. 특히 백엔드의 Controller-Service-Repository 패턴은 OOP의 교과서적 활용이에요.',hl:'hlg'}
+];
+
+var pData=[
+{lines:['// 1. 추상화 (Abstraction)','// 복잡한 내부를 숨기고 핵심만 보여줌!','','// 자동차를 운전할 때','// 엔진 내부 폭발 과정을 알 필요 없음!','// 핸들, 엑셀, 브레이크만 알면 됨!','','interface RemoteControl {','  powerOn(): void','  powerOff(): void','  volumeUp(): void','  volumeDown(): void','}','','// 사용자는 이 4개 버튼만 알면 됨!','// 내부에서 전기 신호가 어떻게 가는지?','// 몰라도 됨! 그게 추상화!'],
+annos:['','','','','엔진 구조 몰라도 운전 가능!','핵심 조작법만!','','리모컨의 "핵심 기능"만 정의','전원 켜기','전원 끄기','볼륨 올리기','볼륨 내리기','','','이것만 알면 TV를 조작 가능!','내부 회로? 신호 처리?','몰라도 됨! = 추상화!'],
+desc:'추상화는 "복잡한 것을 단순하게 보여주는 것"이에요. 리모컨의 버튼 4개만 알면 TV를 조작할 수 있듯이, 인터페이스에 핵심 기능만 정의하면 내부 구현을 몰라도 사용할 수 있어요.',hl:'hlg'},
+{lines:['// 2. 캡슐화 (Encapsulation)','// 데이터를 보호하고, 허용된 방법만으로 접근!','','class BankAccount {','  private balance = 0  // 밖에서 직접 못 건드림!','','  deposit(amount) {','    if (amount <= 0) throw new Error("양수만!")','    this.balance += amount  // 검증 후 변경!','  }','  getBalance() {','    return this.balance  // 읽기만 허용!','  }','}','','const acc = new BankAccount()','acc.deposit(5000)      // OK! 허용된 방법','// acc.balance = -9999  // 에러! 직접 접근 차단!','// 잔고를 마이너스로 만드는 걸 원천 차단!'],
+annos:['','','','','private = 외부 차단!','','','금액 검증!','검증 통과해야만 변경!','','','읽기만 가능!','','','','','정상 입금!','직접 접근 차단!','잘못된 값 방지!'],
+desc:'캡슐화는 "금고에 돈을 넣고 잠그는 것"이에요. 잔고(balance)를 private으로 숨기고, deposit() 메서드를 통해서만 변경을 허용해요. 이러면 "잔고가 마이너스"같은 비정상 상태를 원천 차단할 수 있어요.',hl:'hlg'},
+{lines:['// 3. 상속 (Inheritance)','// 부모의 것을 물려받아서 재사용!','','class Animal {','  name: string','  eat() { return `${this.name}이(가) 먹는다` }','  sleep() { return `${this.name}이(가) 잔다` }','}','','// Dog는 Animal의 모든 것을 물려받음!','class Dog extends Animal {','  bark() { return `${this.name}: 멍멍!` }','}','','// Cat도 Animal을 물려받되, 다른 행동 추가','class Cat extends Animal {','  meow() { return `${this.name}: 야옹~` }','}','','const dog = new Dog("초코")','dog.eat()   // "초코이(가) 먹는다" ← 부모 것!','dog.bark()  // "초코: 멍멍!" ← 자기 것!'],
+annos:['','','','부모 클래스!','','먹기 — 공통 기능','자기 — 공통 기능','','','extends = 물려받기!','','짖기 — Dog만의 기능!','','','','','야옹 — Cat만의 기능!','','','','부모의 eat()를 그대로 사용!','Dog만의 bark()도 사용!'],
+desc:'상속은 "부모님의 재산을 물려받는 것"이에요. Animal에 있는 eat(), sleep()을 Dog, Cat이 다시 만들 필요 없이 그대로 써요. 공통 기능은 부모에, 고유 기능은 자식에 넣어서 중복을 없앨 수 있어요.',hl:'hlg'},
+{lines:['// 4. 다형성 (Polymorphism)','// 같은 이름인데 실제 동작이 다름!','','class Animal {','  speak() { return "..." }','}','class Dog extends Animal {','  speak() { return "멍멍!" }  // 재정의!','}','class Cat extends Animal {','  speak() { return "야옹~" }  // 재정의!','}','class Duck extends Animal {','  speak() { return "꽥꽥!" }  // 재정의!','}','','// 전부 speak()인데 결과가 다름!','const animals: Animal[] = [new Dog(), new Cat(), new Duck()]','animals.forEach(a => console.log(a.speak()))','// "멍멍!" "야옹~" "꽥꽥!"','// 같은 메서드, 다른 동작 = 다형성!'],
+annos:['','','','','기본 speak','','','Dog의 speak!','','','Cat의 speak!','','','Duck의 speak!','','','전부 speak()이라는 같은 이름!','','Animal 타입으로 통일!','같은 코드로 다른 결과!','','이게 다형성의 위력!'],
+desc:'다형성은 "같은 버튼인데 누르는 리모컨마다 다른 TV가 반응하는 것"이에요. speak()이라는 같은 이름이지만 Dog, Cat, Duck이 각각 다르게 동작해요. 이러면 새 동물을 추가해도 호출 코드를 안 고쳐도 돼요.',hl:'hlg'}
+];
+
+var oData=[
+{lines:['// 오버로딩 (Overloading)','// 같은 이름, 다른 파라미터!','// ※ Java/C++/TypeScript에서 지원','','// TypeScript 예시','class Calculator {','  // 같은 이름 add, 파라미터가 다름!','  add(a: number, b: number): number','  add(a: string, b: string): string','  add(a: any, b: any) {','    return a + b','  }','}','','const calc = new Calculator()','calc.add(1, 2)       // 3 (숫자 + 숫자)','calc.add("a", "b")   // "ab" (문자 + 문자)','','// 같은 이름이지만 타입에 따라 다르게 동작!','// "이름은 같고, 시그니처(파라미터)가 다름"'],
+annos:['','','','','','','','숫자 버전 선언','문자 버전 선언','실제 구현','','','','','','숫자를 넣으면 숫자 덧셈!','문자를 넣으면 문자 연결!','','같은 이름, 다른 입력!','컴파일 타임에 결정됨!'],
+desc:'오버로딩은 "같은 이름의 함수인데 받는 파라미터가 다른 것"이에요. 식당에서 "세트 메뉴"라고 하면 1인세트, 2인세트, 가족세트가 있는 것처럼, add()라는 같은 이름이지만 숫자/문자에 따라 다르게 동작해요.',hl:'hlg'},
+{lines:['// 오버라이딩 (Overriding)','// 부모 메서드를 자식이 재정의!','','class Shape {','  area() { return 0 }  // 부모의 기본 구현','}','','class Circle extends Shape {','  constructor(private radius: number) { super() }','  // 부모의 area()를 덮어씀!','  area() { return Math.PI * this.radius ** 2 }','}','','class Rectangle extends Shape {','  constructor(private w: number, private h: number) { super() }','  // 부모의 area()를 또 다르게 덮어씀!','  area() { return this.w * this.h }','}','','const shapes: Shape[] = [new Circle(5), new Rectangle(4, 6)]','shapes.forEach(s => console.log(s.area()))','// 78.54, 24 — 같은 area()인데 다른 결과!'],
+annos:['','','','','부모의 기본값','','','','','부모 메서드를 덮어씀!','원의 넓이 공식!','','','','','부모 메서드를 또 덮어씀!','사각형의 넓이 공식!','','','부모 타입으로 통일!','같은 area() 호출!','런타임에 실제 타입이 결정! = 다형성!'],
+desc:'오버라이딩은 "부모의 방식을 자식이 자기만의 방식으로 바꾸는 것"이에요. Shape의 area()를 Circle은 원 공식으로, Rectangle은 사각형 공식으로 재정의해요. 런타임에 실제 타입에 따라 실행돼요.',hl:'hlg'},
+{lines:['// 오버로딩 vs 오버라이딩 비교!','','// 오버로딩 (Overloading)','// - 같은 클래스 안에서','// - 같은 이름, 다른 파라미터','// - 컴파일 타임에 결정 (정적)','// - 편의성을 위한 것','add(1, 2)      // 숫자 버전','add("a", "b")  // 문자 버전','','// 오버라이딩 (Overriding)','// - 부모-자식 간에','// - 같은 이름, 같은 파라미터','// - 런타임에 결정 (동적)','// - 다형성을 위한 것','dog.speak()  // "멍멍!"','cat.speak()  // "야옹~"','','// 로딩 = 같은 집(클래스)에서 이름 같은 문 여러 개','// 라이딩 = 자식이 부모의 문을 새 문으로 교체!'],
+annos:['','','','같은 클래스!','다른 파라미터!','컴파일 타임!','','','','','','부모 → 자식!','같은 파라미터!','런타임!','','','','','','오버로딩 비유!','오버라이딩 비유!'],
+desc:'오버로딩은 "같은 이름의 문이 여러 개(크기 다른 문)"이고, 오버라이딩은 "부모의 문을 자식이 새 문으로 교체하는 것"이에요. 로딩은 편의성(같은 이름으로 다양한 타입), 라이딩은 다형성(부모를 자식이 재정의)을 위한 거예요.',hl:'hlg'}
+];
+
+var sData=[
+{lines:['// S — 단일 책임 원칙 (SRP)','// 한 클래스는 한 가지 이유로만 변경되어야!','','// 나쁜 예: 두 가지 책임','class UserService {','  saveUser(user) { db.save(user) }  // 데이터 저장','  sendEmail(user) { mailer.send(user) } // 이메일!','  // 데이터 로직이 바뀌면? 이 클래스 수정','  // 이메일 로직이 바뀌면? 이것도 수정!','}','','// 좋은 예: 책임 분리!','class UserRepository {','  saveUser(user) { db.save(user) }  // 저장만!','}','class EmailService {','  sendEmail(user) { mailer.send(user) }  // 이메일만!','}'],
+annos:['','','','2가지 일을 함!','','저장 담당','이메일 담당 — 왜 여기에?','','변경 이유가 2개!','','','책임을 나눔!','','저장만 책임!','','','','이메일만 책임!'],
+desc:'한 클래스가 두 가지 일을 하면, 한쪽이 바뀔 때 다른 쪽도 영향받아요. 요리사가 요리+서빙을 동시에 하면 둘 다 힘들듯이, 클래스도 한 가지만 잘하게 나누는 게 좋아요.',hl:'hlg'},
+{lines:['// O — 개방 폐쇄 원칙 (OCP)','// 확장에 열려있고, 수정에 닫혀있어야!','','// 나쁜 예: 새 타입 추가할 때 기존 코드 수정','function getArea(shape) {','  if (shape.type === "circle")','    return Math.PI * shape.r ** 2','  if (shape.type === "rect")','    return shape.w * shape.h','  // 삼각형 추가? if를 또 추가해야 함!','}','','// 좋은 예: 인터페이스로 확장!','interface Shape { area(): number }','class Circle implements Shape {','  area() { return Math.PI * this.r ** 2 }','}','class Triangle implements Shape {','  area() { return 0.5 * this.base * this.height }','  // 기존 코드 수정 없이 클래스만 추가!','}'],
+annos:['','','','기존 코드를 수정해야 함!','','if 추가...','','if 추가...','','또 if 추가?! 끝이 없음!','','','기존 코드 수정 없이 확장!','규칙만 정의!','','원 구현!','','삼각형 추가!','클래스만 새로 만들면 끝!','기존 코드 한 줄도 안 고침!'],
+desc:'새 기능을 추가할 때 기존 코드를 고치면 버그가 생겨요. 기존 코드는 "닫아두고(수정 X)", 새 클래스만 추가해서 "열어두는(확장 O)" 거예요. 콘센트에 플러그만 꽂으면 되지, 벽 안의 전선을 고칠 필요 없는 것과 같아요.',hl:'hlg'},
+{lines:['// L — 리스코프 치환 원칙 (LSP)','// 자식은 부모를 완전히 대체할 수 있어야!','','// 나쁜 예: 자식이 부모를 대체 못 함','class Bird {','  fly() { return "날고 있다!" }','}','class Penguin extends Bird {','  fly() { throw new Error("펭귄은 못 날아요!") }','  // Bird 자리에 Penguin을 넣으면 에러!','}','','// 좋은 예: 인터페이스를 분리!','interface Walkable { walk(): void }','interface Flyable { fly(): void }','','class Eagle implements Walkable, Flyable {','  walk() { ... }','  fly() { ... }  // 독수리는 날 수 있음!','}','class Penguin implements Walkable {','  walk() { ... }  // 펭귄은 걷기만!','  // fly가 없으니 "못 난다"는 에러도 없음!','}'],
+annos:['','','','','','새는 난다!','','','펭귄은 못 나는데... 에러!','Bird 자리에 못 넣음!','','','인터페이스를 나눔!','걷기','날기','','독수리: 둘 다!','','','','펭귄: 걷기만!','','에러 없이 안전!'],
+desc:'부모 자리에 자식을 넣었을 때 프로그램이 깨지면 안 돼요. "새는 난다"인데 펭귄을 넣으면 에러가 나죠? 그럴 땐 "날 수 있는 새"와 "걸을 수 있는 새"를 분리해서 설계하는 게 맞아요.',hl:'hlg'},
+{lines:['// I — 인터페이스 분리 원칙 (ISP)','// 안 쓰는 메서드에 의존하지 말 것!','','// 나쁜 예: 뚱뚱한 인터페이스','interface Worker {','  work(): void','  eat(): void','  sleep(): void','}','// 로봇은 eat(), sleep()이 필요 없는데 구현해야!','class Robot implements Worker {','  work() { ... }','  eat() { /* 쓸모없는 빈 구현... */ }','  sleep() { /* 쓸모없는 빈 구현... */ }','}','','// 좋은 예: 인터페이스를 작게 나눔!','interface Workable { work(): void }','interface Eatable { eat(): void }','// 로봇은 Workable만 구현하면 됨!','class Robot implements Workable {','  work() { ... }  // 필요한 것만!','}'],
+annos:['','','','3개 다 구현해야 함!','','','','','','','로봇이 eat? sleep?!','','','빈 껍데기 구현... 의미 없음!','','','인터페이스를 나눔!','','','','필요한 것만 골라서!','','깔끔!'],
+desc:'뷔페에서 모든 음식을 접시에 담아야 하는 규칙이 있으면 불편하죠? ISP는 "필요한 것만 골라서 담게 해주는 것"이에요. 인터페이스를 작게 나누면 각 클래스가 자기에게 필요한 것만 구현하면 돼요.',hl:'hlg'},
+{lines:['// D — 의존 역전 원칙 (DIP)','// 구체 클래스가 아닌 추상(인터페이스)에 의존!','','// 나쁜 예: 구체 클래스에 직접 의존','class OrderService {','  private db = new MySQLDatabase()  // MySQL에 묶임!','  save(order) { this.db.save(order) }','  // PostgreSQL로 바꾸려면? 코드 수정 필요!','}','','// 좋은 예: 인터페이스에 의존!','interface Database {','  save(data): void','}','class OrderService {','  constructor(private db: Database) {}  // 추상에 의존!','  save(order) { this.db.save(order) }','  // MySQL이든 PostgreSQL이든 상관없음!','}','','// 사용할 때 원하는 구현체를 주입!','new OrderService(new MySQLDatabase())','new OrderService(new PostgreSQL())  // 교체 자유!'],
+annos:['','','','MySQL에 직접 묶임!','','구체 클래스에 의존!','','DB 교체 = 코드 수정!','','','인터페이스를 사이에!','규칙만 정의!','','','','추상에 의존! 자유로움!','','어떤 DB든 OK!','','','외부에서 주입 = DI!','MySQL 주입','PostgreSQL 주입!'],
+desc:'콘센트(인터페이스)에 아무 전자제품이나 꽂을 수 있는 것처럼, 인터페이스에 의존하면 구현체를 자유롭게 교체할 수 있어요. MySQL→PostgreSQL 교체가 한 줄이면 끝! 이게 DI(의존성 주입)의 핵심이에요.',hl:'hlg'}
+];
+
+var cW=0,cP=0,cO=0,cS=0,dR=false;
+function bH(data,idx,pfx,cc){var d=data[idx];var h='';for(var i=0;i<d.lines.length;i++){h+='<div class="cl" id="'+pfx+'-'+i+'"><span class="ct">'+d.lines[i]+'</span><span class="ca '+cc+'" id="'+pfx+'-a-'+i+'"></span></div>'}return h}
+function rC(t,data,idx,c){document.getElementById(t).innerHTML=bH(data,idx,t,c)}
+function rD(t,data,idx){var el=document.getElementById(t);el.textContent=data[idx].desc;el.classList.remove('show');requestAnimationFrame(function(){requestAnimationFrame(function(){el.classList.add('show')})})}
+function wD(i,b){cW=i;document.querySelectorAll('#w-nav .dbtn').forEach(function(x){x.className='dbtn'});b.className='dbtn ag';rC('w-code',wData,i,'cag');rD('w-desc',wData,i)}
+function pD(i,el){cP=i;document.querySelectorAll('#p-pillar .cc').forEach(function(x){x.classList.remove('active')});el.classList.add('active');rC('p-code',pData,i,'cag');rD('p-desc',pData,i)}
+function oD(i,b){cO=i;document.querySelectorAll('#o-nav .dbtn').forEach(function(x){x.className='dbtn'});b.className='dbtn ag';rC('o-code',oData,i,'cag');rD('o-desc',oData,i)}
+function sD(i,el){cS=i;document.querySelectorAll('#p-solid .cc').forEach(function(x){x.classList.remove('active')});el.classList.add('active');rC('s-code',sData,i,'cag');rD('s-desc',sData,i)}
+function sl(ms){return new Promise(function(r){setTimeout(r,ms)})}
+async function aC(p,data,idx){if(dR)return;dR=true;var d=data[idx];for(var i=0;i<d.lines.length;i++){var ln=document.getElementById(p+'-'+i);var an=document.getElementById(p+'-a-'+i);if(!d.annos[i]||d.annos[i]===''){await sl(200);continue}ln.classList.add(d.hl);an.textContent='\u2190 '+d.annos[i];(function(a){requestAnimationFrame(function(){requestAnimationFrame(function(){a.classList.add('show')})})})(an);await sl(1800)}dR=false}
+function rW(){aC('w-code',wData,cW)}
+function rP(){aC('p-code',pData,cP)}
+function rO(){aC('o-code',oData,cO)}
+function rS(){aC('s-code',sData,cS)}
+rC('w-code',wData,0,'cag');rD('w-desc',wData,0);
+rC('p-code',pData,0,'cag');rD('p-desc',pData,0);
+rC('o-code',oData,0,'cag');rD('o-desc',oData,0);
+rC('s-code',sData,0,'cag');rD('s-desc',sData,0);
+function sw(id){document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active')});document.querySelectorAll('.pnl').forEach(function(p){p.classList.remove('active')});document.querySelector('[onclick="sw(\''+id+'\')"]').classList.add('active');document.getElementById('p-'+id).classList.add('active')}
+</script>
+</body>
+</html>

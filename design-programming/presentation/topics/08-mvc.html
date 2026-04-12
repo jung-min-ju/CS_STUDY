@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MVC Pattern</title>
+  <link rel="stylesheet" href="../topic-frame.css">
+</head>
+<body>
+<h2 class="sr-only">MVC pattern interactive explainer with simulation, pros, cons, and use cases in Korean.</h2>
+<style>
+*{box-sizing:border-box}
+.tabs{display:flex;gap:0;border-bottom:0.5px solid var(--color-border-tertiary);margin-bottom:1.25rem;overflow-x:auto}
+.tab{padding:8px 14px;font-size:13px;font-weight:500;color:var(--color-text-secondary);cursor:pointer;border-bottom:2px solid transparent;transition:all 0.3s;background:none;border-top:none;border-left:none;border-right:none;white-space:nowrap}
+.tab:hover{color:var(--color-text-primary)}.tab.active{color:#3C3489;border-bottom-color:#534AB7}
+.pnl{display:none}.pnl.active{display:block}
+.sec{margin-bottom:1.25rem}
+.sec-title{font-size:14px;font-weight:500;color:var(--color-text-primary);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.sec-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.cw{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:14px 16px;font-family:var(--font-mono);font-size:12px;line-height:2.2;color:var(--color-text-secondary);overflow-x:auto;margin-bottom:10px}
+.cl{display:flex;align-items:baseline;min-height:24px;transition:background 0.5s;border-radius:3px;padding:0 4px;margin:0 -4px}
+.cl.hl{background:#EEEDFE}.cl.hlg{background:#E1F5EE}.cl.hlr{background:#FCEBEB}.cl.hlb{background:#E6F1FB}.cl.hla{background:#FAEEDA}
+.ct{white-space:pre;flex-shrink:0}
+.ca{margin-left:12px;font-family:var(--font-sans);font-size:11px;opacity:0;transition:opacity 1s;white-space:nowrap;flex-shrink:0}
+.ca.show{opacity:1}
+.cap{color:#534AB7}.cag{color:#085041}.car{color:#791F1F}.cab{color:#0C447C}.caa{color:#633806}
+.kw{color:#534AB7}.vl{color:#0F6E56}.nl{color:#A32D2D}.cm{color:var(--color-text-tertiary)}.sv{color:#BA7517}
+
+.viz-area{position:relative;min-height:220px;margin:12px 0;padding:8px 0}
+.mvc-row{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+.mvc-box{width:150px;border-radius:var(--border-radius-lg);padding:12px;text-align:center;border:2px solid;transition:all 0.6s}
+.mvc-box.pulse{transform:scale(1.05)}
+.mvc-label{font-size:14px;font-weight:500;margin-bottom:4px}
+.mvc-desc{font-size:10px;margin-bottom:6px}
+.mvc-state{font-family:var(--font-mono);font-size:11px;min-height:16px;transition:opacity 0.5s}
+.box-model{background:#EEEDFE;border-color:#AFA9EC;color:#3C3489}
+.box-model .mvc-desc{color:#534AB7}
+.box-view{background:#E6F1FB;border-color:#85B7EB;color:#0C447C}
+.box-view .mvc-desc{color:#378ADD}
+.box-ctrl{background:#FAEEDA;border-color:#FAC775;color:#633806}
+.box-ctrl .mvc-desc{color:#BA7517}
+.flow-row{display:flex;justify-content:center;align-items:center;gap:8px;margin:12px 0;font-size:11px;color:var(--color-text-tertiary);flex-wrap:wrap}
+.flow-arrow{font-size:16px;color:var(--color-border-secondary);transition:color 0.5s}
+.flow-arrow.active-m{color:#534AB7}.flow-arrow.active-v{color:#378ADD}.flow-arrow.active-c{color:#BA7517}
+.flow-step{padding:3px 10px;border-radius:var(--border-radius-md);background:var(--color-background-secondary);transition:all 0.5s;font-family:var(--font-mono)}
+.flow-step.active-m{background:#EEEDFE;color:#3C3489}.flow-step.active-v{background:#E6F1FB;color:#0C447C}.flow-step.active-c{background:#FAEEDA;color:#633806}
+.user-zone{margin-top:12px;padding:10px 12px;background:var(--color-background-secondary);border-radius:var(--border-radius-md)}
+.user-label{font-size:10px;font-weight:500;color:var(--color-text-tertiary);margin-bottom:6px}
+.user-msg{font-family:var(--font-mono);font-size:12px;color:var(--color-text-primary);min-height:18px}
+
+.pills{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.pill{font-size:12px;padding:4px 12px;border-radius:var(--border-radius-md);background:var(--color-background-secondary);color:var(--color-text-secondary);transition:all 0.5s}
+.pill.active{background:#EEEDFE;color:#3C3489}.pill.done{background:#E1F5EE;color:#085041}
+.sts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:12px 0}
+.stc{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 12px;text-align:center}
+.stn{font-size:20px;font-weight:500;color:var(--color-text-primary)}
+.stl{font-size:11px;color:var(--color-text-tertiary);margin-top:2px}
+.lga{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 14px;min-height:60px;max-height:200px;overflow-y:auto;font-family:var(--font-mono);font-size:11px;line-height:2;color:var(--color-text-secondary)}
+.ll{display:flex;gap:6px;align-items:baseline}
+.tg{display:inline-block;font-size:10px;padding:1px 7px;border-radius:var(--border-radius-md);font-weight:500}
+.tgm{background:#EEEDFE;color:#3C3489}.tgv{background:#E6F1FB;color:#0C447C}.tgc{background:#FAEEDA;color:#633806}.tgu{background:#E1F5EE;color:#085041}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+.btns button:disabled{opacity:0.4;cursor:not-allowed}
+.dnav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.dbtn{padding:6px 14px;font-size:12px;border-radius:var(--border-radius-md);background:var(--color-background-secondary);color:var(--color-text-secondary);border:0.5px solid var(--color-border-tertiary);cursor:pointer;transition:all 0.3s}
+.dbtn:hover{border-color:var(--color-border-secondary)}
+.dbtn.ag{background:#E1F5EE;color:#085041;border-color:#0F6E56}
+.dbtn.ar{background:#FCEBEB;color:#791F1F;border-color:#A32D2D}
+.dsc{font-size:13px;color:var(--color-text-secondary);line-height:1.7;padding:10px 14px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);min-height:40px;opacity:0;transition:opacity 0.8s}
+.dsc.show{opacity:1}
+
+.intro-block{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:14px 16px;margin-bottom:1.25rem;display:flex;flex-direction:column;gap:10px}
+.intro-item{display:flex;gap:10px;align-items:baseline}
+.intro-label{font-size:12px;font-weight:600;color:var(--color-text-primary);white-space:nowrap;min-width:100px;flex-shrink:0}
+.intro-text{font-size:13px;color:var(--color-text-secondary);line-height:1.6}
+
+.sim-row{display:flex;gap:1.25rem;align-items:flex-start}
+.sim-row>.sec{flex:1;min-width:0;margin-bottom:0}
+.sim-row>.sec:first-child{flex:0 0 38%;max-width:38%}
+.sim-row>.sec:last-child{flex:1}
+@media(max-width:860px){.sim-row{flex-direction:column}.sim-row>.sec:first-child{flex:1;max-width:100%}}
+
+
+
+</style>
+
+<div style="padding:0.5rem 0">
+<div class="intro-block">
+  <div class="intro-item"><span class="intro-label">무슨 패턴인가</span><span class="intro-text">화면(View), 데이터(Model), 중간 다리(Controller)를 분리해서 각각 독립적으로 수정할 수 있게 합니다. UI와 비즈니스 로직이 뒤섞이는 문제를 해결해요.</span></div>
+  <div class="intro-item"><span class="intro-label">이 화면에서는</span><span class="intro-text">Model·View·Controller 세 박스가 역할을, 화살표(User action → Controller → Model update → View render)가 데이터 흐름을 보여줍니다. "+ 할 일 추가" 버튼으로 Todo 시뮬레이션을 실행해 보세요.</span></div>
+  <div class="intro-item"><span class="intro-label">언제 떠올리나</span><span class="intro-text">같은 데이터를 여러 화면에서 보여주거나, 디자이너와 백엔드 개발자가 각자 맡은 영역을 독립적으로 작업해야 할 때.</span></div>
+</div>
+<div class="tabs">
+  <button class="tab active" onclick="sw('sim')">Simulation</button>
+  <button class="tab" onclick="sw('pro')">장점 (Pros)</button>
+  <button class="tab" onclick="sw('con')">단점 (Cons)</button>
+  <button class="tab" onclick="sw('use')">사용 예시</button>
+</div>
+
+<div class="pnl active" id="p-sim">
+<div class="sim-row">
+<div class="sec">
+  <div class="sec-title"><span class="sec-dot" style="background:#534AB7"></span>MVC pattern</div>
+  <div class="cw">
+    <div class="cl" id="cl-0"><span class="ct"><span class="cm">// Model — 데이터와 비즈니스 로직</span></span></div>
+    <div class="cl" id="cl-1"><span class="ct"><span class="kw">class</span> TodoModel {</span></div>
+    <div class="cl" id="cl-2"><span class="ct">  <span class="kw">private</span> todos = []</span><span class="ca cap" id="an-2"></span></div>
+    <div class="cl" id="cl-3"><span class="ct">  addTodo(text) { this.todos.push({ text, done: <span class="nl">false</span> }) }</span><span class="ca cap" id="an-3"></span></div>
+    <div class="cl" id="cl-4"><span class="ct">  toggle(i) { this.todos[i].done = !this.todos[i].done }</span><span class="ca cap" id="an-4"></span></div>
+    <div class="cl" id="cl-5"><span class="ct">  getTodos() { <span class="kw">return</span> [...this.todos] }</span><span class="ca cap" id="an-5"></span></div>
+    <div class="cl" id="cl-6"><span class="ct">}</span></div>
+    <div class="cl" id="cl-7"><span class="ct"></span></div>
+    <div class="cl" id="cl-8"><span class="ct"><span class="cm">// View — 화면 표시</span></span></div>
+    <div class="cl" id="cl-9"><span class="ct"><span class="kw">class</span> TodoView {</span></div>
+    <div class="cl" id="cl-10"><span class="ct">  render(todos) { <span class="cm">/* DOM 업데이트 */</span> }</span><span class="ca cap" id="an-10"></span></div>
+    <div class="cl" id="cl-11"><span class="ct">  bindAddBtn(handler) { <span class="cm">/* 클릭 이벤트 연결 */</span> }</span><span class="ca cap" id="an-11"></span></div>
+    <div class="cl" id="cl-12"><span class="ct">}</span></div>
+    <div class="cl" id="cl-13"><span class="ct"></span></div>
+    <div class="cl" id="cl-14"><span class="ct"><span class="cm">// Controller — Model과 View를 연결</span></span></div>
+    <div class="cl" id="cl-15"><span class="ct"><span class="kw">class</span> TodoController {</span></div>
+    <div class="cl" id="cl-16"><span class="ct">  <span class="kw">constructor</span>(model, view) {</span><span class="ca cap" id="an-16"></span></div>
+    <div class="cl" id="cl-17"><span class="ct">    view.bindAddBtn(text => {</span><span class="ca cap" id="an-17"></span></div>
+    <div class="cl" id="cl-18"><span class="ct">      model.addTodo(text)</span><span class="ca cap" id="an-18"></span></div>
+    <div class="cl" id="cl-19"><span class="ct">      view.render(model.getTodos())</span><span class="ca cap" id="an-19"></span></div>
+    <div class="cl" id="cl-20"><span class="ct">    })</span></div>
+    <div class="cl" id="cl-21"><span class="ct">  }</span></div>
+    <div class="cl" id="cl-22"><span class="ct">}</span></div>
+  </div>
+</div>
+<div class="sec">
+  <div class="sec-title"><span class="sec-dot" style="background:#0F6E56"></span>MVC flow diagram</div>
+  <div class="pills" id="steps"><div class="pill active" data-s="0">Ready</div><div class="pill" data-s="1">1. User action</div><div class="pill" data-s="2">2. Controller</div><div class="pill" data-s="3">3. Model</div><div class="pill" data-s="4">4. View</div></div>
+  <div class="viz-area">
+    <div class="mvc-row">
+      <div class="mvc-box box-model" id="box-m"><div class="mvc-label">Model</div><div class="mvc-desc">데이터 + 로직</div><div class="mvc-state" id="m-state">todos: []</div></div>
+      <div class="mvc-box box-view" id="box-v"><div class="mvc-label">View</div><div class="mvc-desc">화면 표시</div><div class="mvc-state" id="v-state">render 대기</div></div>
+      <div class="mvc-box box-ctrl" id="box-c"><div class="mvc-label">Controller</div><div class="mvc-desc">중간 다리</div><div class="mvc-state" id="c-state">이벤트 대기</div></div>
+    </div>
+    <div class="flow-row">
+      <span class="flow-step" id="fs-1">User action</span>
+      <span class="flow-arrow" id="fa-1">→</span>
+      <span class="flow-step" id="fs-2">Controller</span>
+      <span class="flow-arrow" id="fa-2">→</span>
+      <span class="flow-step" id="fs-3">Model update</span>
+      <span class="flow-arrow" id="fa-3">→</span>
+      <span class="flow-step" id="fs-4">View render</span>
+    </div>
+    <div class="user-zone">
+      <div class="user-label">사용자 화면</div>
+      <div class="user-msg" id="user-msg">버튼을 눌러 Todo를 추가해보세요!</div>
+    </div>
+  </div>
+<div class="sts">
+  <div class="stc"><div class="stn" id="s-actions">0</div><div class="stl">User actions</div></div>
+  <div class="stc"><div class="stn" id="s-updates">0</div><div class="stl">Model updates</div></div>
+  <div class="stc"><div class="stn" id="s-renders">0</div><div class="stl">View renders</div></div>
+</div>
+<div class="sec"><div class="sec-title"><span class="sec-dot" style="background:#888780"></span>Log</div><div class="lga" id="logbox"></div></div>
+<div class="btns">
+  <button id="btn-add" onclick="doAdd()">+ "할 일 추가"</button>
+  <button id="btn-tog" onclick="doToggle()">첫 번째 토글</button>
+  <button id="btn-reset" onclick="doReset()">Reset</button>
+</div>
+</div>
+</div>
+</div>
+
+<div class="pnl" id="p-pro">
+<div class="sec"><div class="sec-title"><span class="sec-dot" style="background:#1D9E75"></span>장점 코드 데모</div>
+<div class="dnav" id="pro-nav">
+  <button class="dbtn ag" onclick="proDem(0,this)">관심사 분리</button>
+  <button class="dbtn" onclick="proDem(1,this)">독립적 테스트</button>
+  <button class="dbtn" onclick="proDem(2,this)">팀 분업</button>
+  <button class="dbtn" onclick="proDem(3,this)">View 교체 자유</button>
+</div>
+<div class="cw" id="pro-code"></div>
+<div class="dsc" id="pro-desc"></div>
+</div>
+<div style="margin-top:8px"><button onclick="runPro()">실행해보기</button></div>
+</div>
+
+<div class="pnl" id="p-con">
+<div class="sec"><div class="sec-title"><span class="sec-dot" style="background:#A32D2D"></span>단점 코드 데모</div>
+<div class="dnav" id="con-nav">
+  <button class="dbtn ar" onclick="conDem(0,this)">보일러플레이트</button>
+  <button class="dbtn" onclick="conDem(1,this)">뚱뚱한 Controller</button>
+  <button class="dbtn" onclick="conDem(2,this)">View-Model 결합</button>
+  <button class="dbtn" onclick="conDem(3,this)">소규모엔 과잉</button>
+</div>
+<div class="cw" id="con-code"></div>
+<div class="dsc" id="con-desc"></div>
+</div>
+<div style="margin-top:8px"><button onclick="runCon()">실행해보기</button></div>
+</div>
+
+<div class="pnl" id="p-use">
+<div class="sec"><div class="sec-title"><span class="sec-dot" style="background:#534AB7"></span>실제 사용 예시</div>
+<div class="dnav" id="use-nav">
+  <button class="dbtn ag" onclick="useDem(0,this)">Express.js</button>
+  <button class="dbtn" onclick="useDem(1,this)">Spring MVC</button>
+  <button class="dbtn" onclick="useDem(2,this)">iOS UIKit</button>
+  <button class="dbtn" onclick="useDem(3,this)">MVP / MVVM 비교</button>
+</div>
+<div class="cw" id="use-code"></div>
+<div class="dsc" id="use-desc"></div>
+</div>
+<div style="margin-top:8px"><button onclick="runUse()">실행해보기</button></div>
+</div>
+</div>
+
+<script>
+var D=2400;
+var todos=[];var actions=0,updates=0,renders=0,running=false;
+var todoTexts=["우유 사기","코드 리뷰","운동하기","책 읽기","빨래하기"];var tIdx=0;
+
+var proData=[
+{lines:['// Model은 "데이터가 뭔지"만 신경 씀','class UserModel {','  getUser(id) { return db.find(id) }','  save(user) { db.save(user) }','  // 화면? 모름. 버튼? 모름. 데이터만!','}','','// View는 "어떻게 보여줄지"만 신경 씀','class UserView {','  render(user) { /* HTML 그리기 */ }','  // 데이터 저장? 모름. 화면만!','}','','// Controller는 "누가 뭘 하면 어떻게 연결할지"','// 각자 자기 일만 하니까 코드가 깔끔!'],
+annos:['','','데이터 가져오기','데이터 저장하기','화면은 내 일이 아니야!','','','','','화면 그리기만!','데이터는 내 일이 아니야!','','','','각자 한 가지만 잘하면 됨!'],
+desc:'식당에서 주방(Model)은 요리만, 홀(View)은 서빙만, 매니저(Controller)는 주문 전달만 해요. 각자 자기 일에 집중하니까 효율적이에요.',hl:'hlg'},
+{lines:['// Model을 단독으로 테스트!','const model = new TodoModel()','model.addTodo("테스트")','expect(model.getTodos().length).toBe(1)  // 통과!','','// View 없이도 Model 테스트 가능!','// Controller 없이도 가능!','','// View도 단독으로 테스트!','const view = new TodoView()','view.render([{ text: "목업", done: false }])','// DOM이 제대로 그려졌는지만 확인!','','// 각각 따로 테스트할 수 있어서 버그 찾기 쉬움!'],
+annos:['','Model만 꺼내서','할 일 추가','1개 들어갔는지 확인!','','View 없어도 테스트 가능!','','','','View만 꺼내서','가짜 데이터로 렌더링','화면만 확인!','','분리되어 있으니 독립 테스트 가능!'],
+desc:'레고 블록을 따로 검사하듯, Model/View/Controller를 각각 독립적으로 테스트할 수 있어요. 버그가 데이터 문제인지, 화면 문제인지, 연결 문제인지 바로 찾을 수 있습니다.',hl:'hlg'},
+{lines:['// 팀원 3명이 동시에 작업 가능!','','// 백엔드 개발자 → Model','class ProductModel {','  getProducts() { /* DB 쿼리 */ }','}','','// 프론트엔드 개발자 → View','class ProductView {','  render(products) { /* UI 그리기 */ }','}','','// 풀스택 개발자 → Controller','class ProductController {','  // Model과 View를 연결!','}'],
+annos:['','','','백엔드팀이 담당!','DB 로직에 집중','','','','프론트팀이 담당!','UI에 집중','','','','둘을 이어주는 역할','서로 안 기다려도 됨!',''],
+desc:'3명이 한 파일을 고치면 충돌나지만, MVC로 나누면 각자 다른 파일을 작업해요. 백엔드는 Model, 프론트는 View, 풀스택은 Controller — 동시에 작업 가능!',hl:'hlg'},
+{lines:['// 같은 Model로 여러 View를 만들 수 있음!','','const model = new TodoModel()','','// 웹 View','const webView = new WebTodoView()','new TodoController(model, webView)','','// 모바일 View','const mobileView = new MobileTodoView()','new TodoController(model, mobileView)','','// 같은 데이터, 다른 화면!','// Model은 하나도 안 바꿈!'],
+annos:['','','데이터 로직은 하나!','','','웹용 화면','웹으로 연결!','','','모바일용 화면','모바일로 연결!','','Model 수정 없이 View만 교체!','데이터 로직 재사용!'],
+desc:'같은 재료(Model)로 한식 플레이팅(Web View)도 하고, 양식 플레이팅(Mobile View)도 할 수 있어요. 데이터 로직은 한 번만 만들고 화면만 바꾸면 됩니다.',hl:'hlg'}
+];
+
+var conData=[
+{lines:['// 간단한 기능인데도 파일 3개 필요','','// models/todo.js','class TodoModel { ... }','','// views/todo.js','class TodoView { ... }','','// controllers/todo.js','class TodoController { ... }','','// 한 줄짜리 기능에도 3개 파일?!','// 작은 프로젝트엔 오히려 부담!'],
+annos:['','','파일 1','','','파일 2','','','파일 3','','','간단한 것도 3등분!','코드량이 늘어남!'],
+desc:'토스트 하나 만드는데 식빵 담당, 굽기 담당, 서빙 담당을 따로 두는 격이에요. 작은 기능에도 Model/View/Controller 3개를 만들어야 해서 코드량이 많아집니다.',hl:'hlr'},
+{lines:['// Controller가 점점 뚱뚱해짐!','class TodoController {','  handleAdd(text) { ... }','  handleDelete(id) { ... }','  handleToggle(id) { ... }','  handleEdit(id, text) { ... }','  handleFilter(type) { ... }','  handleSort(field) { ... }','  handleSearch(query) { ... }','  handleExport() { ... }','  // 기능 추가할 때마다 여기에 쌓임!','}'],
+annos:['','','추가 핸들러','삭제 핸들러','토글 핸들러','수정 핸들러','필터 핸들러','정렬 핸들러','검색 핸들러','내보내기 핸들러','Controller가 점점 비대해져요!',''],
+desc:'교통 경찰관(Controller)이 교차로 하나만 관리하면 괜찮은데, 도시 전체 교통을 혼자 관리하면 과부하가 걸려요. Controller에 로직이 몰리면 "Fat Controller" 문제가 생깁니다.',hl:'hlr'},
+{lines:['// View가 Model의 구조를 알아야 함','class TodoView {','  render(todos) {','    todos.forEach(todo => {','      // todo.text? todo.title? todo.name?','      // Model 구조가 바뀌면 View도 바꿔야!','      el.textContent = todo.text','    })','  }','}','','// Model의 필드명이 바뀌면','// View도 같이 고쳐야 해요!'],
+annos:['','','','','Model의 필드명을 알아야 함!','','todo.text에 의존','','','','','Model 변경 → View도 변경!','완전한 분리가 아님!'],
+desc:'MVC가 "분리"라고 하지만, View가 Model의 데이터 구조를 알아야 화면을 그릴 수 있어요. Model의 필드명이 바뀌면 View도 고쳐야 해서 완전한 독립은 아니에요.',hl:'hlr'},
+{lines:['// 버튼 하나짜리 앱에 MVC를 쓰면...','','// model.js','class CounterModel {','  count = 0','  increment() { this.count++ }','}','// view.js','class CounterView {','  render(count) { span.textContent = count }','}','// controller.js','class CounterController { ... }','','// 이 3개 파일 대신... 한 줄이면 됨!','button.onclick = () => span.textContent = ++count'],
+annos:['','','','','숫자 하나','1 더하기','','','','숫자 표시','','','연결 로직','','이 한 줄이면 같은 기능!','MVC가 오히려 과잉 설계!'],
+desc:'전등 스위치 하나에 스마트홈 시스템을 설치하는 격이에요. 간단한 인터랙션이면 MVC 없이 직접 연결하는 게 나아요. 복잡도가 높아질 때 MVC가 빛납니다.',hl:'hlr'}
+];
+
+var useData=[
+{lines:['// Express.js — 가장 흔한 MVC 예시','','// Model (models/user.js)','const User = mongoose.model("User", userSchema)','','// Controller (controllers/user.js)','exports.getUser = async (req, res) => {','  const user = await User.findById(req.params.id)','  res.render("profile", { user })','}',' ','// View (views/profile.ejs)','<h1><%= user.name %></h1>','','// Route가 Controller를 연결','app.get("/user/:id", userController.getUser)'],
+annos:['','','','Mongoose 모델 = Model','','','요청 → Controller가 받음','Model에서 데이터 가져오기','View에 데이터 전달!','','','','EJS 템플릿 = View','','','URL → Controller 연결!'],
+desc:'Express.js에서 Mongoose 모델이 Model, EJS 템플릿이 View, route 핸들러가 Controller예요. Node.js 백엔드의 가장 기본적인 MVC 구조입니다.',hl:'hlg'},
+{lines:['// Spring MVC — Java 웹 프레임워크','','// Model','@Entity','class Product {','  private String name;','  private int price;','}','','// Controller','@Controller','class ProductController {','  @GetMapping("/products")','  String list(Model model) {','    model.addAttribute("products", productService.findAll())','    return "product-list"  // View 이름!','  }','}'],
+annos:['','','','DB 테이블과 매핑!','','','','','','','어노테이션으로 Controller 선언!','','/products URL 매핑','','Model에 데이터 담기','이 이름의 View를 렌더링!','',''],
+desc:'Spring MVC는 어노테이션(@Controller, @GetMapping)으로 MVC를 구현해요. Java 기업용 웹 앱의 표준 패턴으로, 가장 체계적인 MVC 구현 중 하나입니다.',hl:'hlg'},
+{lines:['// iOS UIKit — 전통적 MVC','','// Model','struct Todo {','  var text: String','  var isDone: Bool','}','','// Controller (UIViewController가 Controller!)','class TodoViewController: UIViewController {','  var todos: [Todo] = []  // Model 참조','  @IBOutlet var tableView: UITableView  // View 참조','  ','  @IBAction func addTapped() {','    todos.append(Todo(text: "새 할 일", isDone: false))','    tableView.reloadData()  // View 업데이트!','  }','}'],
+annos:['','','','데이터 구조','','','','','iOS에선 ViewController가 Controller!','','Model을 갖고 있고','View도 갖고 있음','','버튼 클릭 시','Model 업데이트','View 다시 그리기!','',''],
+desc:'iOS 앱 개발의 기본이 MVC예요. UIViewController가 Controller 역할을 하면서 Model과 View를 연결합니다. 다만 Controller가 너무 커지는 "Massive View Controller" 문제가 유명해요.',hl:'hlg'},
+{lines:['// MVC vs MVP vs MVVM 비교!','','// MVC: View ← Controller → Model','//   Controller가 중간 다리','//   View가 Model을 직접 볼 수도 있음','','// MVP: View ← Presenter → Model','//   View와 Model이 완전 분리!','//   Presenter가 모든 것을 중재','','// MVVM: View ← ViewModel → Model','//   ViewModel이 상태 변환을 맡고','//   Vue/Angular는 이 문맥으로 설명되곤 함'],
+annos:['','','전통적인 MVC','','View→Model 직접 참조 가능','','MVP (Model-View-Presenter)','더 엄격한 분리!','','','MVVM (Model-View-ViewModel)','상태/데이터 연결','프레임워크마다 해석이 다름'],
+desc:'세 패턴은 자주 함께 비교돼요. MVP는 View와 Model을 더 강하게 분리하고, MVVM은 ViewModel을 통해 상태를 연결하는 식으로 설명됩니다. Vue/Angular는 이 관점으로 이해하기 쉽지만, React는 일부만 비슷합니다.',hl:'hlg'}
+];
+
+var curPro=0,curCon=0,curUse=0,demoR=false;
+function buildHTML(data,idx,prefix,colorCls){var d=data[idx];var html='';for(var i=0;i<d.lines.length;i++){html+='<div class="cl" id="'+prefix+'-'+i+'"><span class="ct">'+d.lines[i]+'</span><span class="ca '+colorCls+'" id="'+prefix+'-a-'+i+'"></span></div>'}return html}
+function renderCode(t,data,idx,c){document.getElementById(t).innerHTML=buildHTML(data,idx,t,c)}
+function renderDesc(t,data,idx){var el=document.getElementById(t);el.textContent=data[idx].desc;el.classList.remove('show');requestAnimationFrame(function(){requestAnimationFrame(function(){el.classList.add('show')})})}
+function proDem(i,b){curPro=i;document.querySelectorAll('#pro-nav .dbtn').forEach(function(x){x.className='dbtn'});b.className='dbtn ag';renderCode('pro-code',proData,i,'cag');renderDesc('pro-desc',proData,i)}
+function conDem(i,b){curCon=i;document.querySelectorAll('#con-nav .dbtn').forEach(function(x){x.className='dbtn'});b.className='dbtn ar';renderCode('con-code',conData,i,'car');renderDesc('con-desc',conData,i)}
+function useDem(i,b){curUse=i;document.querySelectorAll('#use-nav .dbtn').forEach(function(x){x.className='dbtn'});b.className='dbtn ag';renderCode('use-code',useData,i,'cag');renderDesc('use-desc',useData,i)}
+function sl(ms){return new Promise(function(r){setTimeout(r,ms)})}
+async function animCode(p,data,idx){if(demoR)return;demoR=true;var d=data[idx];for(var i=0;i<d.lines.length;i++){var line=document.getElementById(p+'-'+i);var anno=document.getElementById(p+'-a-'+i);if(!d.annos[i]||d.annos[i]===''){await sl(200);continue}line.classList.add(d.hl);anno.textContent='\u2190 '+d.annos[i];(function(a){requestAnimationFrame(function(){requestAnimationFrame(function(){a.classList.add('show')})})})(anno);await sl(1800)}demoR=false}
+function runPro(){animCode('pro-code',proData,curPro)}
+function runCon(){animCode('con-code',conData,curCon)}
+function runUse(){animCode('use-code',useData,curUse)}
+renderCode('pro-code',proData,0,'cag');renderDesc('pro-desc',proData,0);
+renderCode('con-code',conData,0,'car');renderDesc('con-desc',conData,0);
+renderCode('use-code',useData,0,'cag');renderDesc('use-desc',useData,0);
+
+function sw(id){document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active')});document.querySelectorAll('.pnl').forEach(function(p){p.classList.remove('active')});document.querySelector('[onclick="sw(\''+id+'\')"]').classList.add('active');document.getElementById('p-'+id).classList.add('active')}
+
+var logbox=document.getElementById('logbox');
+var anIds=[2,3,4,5,10,11,16,17,18,19];
+
+function setStep(n){document.querySelectorAll('.pill').forEach(function(p){var s=parseInt(p.dataset.s);if(!isNaN(s))p.className='pill'+(s===n?' active':(s<n?' done':''))})}
+function clearHL(){for(var i=0;i<=22;i++){var e=document.getElementById('cl-'+i);if(e)e.classList.remove('hl','hlg','hlr','hlb','hla')}anIds.forEach(function(j){var a=document.getElementById('an-'+j);if(a){a.classList.remove('show');a.textContent=''}})}
+function hlLine(n,txt,cls){clearHL();var c=cls||'hl';var e=document.getElementById('cl-'+n);if(e)e.classList.add(c);var a=document.getElementById('an-'+n);if(a&&txt){var acls=c==='hlg'?'cag':c==='hlr'?'car':c==='hlb'?'cab':c==='hla'?'caa':'cap';a.className='ca '+acls;a.textContent='\u2190 '+txt;requestAnimationFrame(function(){requestAnimationFrame(function(){a.classList.add('show')})})}}
+function addLog(msg,type){var d=document.createElement('div');d.className='ll';var tg=document.createElement('span');tg.className='tg '+(type==='model'?'tgm':type==='view'?'tgv':type==='ctrl'?'tgc':'tgu');tg.textContent=type==='model'?'MODEL':type==='view'?'VIEW':type==='ctrl'?'CTRL':'USER';var tx=document.createElement('span');tx.textContent=msg;d.appendChild(tg);d.appendChild(tx);logbox.appendChild(d);logbox.scrollTop=logbox.scrollHeight}
+function updateStats(){document.getElementById('s-actions').textContent=actions;document.getElementById('s-updates').textContent=updates;document.getElementById('s-renders').textContent=renders}
+function pulseBox(id){var el=document.getElementById(id);el.classList.add('pulse');setTimeout(function(){el.classList.remove('pulse')},600)}
+function activateFlow(n,cls){for(var i=1;i<=4;i++){document.getElementById('fs-'+i).className='flow-step';if(i<=3)document.getElementById('fa-'+i).className='flow-arrow'}if(n>=1){document.getElementById('fs-'+n).className='flow-step '+cls;if(n>1)document.getElementById('fa-'+(n-1)).className='flow-arrow '+cls}}
+function todoDisplay(){return todos.map(function(t){return (t.done?'[x]':'[ ]')+' '+t.text}).join(', ')||'(비어있음)'}
+function setBtns(d){['btn-add','btn-tog','btn-reset'].forEach(function(id){var e=document.getElementById(id);if(e)e.disabled=d})}
+
+async function doAdd(){
+if(running)return;running=true;setBtns(true);actions++;
+var text=todoTexts[tIdx%todoTexts.length];tIdx++;
+
+setStep(1);activateFlow(1,'active-v');
+hlLine(11,'사용자가 "추가" 버튼 클릭! → View가 감지','hlb');
+pulseBox('box-v');
+document.getElementById('v-state').textContent='클릭 감지!';
+addLog('사용자 → "'+text+'" 추가 버튼 클릭','user');
+document.getElementById('user-msg').textContent='버튼 클릭! → "'+text+'"';
+await sl(D);
+
+setStep(2);activateFlow(2,'active-c');
+hlLine(17,'View → Controller: "'+text+'" 추가 요청 전달','hla');
+pulseBox('box-c');
+document.getElementById('c-state').textContent='addTodo 처리 중';
+addLog('View → Controller: addTodo("'+text+'") 전달','ctrl');
+await sl(D);
+
+setStep(3);activateFlow(3,'active-m');
+hlLine(3,'Controller → Model: addTodo("'+text+'") 실행!','hl');
+todos.push({text:text,done:false});updates++;
+pulseBox('box-m');
+document.getElementById('m-state').textContent='todos: '+todos.length+'개';
+addLog('Controller → Model: todos에 "'+text+'" 추가','model');
+await sl(D);
+
+setStep(4);activateFlow(4,'active-v');
+hlLine(19,'Controller → View: render() 호출! 화면 갱신','hlb');
+renders++;
+pulseBox('box-v');
+document.getElementById('v-state').textContent='렌더링: '+todos.length+'개';
+document.getElementById('user-msg').textContent=todoDisplay();
+addLog('Controller → View: render('+todos.length+'개 todo)','view');
+updateStats();
+await sl(D/2);activateFlow(0,'');
+running=false;setBtns(false)}
+
+async function doToggle(){
+if(running)return;
+if(todos.length===0){addLog('할 일이 없어요! 먼저 추가하세요','user');return}
+running=true;setBtns(true);actions++;
+
+setStep(1);activateFlow(1,'active-v');
+hlLine(11,'사용자가 첫 번째 항목 클릭! → View 감지','hlb');
+pulseBox('box-v');
+addLog('사용자 → "'+todos[0].text+'" 토글 클릭','user');
+await sl(D);
+
+setStep(2);activateFlow(2,'active-c');
+hlLine(17,'View → Controller: toggle(0) 요청','hla');
+pulseBox('box-c');
+document.getElementById('c-state').textContent='toggle 처리 중';
+addLog('View → Controller: toggle(0) 전달','ctrl');
+await sl(D);
+
+setStep(3);activateFlow(3,'active-m');
+hlLine(4,'Controller → Model: toggle(0) 실행!','hl');
+todos[0].done=!todos[0].done;updates++;
+pulseBox('box-m');
+document.getElementById('m-state').textContent='todos[0].done='+todos[0].done;
+addLog('Controller → Model: "'+todos[0].text+'" done='+todos[0].done,'model');
+await sl(D);
+
+setStep(4);activateFlow(4,'active-v');
+hlLine(19,'Controller → View: render() 호출!','hlb');
+renders++;
+pulseBox('box-v');
+document.getElementById('v-state').textContent='렌더링 갱신';
+document.getElementById('user-msg').textContent=todoDisplay();
+addLog('Controller → View: 화면 갱신','view');
+updateStats();
+await sl(D/2);activateFlow(0,'');
+running=false;setBtns(false)}
+
+function doReset(){todos=[];tIdx=0;actions=0;updates=0;renders=0;running=false;logbox.innerHTML='';setStep(0);clearHL();updateStats();activateFlow(0,'');
+document.getElementById('m-state').textContent='todos: []';
+document.getElementById('v-state').textContent='render 대기';
+document.getElementById('c-state').textContent='이벤트 대기';
+document.getElementById('user-msg').textContent='버튼을 눌러 Todo를 추가해보세요!';
+['box-m','box-v','box-c'].forEach(function(id){document.getElementById(id).classList.remove('pulse')});
+setBtns(false)}
+</script>
+</body>
+</html>

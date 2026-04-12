@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MVVM Pattern</title>
+  <link rel="stylesheet" href="../topic-frame.css">
+</head>
+<body>
+<h2 class="sr-only">MVVM pattern interactive explainer with simulation, pros, cons, and use cases in Korean.</h2>
+<style>
+*{box-sizing:border-box}
+.tabs{display:flex;gap:0;border-bottom:0.5px solid var(--color-border-tertiary);margin-bottom:1.25rem;overflow-x:auto}
+.tab{padding:8px 14px;font-size:13px;font-weight:500;color:var(--color-text-secondary);cursor:pointer;border-bottom:2px solid transparent;transition:all 0.3s;background:none;border-top:none;border-left:none;border-right:none;white-space:nowrap}
+.tab:hover{color:var(--color-text-primary)}.tab.active{color:#3C3489;border-bottom-color:#534AB7}
+.pnl{display:none}.pnl.active{display:block}
+.sec{margin-bottom:1.25rem}
+.sec-title{font-size:14px;font-weight:500;color:var(--color-text-primary);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.sec-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.cw{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:14px 16px;font-family:var(--font-mono);font-size:12px;line-height:2.2;color:var(--color-text-secondary);overflow-x:auto;margin-bottom:10px}
+.cl{display:flex;align-items:baseline;min-height:24px;transition:background 0.5s;border-radius:3px;padding:0 4px;margin:0 -4px}
+.cl.hl{background:#EEEDFE}.cl.hlg{background:#E1F5EE}.cl.hlr{background:#FCEBEB}.cl.hlb{background:#E6F1FB}.cl.hla{background:#FAEEDA}
+.ct{white-space:pre;flex-shrink:0}
+.ca{margin-left:12px;font-family:var(--font-sans);font-size:11px;opacity:0;transition:opacity 1s;white-space:nowrap;flex-shrink:0}
+.ca.show{opacity:1}
+.cap{color:#534AB7}.cag{color:#085041}.car{color:#791F1F}.cab{color:#0C447C}.caa{color:#633806}
+.kw{color:#534AB7}.vl{color:#0F6E56}.nl{color:#A32D2D}.cm{color:var(--color-text-tertiary)}.sv{color:#BA7517}
+
+.viz-area{position:relative;min-height:260px;margin:12px 0;padding:8px 0}
+.mvc-row{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+.mvc-box{width:150px;border-radius:var(--border-radius-lg);padding:12px;text-align:center;border:2px solid;transition:all 0.6s}
+.mvc-box.pulse{transform:scale(1.05)}
+.mvc-label{font-size:14px;font-weight:500;margin-bottom:4px}
+.mvc-desc{font-size:10px;margin-bottom:6px}
+.mvc-state{font-family:var(--font-mono);font-size:11px;min-height:16px;transition:opacity 0.5s}
+.box-model{background:#EEEDFE;border-color:#AFA9EC;color:#3C3489}.box-model .mvc-desc{color:#534AB7}
+.box-view{background:#E6F1FB;border-color:#85B7EB;color:#0C447C}.box-view .mvc-desc{color:#378ADD}
+.box-vm{background:#E1F5EE;border-color:#5DCAA5;color:#085041}.box-vm .mvc-desc{color:#1D9E75}
+.flow-row{display:flex;justify-content:center;align-items:center;gap:8px;margin:12px 0;font-size:11px;color:var(--color-text-tertiary);flex-wrap:wrap}
+.flow-arrow{font-size:16px;color:var(--color-border-secondary);transition:color 0.5s}
+.flow-arrow.av{color:#378ADD}.flow-arrow.ag{color:#1D9E75}.flow-arrow.am{color:#534AB7}
+.flow-step{padding:3px 10px;border-radius:var(--border-radius-md);background:var(--color-background-secondary);transition:all 0.5s;font-family:var(--font-mono)}
+.flow-step.av{background:#E6F1FB;color:#0C447C}.flow-step.ag{background:#E1F5EE;color:#085041}.flow-step.am{background:#EEEDFE;color:#3C3489}
+.binding-badge{display:inline-block;padding:2px 8px;border-radius:var(--border-radius-md);font-size:10px;font-weight:500;margin:0 4px}
+.bind-2way{background:#E1F5EE;color:#085041;border:0.5px solid #5DCAA5}
+.bind-note{font-size:10px;color:var(--color-text-tertiary);text-align:center;margin:6px 0}
+.user-zone{margin-top:12px;padding:10px 12px;background:var(--color-background-secondary);border-radius:var(--border-radius-md)}
+.user-label{font-size:10px;font-weight:500;color:var(--color-text-tertiary);margin-bottom:6px}
+.user-msg{font-family:var(--font-mono);font-size:12px;color:var(--color-text-primary);min-height:18px}
+
+.pills{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.pill{font-size:12px;padding:4px 12px;border-radius:var(--border-radius-md);background:var(--color-background-secondary);color:var(--color-text-secondary);transition:all 0.5s}
+.pill.active{background:#EEEDFE;color:#3C3489}.pill.done{background:#E1F5EE;color:#085041}
+.sts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:12px 0}
+.stc{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 12px;text-align:center}
+.stn{font-size:20px;font-weight:500;color:var(--color-text-primary)}
+.stl{font-size:11px;color:var(--color-text-tertiary);margin-top:2px}
+.lga{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 14px;min-height:60px;max-height:200px;overflow-y:auto;font-family:var(--font-mono);font-size:11px;line-height:2;color:var(--color-text-secondary)}
+.ll{display:flex;gap:6px;align-items:baseline}
+.tg{display:inline-block;font-size:10px;padding:1px 7px;border-radius:var(--border-radius-md);font-weight:500}
+.tgm{background:#EEEDFE;color:#3C3489}.tgv{background:#E6F1FB;color:#0C447C}.tgg{background:#E1F5EE;color:#085041}.tgu{background:#FAEEDA;color:#633806}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+.btns button:disabled{opacity:0.4;cursor:not-allowed}
+.dnav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.dbtn{padding:6px 14px;font-size:12px;border-radius:var(--border-radius-md);background:var(--color-background-secondary);color:var(--color-text-secondary);border:0.5px solid var(--color-border-tertiary);cursor:pointer;transition:all 0.3s}
+.dbtn:hover{border-color:var(--color-border-secondary)}
+.dbtn.ag{background:#E1F5EE;color:#085041;border-color:#0F6E56}
+.dbtn.ar{background:#FCEBEB;color:#791F1F;border-color:#A32D2D}
+.dsc{font-size:13px;color:var(--color-text-secondary);line-height:1.7;padding:10px 14px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);min-height:40px;opacity:0;transition:opacity 0.8s}
+.dsc.show{opacity:1}
+
+.intro-block{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:14px 16px;margin-bottom:1.25rem;display:flex;flex-direction:column;gap:10px}
+.intro-item{display:flex;gap:10px;align-items:baseline}
+.intro-label{font-size:12px;font-weight:600;color:var(--color-text-primary);white-space:nowrap;min-width:100px;flex-shrink:0}
+.intro-text{font-size:13px;color:var(--color-text-secondary);line-height:1.6}
+
+.sim-row{display:flex;gap:1.25rem;align-items:flex-start}
+.sim-row>.sec{flex:1;min-width:0;margin-bottom:0}
+.sim-row>.sec:first-child{flex:0 0 38%;max-width:38%}
+.sim-row>.sec:last-child{flex:1}
+@media(max-width:860px){.sim-row{flex-direction:column}.sim-row>.sec:first-child{flex:1;max-width:100%}}
+
+
+
+</style>
+
+<div style="padding:0.5rem 0">
+<div class="intro-block">
+  <div class="intro-item"><span class="intro-label">무슨 패턴인가</span><span class="intro-text">ViewModel이 상태와 변환 로직을 들고 있고, View는 그 상태를 바인딩해서 자동으로 다시 그려집니다. 수동으로 DOM을 갱신할 필요가 없어요.</span></div>
+  <div class="intro-item"><span class="intro-label">이 화면에서는</span><span class="intro-text">Model·ViewModel·View 세 박스와 바인딩 흐름 화살표가 표시됩니다. "+ 할 일 추가" 버튼을 누르면 State changes와 Renders 카운터가 함께 올라가며 자동 갱신을 확인할 수 있습니다.</span></div>
+  <div class="intro-item"><span class="intro-label">언제 떠올리나</span><span class="intro-text">React Hooks, Vue Composition API처럼 상태 변경이 UI에 자동 반영되는 프레임워크를 쓸 때. 폼 입력이 많거나 양방향 데이터 흐름이 필요한 화면에 적합합니다.</span></div>
+</div>
+<div class="tabs">
+  <button class="tab active" onclick="sw('sim')">Simulation</button>
+  <button class="tab" onclick="sw('pro')">장점 (Pros)</button>
+  <button class="tab" onclick="sw('con')">단점 (Cons)</button>
+  <button class="tab" onclick="sw('use')">사용 예시</button>
+</div>
+
+<div class="pnl active" id="p-sim">
+<div class="sim-row">
+<div class="sec">
+  <div class="sec-title"><span class="sec-dot" style="background:#534AB7"></span>MVVM pattern (React로 비유한 예시)</div>
+  <div class="cw">
+    <div class="cl" id="cl-0"><span class="ct"><span class="cm">// Model — 순수 데이터 + API</span></span></div>
+    <div class="cl" id="cl-1"><span class="ct"><span class="kw">class</span> TodoModel {</span></div>
+    <div class="cl" id="cl-2"><span class="ct">  todos = []</span><span class="ca cap" id="an-2"></span></div>
+    <div class="cl" id="cl-3"><span class="ct">  addTodo(text) { this.todos.push({ text, done: <span class="nl">false</span> }) }</span><span class="ca cap" id="an-3"></span></div>
+    <div class="cl" id="cl-4"><span class="ct">  toggle(i) { this.todos[i].done = !this.todos[i].done }</span><span class="ca cap" id="an-4"></span></div>
+    <div class="cl" id="cl-5"><span class="ct">}</span></div>
+    <div class="cl" id="cl-6"><span class="ct"></span></div>
+    <div class="cl" id="cl-7"><span class="ct"><span class="cm">// ViewModel에 비유할 수 있는 상태 로직 (React Hook)</span></span></div>
+    <div class="cl" id="cl-8"><span class="ct"><span class="kw">function</span> useTodoViewModel() {</span></div>
+    <div class="cl" id="cl-9"><span class="ct">  <span class="kw">const</span> [todos, setTodos] = useState([])</span><span class="ca cag" id="an-9"></span></div>
+    <div class="cl" id="cl-10"><span class="ct">  <span class="kw">const</span> addTodo = (text) => {</span><span class="ca cag" id="an-10"></span></div>
+    <div class="cl" id="cl-11"><span class="ct">    model.addTodo(text)</span><span class="ca cag" id="an-11"></span></div>
+    <div class="cl" id="cl-12"><span class="ct">    setTodos([...model.todos])</span><span class="ca cag" id="an-12"></span></div>
+    <div class="cl" id="cl-13"><span class="ct">  }</span></div>
+    <div class="cl" id="cl-14"><span class="ct">  <span class="kw">return</span> { todos, addTodo }</span><span class="ca cag" id="an-14"></span></div>
+    <div class="cl" id="cl-15"><span class="ct">}</span></div>
+    <div class="cl" id="cl-16"><span class="ct"></span></div>
+    <div class="cl" id="cl-17"><span class="ct"><span class="cm">// View — 상태를 읽고 다시 렌더링</span></span></div>
+    <div class="cl" id="cl-18"><span class="ct"><span class="kw">function</span> TodoView() {</span></div>
+    <div class="cl" id="cl-19"><span class="ct">  <span class="kw">const</span> { todos, addTodo } = useTodoViewModel()</span><span class="ca cab" id="an-19"></span></div>
+    <div class="cl" id="cl-20"><span class="ct">  <span class="kw">return</span> &lt;ul&gt;{todos.map(t => &lt;li&gt;{t.text}&lt;/li&gt;)}&lt;/ul&gt;</span><span class="ca cab" id="an-20"></span></div>
+    <div class="cl" id="cl-21"><span class="ct">}</span></div>
+  </div>
+</div>
+<div class="sec">
+  <div class="sec-title"><span class="sec-dot" style="background:#0F6E56"></span>MVVM flow diagram</div>
+  <div class="pills" id="steps"><div class="pill active" data-s="0">Ready</div><div class="pill" data-s="1">1. User → View</div><div class="pill" data-s="2">2. ViewModel</div><div class="pill" data-s="3">3. Model</div><div class="pill" data-s="4">4. Re-render</div></div>
+  <div class="viz-area">
+    <div class="mvc-row">
+      <div class="mvc-box box-model" id="box-m"><div class="mvc-label">Model</div><div class="mvc-desc">데이터 + API</div><div class="mvc-state" id="m-state">todos: []</div></div>
+      <div class="mvc-box box-vm" id="box-vm"><div class="mvc-label">ViewModel</div><div class="mvc-desc">상태 + 변환 로직</div><div class="mvc-state" id="vm-state">state 대기</div></div>
+      <div class="mvc-box box-view" id="box-v"><div class="mvc-label">View</div><div class="mvc-desc">상태 기반 렌더링</div><div class="mvc-state" id="v-state">render 대기</div></div>
+    </div>
+    <div class="flow-row">
+      <span class="flow-step" id="fs-1">User action</span>
+      <span class="flow-arrow" id="fa-1">→</span>
+      <span class="flow-step" id="fs-2">View</span>
+      <span class="flow-arrow" id="fa-2">→</span>
+      <span class="flow-step" id="fs-3">ViewModel</span>
+      <span class="flow-arrow" id="fa-3">→</span>
+      <span class="flow-step" id="fs-4">Model</span>
+      <span class="flow-arrow" id="fa-4">→</span>
+      <span class="flow-step" id="fs-5">Re-render</span>
+    </div>
+    <div class="bind-note">React 예시에서는 <span class="binding-badge bind-2way">State update</span> 후 View가 다시 렌더링됩니다.</div>
+    <div class="user-zone">
+      <div class="user-label">사용자 화면</div>
+      <div class="user-msg" id="user-msg">버튼을 눌러 Todo를 추가해보세요!</div>
+    </div>
+  </div>
+<div class="sts">
+  <div class="stc"><div class="stn" id="s-actions">0</div><div class="stl">User actions</div></div>
+  <div class="stc"><div class="stn" id="s-binds">0</div><div class="stl">State changes</div></div>
+  <div class="stc"><div class="stn" id="s-renders">0</div><div class="stl">Renders</div></div>
+</div>
+<div class="sec"><div class="sec-title"><span class="sec-dot" style="background:#888780"></span>Log</div><div class="lga" id="logbox"></div></div>
+<div class="btns">
+  <button id="btn-add" onclick="doAdd()">+ "할 일 추가"</button>
+  <button id="btn-tog" onclick="doToggle()">첫 번째 토글</button>
+  <button id="btn-reset" onclick="doReset()">Reset</button>
+</div>
+</div>
+</div>
+</div>
+
+<div class="pnl" id="p-pro">
+<div class="sec"><div class="sec-title"><span class="sec-dot" style="background:#1D9E75"></span>장점 코드 데모</div>
+<div class="dnav" id="pro-nav">
+  <button class="dbtn ag" onclick="proDem(0,this)">자동 동기화</button>
+  <button class="dbtn" onclick="proDem(1,this)">선언적 UI</button>
+  <button class="dbtn" onclick="proDem(2,this)">ViewModel 재사용</button>
+  <button class="dbtn" onclick="proDem(3,this)">테스트 용이</button>
+</div>
+<div class="cw" id="pro-code"></div>
+<div class="dsc" id="pro-desc"></div>
+</div>
+<div style="margin-top:8px"><button onclick="runPro()">실행해보기</button></div>
+</div>
+
+<div class="pnl" id="p-con">
+<div class="sec"><div class="sec-title"><span class="sec-dot" style="background:#A32D2D"></span>단점 코드 데모</div>
+<div class="dnav" id="con-nav">
+  <button class="dbtn ar" onclick="conDem(0,this)">디버깅 어려움</button>
+  <button class="dbtn" onclick="conDem(1,this)">메모리 사용</button>
+  <button class="dbtn" onclick="conDem(2,this)">과도한 리렌더링</button>
+  <button class="dbtn" onclick="conDem(3,this)">학습 곡선</button>
+</div>
+<div class="cw" id="con-code"></div>
+<div class="dsc" id="con-desc"></div>
+</div>
+<div style="margin-top:8px"><button onclick="runCon()">실행해보기</button></div>
+</div>
+
+<div class="pnl" id="p-use">
+<div class="sec"><div class="sec-title"><span class="sec-dot" style="background:#534AB7"></span>실제 사용 예시</div>
+<div class="dnav" id="use-nav">
+  <button class="dbtn ag" onclick="useDem(0,this)">React Hooks</button>
+  <button class="dbtn" onclick="useDem(1,this)">Vue Composition</button>
+  <button class="dbtn" onclick="useDem(2,this)">SwiftUI</button>
+  <button class="dbtn" onclick="useDem(3,this)">MVC vs MVP vs MVVM</button>
+</div>
+<div class="cw" id="use-code"></div>
+<div class="dsc" id="use-desc"></div>
+</div>
+<div style="margin-top:8px"><button onclick="runUse()">실행해보기</button></div>
+</div>
+</div>
+
+<script>
+var D=2400;var todos=[];var acts=0,binds=0,rnds=0,running=false;
+var txts=["우유 사기","코드 리뷰","운동하기","책 읽기","빨래하기"];var tIdx=0;
+
+var proData=[
+{lines:['// MVP: 수동으로 View 갱신해야 함','presenter.onAddClicked()','// model.addTodo(text)','// view.showTodos(model.getTodos()) ← 수동!','// view.clearInput()               ← 수동!','// view.showSuccess(...)           ← 수동!','','// MVVM 계열: 상태를 바꾸면 화면이 다시 계산됨','const addTodo = (text) => {','  model.addTodo(text)','  setTodos([...model.todos])  // 상태 갱신','  // 관련 UI는 새 state 기준으로 다시 렌더링','  // 다른 표시도 state로 관리하면 함께 반영 가능','}'],
+annos:['','','Model 업데이트','View 갱신 1 — 수동!','View 갱신 2 — 수동!','View 갱신 3 — 수동!','','','','Model 업데이트','상태만 바꾸면 됨','View가 새 state로 다시 그려짐','표시도 state에 연결 가능'],
+desc:'MVP에서는 Presenter가 화면 메서드를 하나씩 호출하는 경우가 많아요. MVVM 계열에서는 상태를 갱신하고, View가 그 상태를 기준으로 다시 그려지도록 구성하는 편이 일반적입니다.',hl:'hlg'},
+{lines:['// "어떻게 바꿀지" 안 쓰고 "뭘 보여줄지"만 씀!','','// 명령형 (jQuery 시절)','document.getElementById("list").innerHTML = ""','todos.forEach(t => {','  const li = document.createElement("li")','  li.textContent = t.text','  document.getElementById("list").appendChild(li)','})','','// 선언형 (React)','const TodoList = () => (','  <ul>{todos.map(t => <li>{t.text}</li>)}</ul>',')',' ','// "이 상태이면 이렇게 보여줘" 끝!'],
+annos:['','','옛날 방식 — 과정을 일일이 지시','비우고','반복하고','li 만들고','텍스트 넣고','붙이고... 길다!','','','현대 방식 — 결과만 선언!','','이 한 줄이면 끝!','','','상태 → UI 매핑만 적으면 됨!'],
+desc:'"길을 알려주는 것"(명령형)과 "주소만 말하는 것"(선언형)의 차이예요. MVVM은 "이 데이터가 있으면 이렇게 보여줘"만 적으면 돼요. 어떻게 바꿀지는 프레임워크가 알아서 해요.',hl:'hlg'},
+{lines:['// 같은 상태/로직 묶음을 여러 View에서 재사용!','','function useTodoViewModel() {','  const [todos, setTodos] = useState([])','  const addTodo = (text) => { ... }','  const toggle = (i) => { ... }','  return { todos, addTodo, toggle }','}','','// 풀 페이지 View','function TodoPage() {','  const vm = useTodoViewModel()','  return <FullLayout todos={vm.todos} />','}','// 위젯 View','function TodoWidget() {','  const vm = useTodoViewModel()','  return <MiniList todos={vm.todos} />','}'],
+annos:['','','상태/로직 묶음 하나','상태 관리','추가 로직','토글 로직','API 노출','','','','풀 페이지에서 사용!','같은 묶음 재사용','큰 레이아웃으로','','','작은 위젯에서도 사용!','같은 묶음 재사용','작은 리스트로'],
+desc:'요리 레시피처럼 상태와 UI 로직을 한곳에 모아두고, 화면만 바꿔 끼우는 식이에요. React에선 이런 묶음을 Custom Hook으로 재사용할 수 있어요.',hl:'hlg'},
+{lines:['// ViewModel처럼 분리한 로직을 UI 없이 테스트!','','import { renderHook, act } from "@testing-library/react"','','test("할 일 추가", () => {','  const { result } = renderHook(() => useTodoViewModel())','','  act(() => {','    result.current.addTodo("테스트")','  })','','  expect(result.current.todos.length).toBe(1)','  expect(result.current.todos[0].text).toBe("테스트")','  // DOM 없이 로직만 테스트 완료!','})'],
+annos:['','','React 테스트 도구!','','','Hook을 독립 실행!','','','addTodo 호출','','','1개 추가됐는지 확인','텍스트 맞는지 확인','화면 없이 로직 테스트!'],
+desc:'React Hook은 renderHook으로 화면 없이 테스트할 수 있어요. MVVM의 ViewModel처럼 분리한 상태 로직을 독립적으로 검증하는 예시로 볼 수 있습니다.',hl:'hlg'}
+];
+
+var conData=[
+{lines:['// 상태가 바뀌면 View가 "자동으로" 바뀜','// 그런데... 왜 바뀌었지?','','setTodos([...todos, newTodo])','// ↓ React가 내부적으로','// ↓ 가상 DOM 비교','// ↓ 변경된 부분만 업데이트','// ↓ 화면 갱신!','','// 이 과정이 눈에 안 보여요!','// "왜 갑자기 화면이 바뀌었지?"','// 데이터 흐름을 추적하기 어려움!'],
+annos:['','','','상태 변경!','','눈에 안 보이는 과정 1','눈에 안 보이는 과정 2','눈에 안 보이는 과정 3','','','자동은 편하지만 추적은 어려움','DevTools가 필수!'],
+desc:'자동 세탁기는 편하지만, 빨래가 이상하게 됐을 때 "어느 단계에서 문제가 생겼지?" 찾기가 어려워요. 상태 기반 렌더링도 비슷해서, 자동화된 갱신 흐름을 추적하려면 React DevTools 같은 도구가 중요해요.',hl:'hlr'},
+{lines:['// ViewModel이 상태를 복사해서 갖고 있음','','// Model의 원본 데이터','model.todos = [{ text: "할 일", done: false }]','','// ViewModel이 복사본을 가짐','const [todos, setTodos] = useState([...model.todos])','','// 같은 데이터가 두 곳에!','// Model에도 있고 ViewModel(state)에도 있음','// 큰 앱에서는 메모리 사용량이 늘어남','// 상태가 많을수록 복사본도 많아짐!'],
+annos:['','','원본 1','','','','복사본 2','','','같은 데이터가 두 벌!','','상태가 많으면 메모리도 두 배...'],
+desc:'원본 서류와 복사본을 둘 다 갖고 있는 것처럼, Model과 ViewModel에 같은 데이터가 두 벌 존재해요. 작은 앱에선 괜찮지만, 데이터가 커지면 메모리 사용이 늘어납니다.',hl:'hlr'},
+{lines:['// 부모 상태가 바뀌면 자식도 전부 리렌더링!','','function Parent() {','  const [count, setCount] = useState(0)','  return (','    <div>','      <button onClick={() => setCount(c => c+1)} />','      <ChildA />       // count 안 쓰는데 리렌더!','      <ChildB />       // 이것도!','      <ChildC />       // 이것도!','    </div>','  )','}','// React.memo나 useMemo로 최적화 필요!'],
+annos:['','','','count 상태','','','count 변경!','count 안 쓰는데 다시 그려짐!','이것도 불필요한 리렌더!','이것도!','','','','memo로 방지 필요!'],
+desc:'한 명이 기침하면 교실 전체가 병원에 가는 격이에요. 부모 상태가 바뀌면 관련 없는 자식 컴포넌트까지 다시 그려져요. React.memo나 useMemo로 막아야 하는데, 이것도 공짜가 아니에요.',hl:'hlr'},
+{lines:['// MVVM을 제대로 쓰려면 알아야 할 것들','','// React만 해도...','useState    // 상태 관리','useEffect   // 사이드 이펙트','useMemo     // 메모이제이션','useCallback // 함수 메모이제이션','useRef      // DOM 참조','useContext  // 전역 상태','','// + 상태 관리 라이브러리','// Redux, Zustand, Jotai, Recoil...','// 어떤 걸 써야 하지?!'],
+annos:['','','','Hook 1','Hook 2','Hook 3','Hook 4','Hook 5','Hook 6','','','선택지가 너무 많음!','결정 장애!'],
+desc:'MVVM 스타일로 UI를 구성하더라도 배울 건 많아요. React Hook만 해도 상태, 이펙트, 컨텍스트 같은 개념이 있고 상태 관리 라이브러리까지 들어오면 복잡도가 금방 올라갑니다.',hl:'hlr'}
+];
+
+var useData=[
+{lines:['// React Hooks = MVVM처럼 비유할 수 있는 예시','','// ViewModel에 비유할 수 있는 Custom Hook','function useCounter() {','  const [count, setCount] = useState(0)','  const increment = () => setCount(c => c + 1)','  const decrement = () => setCount(c => c - 1)','  return { count, increment, decrement }','}','','// View (Component)','function Counter() {','  const { count, increment, decrement } = useCounter()','  return <span>{count}</span>','  // count가 바뀌면 다시 렌더링됨','}'],
+annos:['','','','Custom Hook을 ViewModel처럼 볼 수 있음','상태 선언','증가 로직','감소 로직','API 노출','','','','View는 이 로직을 사용','Hook에서 상태와 로직을 가져옴','state를 표시','변경 시 다시 그려짐'],
+desc:'React의 Custom Hook은 상태와 UI 로직을 분리한다는 점에서 ViewModel에 비유할 수 있어요. 다만 React 자체를 정통 MVVM이라고 단정하기보다는, 비슷한 아이디어를 가진 예시로 보는 편이 정확합니다.',hl:'hlg'},
+{lines:['// Vue 3 Composition API','','// ViewModel (Composable)','function useTodos() {','  const todos = ref([])','  const addTodo = (text) => {','    todos.value.push({ text, done: false })','  }','  return { todos, addTodo }','}','','// View (Template)','<template>','  <li v-for="t in todos">{{ t.text }}</li>','  <!-- todos가 바뀌면 자동 갱신! -->','</template>'],
+annos:['','','','Composable = ViewModel 역할','반응형 상태 선언!','','push만 하면 자동 감지!','','','','','','','v-for가 자동으로 반응!','템플릿이 다시 그려짐!'],
+desc:'Vue의 Composition API에서 ref()로 선언한 데이터는 반응형이에요. 값만 바꾸면 Vue가 변경을 자동 감지해서 화면을 갱신해줘요. React보다 더 자동화된 느낌이에요.',hl:'hlg'},
+{lines:['// SwiftUI — Apple의 MVVM','','// ViewModel','class TodoViewModel: ObservableObject {','  @Published var todos: [Todo] = []','  func addTodo(_ text: String) {','    todos.append(Todo(text: text))','    // @Published라서 자동 알림!','  }','}','','// View','struct TodoView: View {','  @StateObject var vm = TodoViewModel()','  var body: some View {','    List(vm.todos) { t in Text(t.text) }','  }','}'],
+annos:['','','','ObservableObject = ViewModel!','@Published = 바인딩 대상!','','추가하면','자동으로 View에 알림!','','','','','','@StateObject로 바인딩!','','List가 자동 갱신!',''],
+desc:'SwiftUI에서 @Published를 붙이면 그 값이 바뀔 때 View에 자동으로 알려줘요. React의 useState와 비슷하지만, Swift답게 더 타입 안전하고 선언적이에요.',hl:'hlg'},
+{lines:['// MVC / MVP / MVVM 비교!','','// MVC:  View ←→ Model (서로 앎)','//   View가 Model을 직접 읽음','//   Controller가 교통정리','','// MVP:  View ✕ Model (서로 모름)','//   Presenter가 수동으로 View 갱신','//   테스트가 쉬운 편, 코드 많음','','// MVVM: View ← 상태 연결 → ViewModel','//   상태 변화에 맞춰 View를 다시 그림','//   프레임워크 지원이 강하면 자동화가 많음','','// Vue/SwiftUI는 MVVM으로 자주 설명되고','// React는 일부 개념만 비슷하게 볼 수 있음'],
+annos:['','','View → Model 직접 참조','','','','완전 분리, 수동 갱신','','','','상태를 ViewModel에 연결','','자동화 수준은 도구마다 다름','','','프레임워크마다 해석이 다름','React는 완전 동일 개념은 아님'],
+desc:'세 패턴은 자주 비교되는 UI 아키텍처예요. Vue와 SwiftUI는 MVVM으로 설명하기 쉽고, React는 일부 개념이 비슷하지만 보통 별도의 컴포넌트 모델로 다루는 편이 더 정확합니다.',hl:'hlg'}
+];
+
+var curPro=0,curCon=0,curUse=0,demoR=false;
+function buildHTML(data,idx,prefix,colorCls){var d=data[idx];var html='';for(var i=0;i<d.lines.length;i++){html+='<div class="cl" id="'+prefix+'-'+i+'"><span class="ct">'+d.lines[i]+'</span><span class="ca '+colorCls+'" id="'+prefix+'-a-'+i+'"></span></div>'}return html}
+function renderCode(t,data,idx,c){document.getElementById(t).innerHTML=buildHTML(data,idx,t,c)}
+function renderDesc(t,data,idx){var el=document.getElementById(t);el.textContent=data[idx].desc;el.classList.remove('show');requestAnimationFrame(function(){requestAnimationFrame(function(){el.classList.add('show')})})}
+function proDem(i,b){curPro=i;document.querySelectorAll('#pro-nav .dbtn').forEach(function(x){x.className='dbtn'});b.className='dbtn ag';renderCode('pro-code',proData,i,'cag');renderDesc('pro-desc',proData,i)}
+function conDem(i,b){curCon=i;document.querySelectorAll('#con-nav .dbtn').forEach(function(x){x.className='dbtn'});b.className='dbtn ar';renderCode('con-code',conData,i,'car');renderDesc('con-desc',conData,i)}
+function useDem(i,b){curUse=i;document.querySelectorAll('#use-nav .dbtn').forEach(function(x){x.className='dbtn'});b.className='dbtn ag';renderCode('use-code',useData,i,'cag');renderDesc('use-desc',useData,i)}
+function sl(ms){return new Promise(function(r){setTimeout(r,ms)})}
+async function animCode(p,data,idx){if(demoR)return;demoR=true;var d=data[idx];for(var i=0;i<d.lines.length;i++){var line=document.getElementById(p+'-'+i);var anno=document.getElementById(p+'-a-'+i);if(!d.annos[i]||d.annos[i]===''){await sl(200);continue}line.classList.add(d.hl);anno.textContent='\u2190 '+d.annos[i];(function(a){requestAnimationFrame(function(){requestAnimationFrame(function(){a.classList.add('show')})})})(anno);await sl(1800)}demoR=false}
+function runPro(){animCode('pro-code',proData,curPro)}
+function runCon(){animCode('con-code',conData,curCon)}
+function runUse(){animCode('use-code',useData,curUse)}
+renderCode('pro-code',proData,0,'cag');renderDesc('pro-desc',proData,0);
+renderCode('con-code',conData,0,'car');renderDesc('con-desc',conData,0);
+renderCode('use-code',useData,0,'cag');renderDesc('use-desc',useData,0);
+
+function sw(id){document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active')});document.querySelectorAll('.pnl').forEach(function(p){p.classList.remove('active')});document.querySelector('[onclick="sw(\''+id+'\')"]').classList.add('active');document.getElementById('p-'+id).classList.add('active')}
+
+var logbox=document.getElementById('logbox');
+var anIds=[2,3,4,9,10,11,12,14,19,20];
+function setStep(n){document.querySelectorAll('.pill').forEach(function(p){var s=parseInt(p.dataset.s);if(!isNaN(s))p.className='pill'+(s===n?' active':(s<n?' done':''))})}
+function clearHL(){for(var i=0;i<=21;i++){var e=document.getElementById('cl-'+i);if(e)e.classList.remove('hl','hlg','hlr','hlb','hla')}anIds.forEach(function(j){var a=document.getElementById('an-'+j);if(a){a.classList.remove('show');a.textContent=''}})}
+function hlLine(n,txt,cls){clearHL();var c=cls||'hl';var e=document.getElementById('cl-'+n);if(e)e.classList.add(c);var a=document.getElementById('an-'+n);if(a&&txt){var acls=c==='hlg'?'cag':c==='hlr'?'car':c==='hlb'?'cab':c==='hla'?'caa':'cap';a.className='ca '+acls;a.textContent='\u2190 '+txt;requestAnimationFrame(function(){requestAnimationFrame(function(){a.classList.add('show')})})}}
+function addLog(msg,type){var d=document.createElement('div');d.className='ll';var tg=document.createElement('span');tg.className='tg '+(type==='model'?'tgm':type==='view'?'tgv':type==='vm'?'tgg':'tgu');tg.textContent=type==='model'?'MODEL':type==='view'?'VIEW':type==='vm'?'VM':'USER';var tx=document.createElement('span');tx.textContent=msg;d.appendChild(tg);d.appendChild(tx);logbox.appendChild(d);logbox.scrollTop=logbox.scrollHeight}
+function updateStats(){document.getElementById('s-actions').textContent=acts;document.getElementById('s-binds').textContent=binds;document.getElementById('s-renders').textContent=rnds}
+function pulseBox(id){var el=document.getElementById(id);el.classList.add('pulse');setTimeout(function(){el.classList.remove('pulse')},600)}
+function activateFlow(n,cls){for(var i=1;i<=5;i++){document.getElementById('fs-'+i).className='flow-step';if(i<=4)document.getElementById('fa-'+i).className='flow-arrow'}if(n>=1){document.getElementById('fs-'+n).className='flow-step '+cls;if(n>1)document.getElementById('fa-'+(n-1)).className='flow-arrow '+cls}}
+function todoDisplay(){return todos.map(function(t){return(t.done?'[x]':'[ ]')+' '+t.text}).join(', ')||'(비어있음)'}
+function setBtns(d){['btn-add','btn-tog','btn-reset'].forEach(function(id){var e=document.getElementById(id);if(e)e.disabled=d})}
+
+async function doAdd(){
+if(running)return;running=true;setBtns(true);acts++;
+var text=txts[tIdx%txts.length];tIdx++;
+
+setStep(1);activateFlow(1,'av');
+hlLine(19,'사용자 클릭! View의 addTodo 바인딩 호출','hlb');
+pulseBox('box-v');
+document.getElementById('v-state').textContent='클릭!';
+addLog('사용자 → "'+text+'" 추가 클릭','user');
+document.getElementById('user-msg').textContent='클릭! → "'+text+'"';
+await sl(D);
+
+setStep(2);activateFlow(3,'ag');
+hlLine(10,'View → ViewModel: addTodo("'+text+'") 호출','hlg');
+pulseBox('box-vm');
+document.getElementById('vm-state').textContent='addTodo 실행';
+addLog('View → ViewModel: addTodo("'+text+'")','vm');
+await sl(D);
+
+setStep(3);activateFlow(4,'am');
+hlLine(11,'ViewModel → Model: model.addTodo("'+text+'")','hl');
+todos.push({text:text,done:false});
+pulseBox('box-m');
+document.getElementById('m-state').textContent='todos: '+todos.length+'개';
+addLog('ViewModel → Model: addTodo("'+text+'")','model');
+await sl(D);
+
+hlLine(12,'setTodos() → 상태 변경! 바인딩 트리거!','hlg');
+binds++;
+pulseBox('box-vm');
+document.getElementById('vm-state').textContent='setTodos → 바인딩!';
+addLog('ViewModel: setTodos() → 바인딩 트리거!','vm');
+await sl(D);
+
+setStep(4);activateFlow(5,'av');
+hlLine(20,'바인딩이 View를 자동 갱신! 수동 호출 없음!','hlb');
+rnds++;
+pulseBox('box-v');
+document.getElementById('v-state').textContent='자동 렌더! '+todos.length+'개';
+document.getElementById('user-msg').textContent=todoDisplay();
+addLog('Data Binding → View 자동 리렌더링!','view');
+updateStats();
+await sl(D/2);activateFlow(0,'');
+document.getElementById('vm-state').textContent='state 대기';
+running=false;setBtns(false)}
+
+async function doToggle(){
+if(running)return;
+if(todos.length===0){addLog('할 일이 없어요! 먼저 추가하세요','user');return}
+running=true;setBtns(true);acts++;
+
+setStep(1);activateFlow(1,'av');
+hlLine(19,'사용자 클릭! View → ViewModel','hlb');
+pulseBox('box-v');
+addLog('사용자 → "'+todos[0].text+'" 토글','user');
+await sl(D);
+
+setStep(2);activateFlow(3,'ag');
+hlLine(10,'ViewModel: toggle 로직 실행','hlg');
+pulseBox('box-vm');
+document.getElementById('vm-state').textContent='toggle 실행';
+addLog('View → ViewModel: toggle(0)','vm');
+await sl(D);
+
+setStep(3);activateFlow(4,'am');
+hlLine(4,'ViewModel → Model: toggle(0)','hl');
+todos[0].done=!todos[0].done;
+pulseBox('box-m');
+document.getElementById('m-state').textContent='done='+todos[0].done;
+addLog('ViewModel → Model: toggle(0) done='+todos[0].done,'model');
+await sl(D);
+
+hlLine(12,'setTodos() → 바인딩 트리거!','hlg');
+binds++;
+pulseBox('box-vm');
+addLog('ViewModel: setTodos() → 바인딩!','vm');
+await sl(D);
+
+setStep(4);activateFlow(5,'av');
+hlLine(20,'View 자동 갱신!','hlb');
+rnds++;
+pulseBox('box-v');
+document.getElementById('v-state').textContent='자동 렌더!';
+document.getElementById('user-msg').textContent=todoDisplay();
+addLog('Data Binding → View 자동 리렌더링!','view');
+updateStats();
+await sl(D/2);activateFlow(0,'');
+document.getElementById('vm-state').textContent='state 대기';
+running=false;setBtns(false)}
+
+function doReset(){todos=[];tIdx=0;acts=0;binds=0;rnds=0;running=false;logbox.innerHTML='';setStep(0);clearHL();updateStats();activateFlow(0,'');
+document.getElementById('m-state').textContent='todos: []';
+document.getElementById('v-state').textContent='render 대기';
+document.getElementById('vm-state').textContent='state 대기';
+document.getElementById('user-msg').textContent='버튼을 눌러 Todo를 추가해보세요!';
+['box-m','box-v','box-vm'].forEach(function(id){document.getElementById(id).classList.remove('pulse')});
+setBtns(false)}
+</script>
+</body>
+</html>
